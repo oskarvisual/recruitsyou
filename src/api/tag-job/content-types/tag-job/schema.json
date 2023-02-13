@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tag_jobs",
+  "info": {
+    "singularName": "tag-job",
+    "pluralName": "tag-jobs",
+    "displayName": "TagJob",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "tag": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

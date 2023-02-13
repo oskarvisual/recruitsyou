@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "questions",
+  "info": {
+    "singularName": "question",
+    "pluralName": "questions",
+    "displayName": "Question",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "questionnaire": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::questionnaire.questionnaire"
+    },
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "text-single",
+        "text-multiple",
+        "choice-single",
+        "choice-multiple",
+        "yes/no",
+        "video",
+        "file",
+        "info"
+      ],
+      "default": "text-single"
+    },
+    "alternatives": {
+      "type": "component",
+      "repeatable": true,
+      "component": "questionnaire.alternatives"
+    },
+    "videoDuration": {
+      "type": "integer",
+      "max": 5,
+      "min": 0
+    },
+    "required": {
+      "type": "boolean",
+      "default": true
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}

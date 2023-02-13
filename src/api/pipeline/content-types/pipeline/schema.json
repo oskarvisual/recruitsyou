@@ -1,0 +1,29 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pipelines",
+  "info": {
+    "singularName": "pipeline",
+    "pluralName": "pipelines",
+    "displayName": "Pipeline",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "pipeline": {
+      "type": "string",
+      "required": true
+    },
+    "default": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

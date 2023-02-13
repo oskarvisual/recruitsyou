@@ -1,0 +1,20 @@
+{
+  "collectionName": "components_element_navs",
+  "info": {
+    "displayName": "nav",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "url": {
+      "type": "string"
+    },
+    "blank": {
+      "type": "boolean",
+      "default": false
+    },
+    "text": {
+      "type": "string"
+    }
+  }
+}

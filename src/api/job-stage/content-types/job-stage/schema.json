@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_stages",
+  "info": {
+    "singularName": "job-stage",
+    "pluralName": "job-stages",
+    "displayName": "JobStage",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "stage": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "sourced",
+        "apply",
+        "phone",
+        "interview",
+        "assessment",
+        "offer",
+        "hired",
+        "onboarding"
+      ],
+      "required": false
+    },
+    "automated": {
+      "type": "dynamiczone",
+      "components": [
+        "automated.email",
+        "automated.note",
+        "automated.tag",
+        "automated.task",
+        "automated.share-candidate",
+        "automated.link",
+        "automated.notification"
+      ]
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}

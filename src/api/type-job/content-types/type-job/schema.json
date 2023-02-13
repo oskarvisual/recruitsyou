@@ -1,0 +1,19 @@
+{
+  "kind": "collectionType",
+  "collectionName": "type_jobs",
+  "info": {
+    "singularName": "type-job",
+    "pluralName": "type-jobs",
+    "displayName": "TypeJob",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "string"
+    }
+  }
+}

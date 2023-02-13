@@ -1,0 +1,32 @@
+{
+  "collectionName": "components_element_social_networks",
+  "info": {
+    "displayName": "socialNetworks",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "socialNetwork": {
+      "type": "enumeration",
+      "enum": [
+        "behance",
+        "dribble",
+        "facebook",
+        "github",
+        "glassdor",
+        "indeed",
+        "linkedin",
+        "instagram",
+        "medium",
+        "snapchat",
+        "tiktok",
+        "twitter",
+        "youtube",
+        "vimeo"
+      ]
+    },
+    "url": {
+      "type": "string"
+    }
+  }
+}

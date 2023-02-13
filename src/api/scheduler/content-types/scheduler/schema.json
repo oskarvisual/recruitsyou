@@ -1,0 +1,146 @@
+{
+  "kind": "collectionType",
+  "collectionName": "schedulers",
+  "info": {
+    "singularName": "scheduler",
+    "pluralName": "schedulers",
+    "displayName": "Scheduler",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "scheduler": {
+      "type": "string",
+      "required": true
+    },
+    "daysRange": {
+      "type": "integer",
+      "default": 20
+    },
+    "ExpiresAfterDays": {
+      "type": "integer",
+      "default": 20
+    },
+    "minutesDuration": {
+      "type": "integer",
+      "default": 30
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "onsite",
+        "phone",
+        "meets",
+        "teams",
+        "zoom",
+        "jitsi"
+      ],
+      "default": "onsite"
+    },
+    "location": {
+      "type": "string"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "monday": {
+      "type": "boolean",
+      "default": true
+    },
+    "mondayFrom": {
+      "type": "time",
+      "default": "09:00"
+    },
+    "mondayTo": {
+      "type": "time",
+      "default": "18:00"
+    },
+    "tuesday": {
+      "type": "boolean",
+      "default": true
+    },
+    "tuesdayFrom": {
+      "type": "time",
+      "default": "09:00"
+    },
+    "tuesdayTo": {
+      "type": "time",
+      "default": "18:00"
+    },
+    "wednesday": {
+      "type": "boolean",
+      "default": true
+    },
+    "wednesdayFrom": {
+      "type": "time",
+      "default": "09:00"
+    },
+    "wednesdayTo": {
+      "type": "time",
+      "default": "18:00"
+    },
+    "thursday": {
+      "type": "boolean",
+      "default": true
+    },
+    "thursdayFrom": {
+      "type": "time",
+      "default": "09:00"
+    },
+    "thursdayTo": {
+      "type": "time",
+      "default": "18:00"
+    },
+    "friday": {
+      "type": "boolean",
+      "default": true
+    },
+    "fridayFrom": {
+      "type": "time",
+      "default": "09:00"
+    },
+    "fridayTo": {
+      "type": "time",
+      "default": "18:00"
+    },
+    "saturday": {
+      "type": "boolean",
+      "default": false
+    },
+    "saturdayFrom": {
+      "type": "time",
+      "default": "09:00"
+    },
+    "saturdayTo": {
+      "type": "time",
+      "default": "18:00"
+    },
+    "sunday": {
+      "type": "boolean",
+      "default": false
+    },
+    "sundayFrom": {
+      "type": "time",
+      "default": "09:00"
+    },
+    "sundayTo": {
+      "type": "time",
+      "default": "18:00"
+    },
+    "timezone": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::timezone.timezone"
+    }
+  }
+}

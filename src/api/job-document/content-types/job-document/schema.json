@@ -1,0 +1,49 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_documents",
+  "info": {
+    "singularName": "job-document",
+    "pluralName": "job-documents",
+    "displayName": "JobDocument",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "document": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::document.document"
+    },
+    "variables": {
+      "type": "json"
+    },
+    "fileSigned": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
+    },
+    "signed": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

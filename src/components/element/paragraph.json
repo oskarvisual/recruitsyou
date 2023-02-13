@@ -1,0 +1,35 @@
+{
+  "collectionName": "components_element_paragraphs",
+  "info": {
+    "displayName": "paragraph",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.content"
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "style-1",
+        "style-2",
+        "style-3",
+        "hero"
+      ],
+      "default": "style-1"
+    },
+    "style": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.style"
+    },
+    "size": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.size"
+    }
+  }
+}

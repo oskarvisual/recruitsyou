@@ -1,0 +1,31 @@
+{
+  "collectionName": "components_candidate_experiences",
+  "info": {
+    "displayName": "experience",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "title": {
+      "type": "string"
+    },
+    "company": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "fromYear": {
+      "type": "integer"
+    },
+    "toYear": {
+      "type": "integer"
+    },
+    "current": {
+      "type": "boolean"
+    }
+  }
+}

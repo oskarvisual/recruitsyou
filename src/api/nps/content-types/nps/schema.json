@@ -1,0 +1,40 @@
+{
+  "kind": "collectionType",
+  "collectionName": "npses",
+  "info": {
+    "singularName": "nps",
+    "pluralName": "npses",
+    "displayName": "Nps",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "candidate": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::candidate.candidate"
+    },
+    "nps": {
+      "type": "integer",
+      "max": 10,
+      "min": 1,
+      "required": true
+    },
+    "comment": {
+      "type": "text"
+    }
+  }
+}

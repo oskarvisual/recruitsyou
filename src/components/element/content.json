@@ -1,0 +1,50 @@
+{
+  "collectionName": "components_element_contents",
+  "info": {
+    "displayName": "content"
+  },
+  "options": {},
+  "attributes": {
+    "showTitle": {
+      "type": "boolean",
+      "default": true
+    },
+    "title": {
+      "type": "string"
+    },
+    "showSubtitle": {
+      "type": "boolean",
+      "default": true
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "showDescription": {
+      "type": "boolean",
+      "default": true
+    },
+    "description": {
+      "type": "richtext"
+    },
+    "showCta1": {
+      "type": "boolean",
+      "default": false
+    },
+    "cta1": {
+      "type": "string"
+    },
+    "ctaUrl1": {
+      "type": "string"
+    },
+    "showCta2": {
+      "type": "boolean",
+      "default": false
+    },
+    "cta2": {
+      "type": "string"
+    },
+    "ctaUrl2": {
+      "type": "string"
+    }
+  }
+}

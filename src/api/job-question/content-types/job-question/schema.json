@@ -1,0 +1,65 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_questions",
+  "info": {
+    "singularName": "job-question",
+    "pluralName": "job-questions",
+    "displayName": "JobQuestion",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "question": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "text-single",
+        "text-multiple",
+        "choice-single",
+        "choice-multiple",
+        "yes/no",
+        "video",
+        "file",
+        "info"
+      ],
+      "required": true
+    },
+    "alternatives": {
+      "displayName": "alternatives",
+      "type": "component",
+      "repeatable": true,
+      "component": "questionnaire.alternatives"
+    },
+    "videoDuration": {
+      "type": "integer",
+      "max": 5,
+      "min": 0
+    },
+    "required": {
+      "type": "boolean",
+      "default": true
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}

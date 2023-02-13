@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_questionnaire_alternatives",
+  "info": {
+    "displayName": "alternatives"
+  },
+  "options": {},
+  "attributes": {
+    "alternative": {
+      "type": "string"
+    },
+    "disqualifyAuto": {
+      "type": "boolean",
+      "default": false
+    },
+    "disqualify": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::disqualify.disqualify"
+    }
+  }
+}

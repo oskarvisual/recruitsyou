@@ -1,0 +1,33 @@
+{
+  "kind": "collectionType",
+  "collectionName": "push_keys",
+  "info": {
+    "singularName": "push-key",
+    "pluralName": "push-keys",
+    "displayName": "PushKey",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "platform": {
+      "type": "string"
+    },
+    "endpoint": {
+      "type": "string"
+    },
+    "expirationTime": {
+      "type": "string"
+    },
+    "keys": {
+      "type": "json"
+    }
+  }
+}

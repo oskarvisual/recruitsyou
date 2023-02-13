@@ -1,0 +1,35 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_users",
+  "info": {
+    "singularName": "job-user",
+    "pluralName": "job-users",
+    "displayName": "JobUser",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "owner": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

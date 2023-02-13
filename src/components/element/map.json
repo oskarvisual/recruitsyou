@@ -1,0 +1,40 @@
+{
+  "collectionName": "components_element_maps",
+  "info": {
+    "displayName": "map",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.content"
+    },
+    "locations": {
+      "displayName": "mapList",
+      "type": "component",
+      "repeatable": true,
+      "component": "element.map-list"
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "style-1",
+        "style-2",
+        "style-3"
+      ],
+      "default": "style-1"
+    },
+    "style": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.style"
+    },
+    "size": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.size"
+    }
+  }
+}

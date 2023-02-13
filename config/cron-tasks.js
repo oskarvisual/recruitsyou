@@ -1,0 +1,129 @@
+const moment = require('moment');
+//TODO: FALTA LOGICA PARA SUSPENDER CUENTA SIN PAGO
+//TODO: FALTA LOGICA PARA ACTUALIZAR FECHA DE VENCIMIENTO SI PAGO
+//TODO: FALTA CORREOS PERIDICOS CADA RECORDATIRIOS CADA X DIAS DESDE EL REGISTRO
+//TODO: RECORDATORIO DE TASKS 
+//TODO: VENCIMIENTO DE TASK
+//TODO: CREAR CONTACTO EN MAILJET
+module.exports = {
+/*
+const Mailjet = require ('node-mailjet');
+
+const mailjet = new Mailjet({
+  apiKey: process.env.MJ_APIKEY_PUBLIC,
+  apiSecret: process.env.MJ_APIKEY_PRIVATE
+});
+
+            await mailjet
+            .post("contact", {'version': 'v3'})
+            .request({
+                IsExcludedFromCampaigns: false,
+                Name: user.firstName,
+                Email: user.email
+            }).then((result) => {
+                mailjet
+                .post(listrecipient, {'version': 'v3'})
+                .request({
+                    IsUnsubscribed: false,
+                    ContactID: result.body.Data.ID,
+                    ListID: process.env.MJ_CONTACT_LIST,
+                });
+            }).catch((err) => {
+                console.log(err.statusCode)
+            });
+ */
+
+    '0 * * * * *': async ({ strapi }) => {
+        try {
+            if(process.env.SMTP_SEND == "true"){
+
+                const emails = await strapi.db.query('api::email.email').findMany({
+                    where: {
+                        $and: [
+                            {
+                                sent: 0,
+                            },
+                            {
+                                publishedAt: { $lt: new Date() },
+                            },
+                        ]
+                    },
+                    populate: ['company'],
+                    sort: { publishedAt: 'ASC' },
+                    offset: 0, 
+                    limit: 25,
+                });
+
+                for (let i = 0; i < emails.length; i++) {
+
+                    emails[i].company = await strapi.db.query('api::company.company').findOne({
+                        select: [
+                            'id',
+                            'company',
+                            'demo',
+                        ],
+                        where: { id: emails[i].company.id },
+                        populate: { 
+                            plan: true,
+                        },
+                    });
+
+                    if (emails[i].company.unlimitedEmails === false) {
+                        const startToday =  moment(new Date(new Date().setUTCHours(0,0,0,0))).format();
+                        const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format();
+
+                        const emailSents = await strapi.db.query('api::email.email').count(params.filters= {
+                            $and: [
+                                {
+                                    company: emails[i].company.id,
+                                },
+                                {
+                                    sent: 1,
+                                },
+                                {
+                                    created_at_gte: startToday,
+                                },
+                                {
+                                    created_at_lte: endToday,
+                                },
+                            ],
+                        });
+
+                        if(emailSents >= emails[i].company.emailsPerDay){
+                            continue;
+                        }
+                    }
+
+                    dataEmail = {
+                        from: emails[i].from,
+                        to: emails[i].to,
+                        replyTo: emails[i].replyTo,
+                        subject: emails[i].subject,
+                        html: emails[i].body,
+                    }
+                        
+                    let email = await strapi.plugins['email'].services.email.send(dataEmail);
+
+                    if(email.accepted.length > 0){
+                        await strapi.entityService.update('api::email.email', emails[i].id, {
+                            data: {
+                                sent: 1,
+                            },
+                        });
+
+                        await strapi.service('api::log.log').create({
+                            data:{
+                                company: emails[i].company.id,
+                                log: `Sent email`,
+                                type: `send-email`,
+                                data: dataEmail
+                            }
+                        });
+                    }
+                }
+            }
+        } catch(err){
+            console.log(err);
+        }
+    },
+  };

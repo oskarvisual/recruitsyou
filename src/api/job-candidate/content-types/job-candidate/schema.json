@@ -1,0 +1,39 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_candidates",
+  "info": {
+    "singularName": "job-candidate",
+    "pluralName": "job-candidates",
+    "displayName": "JobCandidate",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "stage": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job-stage.job-stage"
+    },
+    "candidate": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::candidate.candidate"
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}

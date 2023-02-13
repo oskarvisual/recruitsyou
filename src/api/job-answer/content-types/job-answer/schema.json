@@ -1,0 +1,60 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_answers",
+  "info": {
+    "singularName": "job-answer",
+    "pluralName": "job-answers",
+    "displayName": "JobAnswer",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "jobQuestion": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job-question.job-question"
+    },
+    "candidate": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::candidate.candidate"
+    },
+    "answer": {
+      "type": "text"
+    },
+    "video": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "videos"
+      ]
+    },
+    "file": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "alternatives": {
+      "type": "component",
+      "repeatable": true,
+      "component": "candidate.answers"
+    }
+  }
+}

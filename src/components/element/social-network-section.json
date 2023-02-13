@@ -1,0 +1,24 @@
+{
+  "collectionName": "components_element_social_network_sections",
+  "info": {
+    "displayName": "socialNetworkSection"
+  },
+  "options": {},
+  "attributes": {
+    "socialNetworks": {
+      "type": "component",
+      "repeatable": true,
+      "component": "element.social-networks"
+    },
+    "style": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.style"
+    },
+    "size": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.size"
+    }
+  }
+}

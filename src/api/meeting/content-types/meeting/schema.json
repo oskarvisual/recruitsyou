@@ -1,0 +1,69 @@
+{
+  "kind": "collectionType",
+  "collectionName": "meetings",
+  "info": {
+    "singularName": "meeting",
+    "pluralName": "meetings",
+    "displayName": "Meeting",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
+    },
+    "candidates": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::candidate.candidate"
+    },
+    "date": {
+      "type": "date"
+    },
+    "timeFrom": {
+      "type": "time"
+    },
+    "timeTo": {
+      "type": "time"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "on-site",
+        "phone",
+        "meets",
+        "teams",
+        "zoom",
+        "jitsi"
+      ],
+      "default": "on-site"
+    },
+    "timezone": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::timezone.timezone"
+    },
+    "location": {
+      "type": "string"
+    },
+    "code": {
+      "type": "customField",
+      "customField": "plugin::field-uuid.uuid"
+    }
+  }
+}

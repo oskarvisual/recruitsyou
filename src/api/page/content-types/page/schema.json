@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "pages",
+  "info": {
+    "singularName": "page",
+    "pluralName": "pages",
+    "displayName": "Page"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "title": {
+      "type": "string"
+    },
+    "slug": {
+      "type": "string"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "home",
+        "job",
+        "referral",
+        "page"
+      ],
+      "default": "page"
+    },
+    "seo": {
+      "type": "component",
+      "repeatable": false,
+      "component": "seo.seo"
+    },
+    "elements": {
+      "type": "dynamiczone",
+      "components": [
+        "element.paragraph",
+        "element.image",
+        "element.gallery",
+        "element.video",
+        "element.departaments",
+        "element.jobs",
+        "element.list",
+        "element.map",
+        "element.social-network-section"
+      ]
+    }
+  }
+}

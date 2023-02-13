@@ -1,0 +1,215 @@
+{
+  "kind": "collectionType",
+  "collectionName": "companies",
+  "info": {
+    "singularName": "company",
+    "pluralName": "companies",
+    "displayName": "Company",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "string",
+      "required": true
+    },
+    "searchEngineIndexing": {
+      "type": "boolean",
+      "default": true
+    },
+    "gpdr": {
+      "type": "boolean",
+      "default": false
+    },
+    "gpdrRetentionDays": {
+      "type": "integer",
+      "default": 180
+    },
+    "gpdrPrivacyUrl": {
+      "type": "string"
+    },
+    "gpdrEmailFooter": {
+      "type": "richtext"
+    },
+    "gpdrDeleteExpiredCandidates": {
+      "type": "boolean",
+      "default": false
+    },
+    "googleAnalytics": {
+      "type": "string"
+    },
+    "facebookPixel": {
+      "type": "string"
+    },
+    "customCss": {
+      "type": "text"
+    },
+    "customHeader": {
+      "type": "text"
+    },
+    "customBody": {
+      "type": "text"
+    },
+    "colorPrimary": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorSecundary": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorAccent": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "favicon": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "nav": {
+      "type": "enumeration",
+      "enum": [
+        "style-1",
+        "style-2",
+        "style-3"
+      ],
+      "default": "style-1"
+    },
+    "navLogo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "menu": {
+      "type": "component",
+      "repeatable": true,
+      "component": "element.nav"
+    },
+    "socialNetwork": {
+      "type": "component",
+      "repeatable": true,
+      "component": "element.social-networks"
+    },
+    "navWidth": {
+      "type": "enumeration",
+      "enum": [
+        "small",
+        "medium",
+        "large",
+        "full"
+      ],
+      "default": "medium"
+    },
+    "navBackground": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "navColor": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "navColorHover": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "footerShowBrand": {
+      "type": "boolean",
+      "default": true
+    },
+    "plan": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::plan.plan"
+    },
+    "dueDate": {
+      "type": "date"
+    },
+    "demo": {
+      "type": "boolean",
+      "default": true
+    },
+    "linkedInCompanyId": {
+      "type": "string"
+    },
+    "users": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "company"
+    },
+    "domain": {
+      "type": "uid",
+      "targetField": "company"
+    },
+    "subdomain": {
+      "type": "boolean",
+      "default": true
+    },
+    "country": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::country.country"
+    },
+    "street": {
+      "type": "string"
+    },
+    "streetNumber": {
+      "type": "string"
+    },
+    "state": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "zip": {
+      "type": "string"
+    },
+    "taxNumber": {
+      "type": "string"
+    },
+    "website": {
+      "type": "string"
+    },
+    "billingFirstName": {
+      "type": "string"
+    },
+    "billingLastName": {
+      "type": "string"
+    },
+    "billingEmail": {
+      "type": "string"
+    },
+    "billingPhone": {
+      "type": "string"
+    },
+    "customerID": {
+      "type": "string",
+      "private": true
+    }
+  }
+}

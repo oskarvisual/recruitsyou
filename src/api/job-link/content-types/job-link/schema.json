@@ -1,0 +1,55 @@
+{
+  "kind": "collectionType",
+  "collectionName": "job_links",
+  "info": {
+    "singularName": "job-link",
+    "pluralName": "job-links",
+    "displayName": "JobLink",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "candidate": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::candidate.candidate"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "referral",
+        "scheduler",
+        "questionnaire",
+        "test",
+        "nps",
+        "gpdr",
+        "onboarding"
+      ]
+    },
+    "code": {
+      "type": "customField",
+      "customField": "plugin::field-uuid.uuid"
+    },
+    "scheduler": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::scheduler.scheduler"
+    },
+    "expire": {
+      "type": "datetime"
+    }
+  }
+}

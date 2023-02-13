@@ -1,0 +1,38 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tests",
+  "info": {
+    "singularName": "test",
+    "pluralName": "tests",
+    "displayName": "Test",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "behavioral",
+        "personality",
+        "intelligence"
+      ],
+      "default": "behavioral"
+    },
+    "test": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "code": {
+      "type": "uid",
+      "targetField": "test"
+    },
+    "time": {
+      "type": "integer"
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_automated_notes",
+  "info": {
+    "displayName": "note"
+  },
+  "options": {},
+  "attributes": {
+    "note": {
+      "type": "richtext"
+    }
+  }
+}

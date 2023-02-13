@@ -1,0 +1,235 @@
+{
+  "collectionName": "components_element_styles",
+  "info": {
+    "displayName": "style",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "fontTitle": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::font.font"
+    },
+    "fontSubtitle": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::font.font"
+    },
+    "fontDescription": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::font.font"
+    },
+    "fontCta1": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::font.font"
+    },
+    "fontCta2": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::font.font"
+    },
+    "background": {
+      "type": "enumeration",
+      "enum": [
+        "color",
+        "image",
+        "video"
+      ],
+      "default": "color"
+    },
+    "backgroundColor": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "backgroundImage": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "backgroundVideo": {
+      "type": "string"
+    },
+    "colorTitle": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorSubtitle": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorDescription": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorBackgroundCta1": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorCta1": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorBorderCta1": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorBackgroundCta2": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorCta2": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorBorderCta2": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "borderCta1": {
+      "type": "enumeration",
+      "enum": [
+        "none",
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "none"
+    },
+    "borderCta2": {
+      "type": "enumeration",
+      "enum": [
+        "none",
+        "sm",
+        "md",
+        "lg"
+      ],
+      "default": "none"
+    },
+    "fontWeightTitle": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "normal",
+        "bolder"
+      ],
+      "default": "normal"
+    },
+    "fontWeightSubtitle": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "normal",
+        "bolder"
+      ],
+      "default": "normal"
+    },
+    "fontWeightDescription": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "normal",
+        "bolder"
+      ],
+      "default": "normal"
+    },
+    "fontWeightCta1": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "normal",
+        "bolder"
+      ],
+      "default": "normal"
+    },
+    "fontWeightCta2": {
+      "type": "enumeration",
+      "enum": [
+        "light",
+        "normal",
+        "bolder"
+      ],
+      "default": "normal"
+    },
+    "fontSizeTitle": {
+      "type": "enumeration",
+      "enum": [
+        "sm",
+        "md",
+        "lg",
+        "lg2",
+        "lg3"
+      ],
+      "default": "md"
+    },
+    "fontSizeSubtitle": {
+      "type": "enumeration",
+      "enum": [
+        "sm",
+        "md",
+        "lg",
+        "lg2",
+        "lg3"
+      ],
+      "default": "md"
+    },
+    "fontSizeDescription": {
+      "type": "enumeration",
+      "enum": [
+        "sm",
+        "md",
+        "lg",
+        "lg2",
+        "lg3"
+      ],
+      "default": "md"
+    },
+    "fontSizeCta1": {
+      "type": "enumeration",
+      "enum": [
+        "sm",
+        "md",
+        "lg",
+        "lg2",
+        "lg3"
+      ],
+      "default": "md"
+    },
+    "fontSizeCta2": {
+      "type": "enumeration",
+      "enum": [
+        "sm",
+        "md",
+        "lg",
+        "lg2",
+        "lg3"
+      ],
+      "default": "md"
+    },
+    "colorLink": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    },
+    "colorLinkHover": {
+      "type": "customField",
+      "regex": "^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$",
+      "customField": "plugin::color-picker.color"
+    }
+  }
+}

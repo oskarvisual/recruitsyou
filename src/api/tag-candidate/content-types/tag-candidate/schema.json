@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "tag_candidates",
+  "info": {
+    "singularName": "tag-candidate",
+    "pluralName": "tag-candidates",
+    "displayName": "TagCandidate",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "tag": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

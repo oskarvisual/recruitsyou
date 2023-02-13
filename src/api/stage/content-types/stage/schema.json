@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "stages",
+  "info": {
+    "singularName": "stage",
+    "pluralName": "stages",
+    "displayName": "Stage",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "pipeline": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::pipeline.pipeline"
+    },
+    "stage": {
+      "type": "string",
+      "required": true
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "sourced",
+        "apply",
+        "phone",
+        "interview",
+        "assessment",
+        "offer",
+        "hired",
+        "onboarding"
+      ],
+      "required": false
+    },
+    "automated": {
+      "type": "dynamiczone",
+      "components": [
+        "automated.email",
+        "automated.note",
+        "automated.tag",
+        "automated.task",
+        "automated.share-candidate",
+        "automated.link",
+        "automated.notification"
+      ]
+    },
+    "order": {
+      "type": "integer"
+    }
+  }
+}

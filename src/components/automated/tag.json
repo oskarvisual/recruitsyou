@@ -1,0 +1,15 @@
+{
+  "collectionName": "components_automated_tags",
+  "info": {
+    "displayName": "tag",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "tag": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::tag-candidate.tag-candidate"
+    }
+  }
+}

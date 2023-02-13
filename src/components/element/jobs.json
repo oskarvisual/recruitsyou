@@ -1,0 +1,54 @@
+{
+  "collectionName": "components_element_jobs",
+  "info": {
+    "displayName": "jobs",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "content": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.content"
+    },
+    "showFilters": {
+      "type": "boolean",
+      "default": true
+    },
+    "showLocation": {
+      "type": "boolean",
+      "default": true
+    },
+    "showDepartament": {
+      "type": "boolean",
+      "default": true
+    },
+    "showSalary": {
+      "type": "boolean",
+      "default": true
+    },
+    "showTags": {
+      "type": "boolean",
+      "default": true
+    },
+    "layout": {
+      "type": "enumeration",
+      "enum": [
+        "style-1",
+        "style-2",
+        "style-3"
+      ],
+      "default": "style-1"
+    },
+    "style": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.style"
+    },
+    "size": {
+      "type": "component",
+      "repeatable": false,
+      "component": "element.size"
+    }
+  }
+}

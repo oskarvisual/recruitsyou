@@ -1,0 +1,37 @@
+{
+  "kind": "collectionType",
+  "collectionName": "disqualifies",
+  "info": {
+    "singularName": "disqualify",
+    "pluralName": "disqualifies",
+    "displayName": "Disqualify",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "disqualify": {
+      "type": "string",
+      "required": true
+    },
+    "automated": {
+      "type": "dynamiczone",
+      "components": [
+        "automated.email",
+        "automated.note",
+        "automated.tag",
+        "automated.link",
+        "automated.share-candidate",
+        "automated.task",
+        "automated.notification"
+      ]
+    }
+  }
+}

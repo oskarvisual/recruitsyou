@@ -1,0 +1,238 @@
+{
+  "kind": "collectionType",
+  "collectionName": "jobs",
+  "info": {
+    "singularName": "job",
+    "pluralName": "jobs",
+    "displayName": "Job",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "code": {
+      "type": "customField",
+      "customField": "plugin::field-uuid.uuid",
+      "required": true
+    },
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "departament": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::departament.departament"
+    },
+    "type": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::type-job.type-job"
+    },
+    "industry": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::industry.industry"
+    },
+    "experience": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::experience.experience"
+    },
+    "education": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::education.education"
+    },
+    "country": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::country.country"
+    },
+    "state": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "street": {
+      "type": "string"
+    },
+    "zip": {
+      "type": "string"
+    },
+    "remote": {
+      "type": "boolean",
+      "default": true
+    },
+    "hoursFrom": {
+      "type": "integer"
+    },
+    "hoursTo": {
+      "type": "integer"
+    },
+    "salaryFrom": {
+      "type": "decimal"
+    },
+    "salaryTo": {
+      "type": "decimal"
+    },
+    "salaryPeriod": {
+      "type": "enumeration",
+      "enum": [
+        "none",
+        "hourly",
+        "monthly",
+        "yearly"
+      ]
+    },
+    "salaryCurrency": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::currency.currency"
+    },
+    "description": {
+      "type": "richtext",
+      "required": true,
+      "minLength": 150
+    },
+    "requirements": {
+      "type": "richtext"
+    },
+    "benefits": {
+      "type": "richtext"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tag-job.tag-job"
+    },
+    "archived": {
+      "type": "boolean",
+      "default": false
+    },
+    "formPhone": {
+      "type": "boolean",
+      "default": true
+    },
+    "formAddress": {
+      "type": "boolean",
+      "default": true
+    },
+    "formPhoto": {
+      "type": "boolean",
+      "default": true
+    },
+    "formEducation": {
+      "type": "boolean",
+      "default": true
+    },
+    "formExperience": {
+      "type": "boolean",
+      "default": true
+    },
+    "formSummary": {
+      "type": "boolean",
+      "default": true
+    },
+    "formResume": {
+      "type": "boolean",
+      "default": true
+    },
+    "formcoverLetter": {
+      "type": "boolean",
+      "default": true
+    },
+    "formNationality": {
+      "type": "boolean"
+    },
+    "formDateBirth": {
+      "type": "boolean",
+      "default": true
+    },
+    "formGender": {
+      "type": "boolean",
+      "default": true
+    },
+    "formSalaryExpectation": {
+      "type": "boolean",
+      "default": true
+    },
+    "formSkills": {
+      "type": "boolean",
+      "default": true
+    },
+    "formTimezone": {
+      "type": "boolean",
+      "default": true
+    },
+    "tests": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::test.test"
+    },
+    "referral": {
+      "type": "boolean",
+      "default": false
+    },
+    "referralReward": {
+      "type": "boolean",
+      "default": false
+    },
+    "reward": {
+      "type": "richtext"
+    },
+    "questionnairyDescription": {
+      "type": "richtext"
+    },
+    "testDescription": {
+      "type": "richtext"
+    },
+    "archivedDate": {
+      "type": "datetime"
+    },
+    "indeed": {
+      "type": "boolean",
+      "default": false
+    },
+    "arbeitnow": {
+      "type": "boolean",
+      "default": false
+    },
+    "googleJobs": {
+      "type": "boolean",
+      "default": true
+    },
+    "talent": {
+      "type": "boolean",
+      "default": false
+    },
+    "jora": {
+      "type": "boolean",
+      "default": false
+    },
+    "jooble": {
+      "type": "boolean",
+      "default": false
+    },
+    "linkedIn": {
+      "type": "boolean",
+      "default": false
+    },
+    "zipRecruiter": {
+      "type": "boolean",
+      "default": false
+    },
+    "adzuna": {
+      "type": "boolean",
+      "default": false
+    }
+  }
+}

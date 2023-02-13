@@ -1,0 +1,16 @@
+{
+  "collectionName": "components_automated_share_candidates",
+  "info": {
+    "displayName": "shareCandidate",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "to": {
+      "type": "string"
+    },
+    "hours": {
+      "type": "integer"
+    }
+  }
+}

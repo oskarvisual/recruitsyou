@@ -1,0 +1,67 @@
+{
+  "kind": "collectionType",
+  "collectionName": "plans",
+  "info": {
+    "singularName": "plan",
+    "pluralName": "plans",
+    "displayName": "Plan",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "plan": {
+      "type": "string"
+    },
+    "unlimitedUsers": {
+      "type": "boolean",
+      "default": true
+    },
+    "unlimitedPages": {
+      "type": "boolean",
+      "default": false
+    },
+    "unlimitedJobs": {
+      "type": "boolean",
+      "default": false
+    },
+    "customize": {
+      "type": "boolean",
+      "default": true
+    },
+    "removeBranding": {
+      "type": "boolean",
+      "default": false
+    },
+    "unlimitedEmails": {
+      "type": "boolean",
+      "default": true
+    },
+    "ai": {
+      "type": "boolean",
+      "default": false
+    },
+    "files": {
+      "type": "boolean",
+      "default": false
+    },
+    "tests": {
+      "type": "boolean",
+      "default": false
+    },
+    "emailsPerDay": {
+      "type": "integer"
+    },
+    "PriceAPIMonth": {
+      "type": "string"
+    },
+    "PriceAPIYear": {
+      "type": "string"
+    },
+    "aiPerDay": {
+      "type": "integer"
+    }
+  }
+}

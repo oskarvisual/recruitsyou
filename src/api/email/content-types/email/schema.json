@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "emails",
+  "info": {
+    "singularName": "email",
+    "pluralName": "emails",
+    "displayName": "Email",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "from": {
+      "type": "email"
+    },
+    "to": {
+      "type": "email"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "body": {
+      "type": "richtext"
+    },
+    "sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "replyTo": {
+      "type": "email"
+    },
+    "event": {
+      "type": "json"
+    }
+  }
+}

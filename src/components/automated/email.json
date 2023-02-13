@@ -1,0 +1,25 @@
+{
+  "collectionName": "components_automated_emails",
+  "info": {
+    "displayName": "email",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "to": {
+      "type": "string"
+    },
+    "subject": {
+      "type": "string"
+    },
+    "message": {
+      "type": "richtext"
+    },
+    "replyTo": {
+      "type": "email"
+    },
+    "hours": {
+      "type": "integer"
+    }
+  }
+}

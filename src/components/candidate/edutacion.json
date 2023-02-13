@@ -1,0 +1,28 @@
+{
+  "collectionName": "components_candidate_edutacions",
+  "info": {
+    "displayName": "edutacion",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "school": {
+      "type": "string"
+    },
+    "degree": {
+      "type": "string"
+    },
+    "degreeSubject": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "fromYear": {
+      "type": "integer"
+    },
+    "toYear": {
+      "type": "integer"
+    }
+  }
+}

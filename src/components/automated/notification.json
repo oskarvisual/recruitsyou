@@ -1,0 +1,21 @@
+{
+  "collectionName": "components_automated_notifications",
+  "info": {
+    "displayName": "notification",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
+    },
+    "notification": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    }
+  }
+}

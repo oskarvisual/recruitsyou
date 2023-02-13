@@ -1,0 +1,12 @@
+{
+  "collectionName": "components_candidate_answers",
+  "info": {
+    "displayName": "answers"
+  },
+  "options": {},
+  "attributes": {
+    "alternative": {
+      "type": "string"
+    }
+  }
+}

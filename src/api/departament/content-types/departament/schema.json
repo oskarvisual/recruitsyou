@@ -1,0 +1,25 @@
+{
+  "kind": "collectionType",
+  "collectionName": "departaments",
+  "info": {
+    "singularName": "departament",
+    "pluralName": "departaments",
+    "displayName": "Departament",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "departament": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

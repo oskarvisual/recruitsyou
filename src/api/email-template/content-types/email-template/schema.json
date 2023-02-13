@@ -1,0 +1,57 @@
+{
+  "kind": "collectionType",
+  "collectionName": "email_templates",
+  "info": {
+    "singularName": "email-template",
+    "pluralName": "email-templates",
+    "displayName": "EmailTemplate",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "confirmation",
+        "candidate",
+        "referral",
+        "scheduler",
+        "test",
+        "questionnaire",
+        "nps",
+        "gpdr",
+        "disqualify",
+        "onboarding",
+        "general"
+      ],
+      "required": true
+    },
+    "subject": {
+      "type": "string",
+      "required": true
+    },
+    "message": {
+      "type": "richtext",
+      "required": true
+    },
+    "default": {
+      "type": "boolean",
+      "default": false
+    },
+    "template": {
+      "type": "string",
+      "required": true
+    },
+    "replyTo": {
+      "type": "email"
+    }
+  }
+}

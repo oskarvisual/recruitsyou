@@ -1,0 +1,144 @@
+{
+  "kind": "collectionType",
+  "collectionName": "candidates",
+  "info": {
+    "singularName": "candidate",
+    "pluralName": "candidates",
+    "displayName": "Candidate",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "email": {
+      "type": "email",
+      "required": true
+    },
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string"
+    },
+    "photo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "socialNetwork": {
+      "type": "component",
+      "repeatable": true,
+      "component": "element.social-networks"
+    },
+    "source": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::source.source"
+    },
+    "resume": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "files"
+      ]
+    },
+    "coverLetter": {
+      "type": "text"
+    },
+    "address": {
+      "type": "string"
+    },
+    "summary": {
+      "type": "text"
+    },
+    "nationality": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::country.country"
+    },
+    "birthDate": {
+      "type": "date"
+    },
+    "timezone": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::timezone.timezone"
+    },
+    "skills": {
+      "type": "text"
+    },
+    "salaryExpectation": {
+      "type": "decimal"
+    },
+    "gender": {
+      "type": "enumeration",
+      "enum": [
+        "male",
+        "female",
+        "non-binary",
+        "not-specified"
+      ]
+    },
+    "experience": {
+      "displayName": "experience",
+      "type": "component",
+      "repeatable": true,
+      "component": "candidate.experience"
+    },
+    "education": {
+      "displayName": "edutacion",
+      "type": "component",
+      "repeatable": true,
+      "component": "candidate.edutacion"
+    },
+    "tags": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tag-candidate.tag-candidate"
+    },
+    "consent": {
+      "type": "boolean",
+      "default": false
+    },
+    "phone": {
+      "type": "string"
+    },
+    "mobile": {
+      "type": "string"
+    },
+    "demo": {
+      "type": "boolean",
+      "default": false
+    },
+    "referral": {
+      "type": "boolean",
+      "default": false
+    },
+    "referrals": {
+      "displayName": "referrals",
+      "type": "component",
+      "repeatable": true,
+      "component": "candidate.referrals"
+    },
+    "disqualify": {
+      "type": "boolean",
+      "default": false
+    },
+    "disqualifyReason": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::disqualify.disqualify"
+    }
+  }
+}
