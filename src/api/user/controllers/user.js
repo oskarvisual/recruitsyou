@@ -6,8 +6,6 @@
 
 const { nanoid } = require("nanoid");
 
-const Mailjet = require ('node-mailjet');
-
 module.exports = {
     async me(ctx){
         try {
@@ -117,7 +115,8 @@ module.exports = {
                 data:{
                     log: `Updated profile`,
                     type: "update-profile",
-                    data: result
+                    result: result,
+                    params: ctx.request.body,
                 }
             });
 
@@ -224,7 +223,7 @@ module.exports = {
                         message: "Your plan does not allow you to perform this action",
                         details: {}
                     }
-                }, 403);
+                }, 500);
             }
             
             const data = ctx.request.body.data;
@@ -316,6 +315,12 @@ module.exports = {
                     <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>
                     `,
                 });
+            }else{
+                console.log({
+                    URL: process.env.ATS_URL,
+                    Email: result.email,
+                    Password: password
+                });
             }
 
             delete result.password;
@@ -326,13 +331,16 @@ module.exports = {
                 data:{
                     log: `Registered user`,
                     type: "register-user",
-                    data: result
+                    result: result,
+                    params: ctx.request.body,
                 }
             });
 
             let userId = result.id;
             delete result.id;
             let attributes = result;
+
+            await strapi.service('api::mailing.mailing').addContact(result.firstName, result.email, process.env.MJ_CONTACT_USERS_LIST);
 
             return {
                 data: {
@@ -401,7 +409,8 @@ module.exports = {
                     data:{
                         log: `Updated user`,
                         type: "update-user",
-                        data: result
+                        result: result,
+                        params: ctx.request.body,
                     }
                 });
 
@@ -465,7 +474,8 @@ module.exports = {
                 data:{
                     log: `Deleted user`,
                     type: "delete-user",
-                    data: result
+                    result: result,
+                    params: ctx.request.body,
                 }
             });
 

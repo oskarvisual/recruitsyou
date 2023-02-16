@@ -71,7 +71,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     message: "Your plan does not allow you to perform this action",
                     details: {}
                 }
-            }, 403); 
+            }, 500); 
         }
         
         const response = await super.create(params);
@@ -161,7 +161,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     message: "Your plan does not allow you to perform this action",
                     details: {}
                 }
-            }, 403); 
+            }, 500); 
         }
         
         const result = await strapi.service(api).findOne(entityId);

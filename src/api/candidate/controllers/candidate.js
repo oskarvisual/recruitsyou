@@ -109,7 +109,7 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                     message: "Your plan does not allow you to perform this action",
                     details: {}
                 }
-            }, 403); 
+            }, 500); 
         }
 
 
@@ -285,7 +285,7 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                     message: "Your plan does not allow you to perform this action",
                     details: {}
                 }
-            }, 403); 
+            }, 500); 
         }
 
         const config = strapi.config.get("plugin.upload");

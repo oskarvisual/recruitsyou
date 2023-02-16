@@ -3,14 +3,25 @@
 /**
  * A set of functions called "actions" for `ai`
  */
-//TODO: CREAR ENDPOINTS PARA CREAR DESCRIPCIONES, ETC
-//TODO: FALTA LOGICA PARA LIMITAR ACCION POR PLAN
+
 module.exports = {
-  // exampleAction: async (ctx, next) => {
-  //   try {
-  //     ctx.body = 'ok';
-  //   } catch (err) {
-  //     ctx.body = err;
-  //   }
-  // }
+    async generate(ctx){
+        try {
+            const user = await strapi.service('api::user.user').me();
+            const data = ctx.request.body.data;
+
+            const text = await strapi.service('api::ai.ai').generateText(data.prompt);
+
+            ctx.body = {
+                data: text,
+                meta: {}
+            };
+            
+        } catch (err) {
+            ctx.send({
+                data: null,
+                ...err,
+            }, 500);
+        }
+    },
 };

@@ -34,6 +34,8 @@ module.exports = {
                 photo: true,
             }
         });
+
+        if (user == null) { return false; }
         
         user.company = await strapi.db.query('api::company.company').findOne({
             select: [
@@ -45,6 +47,7 @@ module.exports = {
                 'customerID',
                 'demo',
                 'createdAt',
+                'publishedAt',
             ],
             where: { id: user.company.id },
             populate: { 
@@ -52,7 +55,7 @@ module.exports = {
             },
         });
 
-        
+        if(user.company == null || user.company.publishedAt == null) { return false; }
 
         return user;
     },

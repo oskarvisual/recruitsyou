@@ -82,6 +82,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         params.data.demo = user.company.demo;
         params.data.dueDate = user.company.dueDate;
         params.data.createdAt = user.company.createdAt;
+        params.data.publishedAt = user.company.publishedAt;
         params.data.customerID = user.company.customerID;
         
         if(!user.company.plan.removeBranding){

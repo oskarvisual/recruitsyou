@@ -13,9 +13,12 @@ const { v4: uuidv4 } = require('uuid');
 const { nanoid } = require("nanoid");
 
 const moment = require('moment');
+
 //TODO: TODO DEBE TENER SU POPULATE INCLUIDO EN LA CONSULTA PARA NO PONERLO EN LA URL
 //TODO: FALTA CREAR PLANTILLA DE PAGINAS CON (publishedAt: new Date())
 //TODO: FALTA MODIFICAR PLANTILLA DE CORREOS CON VARIABLES REALES
+//TODO: CREAR WEBHOOKS para recibir pagos o caneclaciones de stripe
+//TODO: Crear listado y detalles de invoices
 module.exports = createCoreController('api::company.company', ({ strapi }) => ({
     async create(ctx){
         try {    
@@ -169,6 +172,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                 navBackground: process.env.NAV_BACKGROUND,
                 navColor: process.env.NAV_COLOR,
                 navColorHover: process.env.NAV_COLOR_HOVER,
+                publishedAt: new Date(),
             };
             
             const company = await super.create(ctx);
@@ -1042,7 +1046,8 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     company: company.data.id,
                     log: `Registered user`,
                     type: "register-user",
-                    data: user
+                    result: user,
+                    params: {}
                 }
             });
 
@@ -1051,7 +1056,8 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     company: company.data.id,
                     log: `Registered company`,
                     type: "register-company",
-                    data: company
+                    result: company,
+                    params: {}
                 }
             });
 
@@ -1086,7 +1092,15 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
                     <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                 });
+            }else{
+                console.log({
+                    URL: process.env.ATS_URL,
+                    Email: user.email,
+                    Password: password
+                });
             }
+
+            await strapi.service('api::mailing.mailing').addContact(user.firstName, user.email, process.env.MJ_CONTACT_ADMINS_LIST);
 
             return this.sanitizeOutput(company, ctx);
 
@@ -1101,9 +1115,10 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
     async report(ctx){
         try {
             const { id } = ctx.params;
-            const data = await strapi.service('api::company.company').findOne(id, ctx);
-            
-            if(data == null){
+
+            const user = await strapi.service('api::user.user').me();
+
+            if(user.company.id != id){
                 return ctx.send({
                     data: null,
                     error: {
@@ -1133,7 +1148,9 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     toHire: 0,
                     toDisqualify: 0,
                 },
-                nps: 0,
+                nps: {
+                    
+                },
                 disqualify: {
                     reasons: {
 
@@ -1151,11 +1168,6 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     one: 0,
                     two: 0,
                     three: 0,
-                },
-                pipeline: {
-                    apply: 0,
-                    interview: 0,
-                    hire: 0,
                 },
                 jobs: {
                     archivaded: 0,

@@ -17,24 +17,24 @@ module.exports = (plugin) => {
     
     plugin.controllers.user.find = async (ctx) => {
         ctx.send({
-            "data": null,
-            "error": {
-              "status": 500,
-              "name": "InternalServerError",
-              "message": "Internal Server Error"
+            data: null,
+            error: {
+                status: 404,
+                name: 'NotFoundError',
+                message: 'Not Found'
             }
-        }, 500);
+        }, 404);
     };
     
     plugin.controllers.user.findOne = async (ctx) => {
         ctx.send({
-            "data": null,
-            "error": {
-              "status": 500,
-              "name": "InternalServerError",
-              "message": "Internal Server Error"
+            data: null,
+            error: {
+                status: 404,
+                name: 'NotFoundError',
+                message: 'Not Found'
             }
-        }, 500);
+        }, 404);
     };
   
     return plugin

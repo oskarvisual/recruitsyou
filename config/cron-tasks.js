@@ -1,38 +1,14 @@
 const moment = require('moment');
+const startToday =  moment(new Date(new Date().setUTCHours(0,0,0,0))).format();
+const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format();
+
 //TODO: FALTA LOGICA PARA SUSPENDER CUENTA SIN PAGO
 //TODO: FALTA LOGICA PARA ACTUALIZAR FECHA DE VENCIMIENTO SI PAGO
 //TODO: FALTA CORREOS PERIDICOS CADA RECORDATIRIOS CADA X DIAS DESDE EL REGISTRO
 //TODO: RECORDATORIO DE TASKS 
 //TODO: VENCIMIENTO DE TASK
-//TODO: CREAR CONTACTO EN MAILJET
+//TODO: ENVIAR AVISO DE GPDR
 module.exports = {
-/*
-const Mailjet = require ('node-mailjet');
-
-const mailjet = new Mailjet({
-  apiKey: process.env.MJ_APIKEY_PUBLIC,
-  apiSecret: process.env.MJ_APIKEY_PRIVATE
-});
-
-            await mailjet
-            .post("contact", {'version': 'v3'})
-            .request({
-                IsExcludedFromCampaigns: false,
-                Name: user.firstName,
-                Email: user.email
-            }).then((result) => {
-                mailjet
-                .post(listrecipient, {'version': 'v3'})
-                .request({
-                    IsUnsubscribed: false,
-                    ContactID: result.body.Data.ID,
-                    ListID: process.env.MJ_CONTACT_LIST,
-                });
-            }).catch((err) => {
-                console.log(err.statusCode)
-            });
- */
-
     '0 * * * * *': async ({ strapi }) => {
         try {
             if(process.env.SMTP_SEND == "true"){
@@ -69,24 +45,28 @@ const mailjet = new Mailjet({
                     });
 
                     if (emails[i].company.unlimitedEmails === false) {
-                        const startToday =  moment(new Date(new Date().setUTCHours(0,0,0,0))).format();
-                        const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format();
 
-                        const emailSents = await strapi.db.query('api::email.email').count(params.filters= {
-                            $and: [
-                                {
-                                    company: emails[i].company.id,
-                                },
-                                {
-                                    sent: 1,
-                                },
-                                {
-                                    created_at_gte: startToday,
-                                },
-                                {
-                                    created_at_lte: endToday,
-                                },
-                            ],
+                        let emailSents = await strapi.db.query('api::email.email').count({
+                            filters: {
+                                $and: [
+                                    {
+                                        company: emails[i].company.id,
+                                    },
+                                    {
+                                        sent: 1,
+                                    },
+                                    {
+                                        createdAt: {
+                                            $gte: startToday,
+                                        },
+                                    },
+                                    {
+                                        createdAt: {
+                                            $lte: endToday,
+                                        },
+                                    },
+                                ],
+                            }
                         });
 
                         if(emailSents >= emails[i].company.emailsPerDay){

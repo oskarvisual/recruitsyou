@@ -8,7 +8,8 @@ module.exports = {
             data:{
                 log: `Added ${collection}`,
                 type: `add-${collection}`,
-                data: result
+                result: result,
+                params: params,
             }
         });
     },
@@ -19,7 +20,8 @@ module.exports = {
             data:{
                 log: `Updated ${collection}`,
                 type: `update-${collection}`,
-                data: result
+                result: result,
+                params: params,
             }
         });
     },
@@ -30,7 +32,8 @@ module.exports = {
             data:{
                 log: `Deleted ${collection}`,
                 type: `delete-${collection}`,
-                data: result
+                result: result,
+                params: params,
             }
         });
     },

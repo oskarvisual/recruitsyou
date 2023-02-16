@@ -18,7 +18,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             'ip',
             'createdAt',
             'updatedAt',
-        ]
+        ];
         params.filters = { company: user.company.id }
         params.populate = { user: true }
 
@@ -29,6 +29,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async findOne(entityId, params = {}) {
         const user = await strapi.service('api::user.user').me();
 
+        params.fields = [
+            'log',
+            'type',
+            'ip',
+            'result',
+            'createdAt',
+            'updatedAt',
+        ];
         params.filters = {
             $and: [
                 {
@@ -58,6 +66,10 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             params.data.company = user.company.id;
         }
         params.data.ip = ip.address();
+
+        if(params.data.company == undefined || params.data.company == null){
+            return null;
+        }
         
         const response = await super.create(params);
 

@@ -6,7 +6,8 @@ module.exports = {
             data:{
                 log: `Updated company settings`,
                 type: "update-company",
-                data: result
+                result: result,
+                params: params,
             }
         });
     },

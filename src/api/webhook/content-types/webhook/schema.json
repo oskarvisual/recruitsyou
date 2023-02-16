@@ -1,0 +1,53 @@
+{
+  "kind": "collectionType",
+  "collectionName": "webhooks",
+  "info": {
+    "singularName": "webhook",
+    "pluralName": "webhooks",
+    "displayName": "Webhook",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "url": {
+      "type": "string",
+      "required": true
+    },
+    "candidateCreated": {
+      "type": "boolean",
+      "default": true
+    },
+    "candidateAssigned": {
+      "type": "boolean",
+      "default": true
+    },
+    "MoveOnPipeline": {
+      "type": "boolean",
+      "default": true
+    },
+    "candidateDeleted": {
+      "type": "boolean",
+      "default": true
+    },
+    "jobPublished": {
+      "type": "boolean",
+      "default": true
+    },
+    "jobUnpublished": {
+      "type": "boolean",
+      "default": true
+    },
+    "name": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

@@ -11,6 +11,23 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async find(params) {
         const user = await strapi.service('api::user.user').me();
         
+        params.fields = [
+            'id',
+            'email',
+            'firstName',
+            'lastName',
+            'createdAt',
+            'updatedAt',
+            'birthDate',
+            'salaryExpectation',
+            'salaryPeriod',
+            'gender',
+            'phone',
+            'mobile',
+            'disqualify',
+            'demo',
+        ];
+        
         let filters = {
             $and: [
                 {
@@ -22,11 +39,11 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         /*
         filters: {
             chef: {
-            restaurants: {
-                stars: {
-                $eq: 5,
+                restaurants: {
+                    stars: {
+                        $eq: 5,
+                    },
                 },
-            },
             },
         }
         */
@@ -200,7 +217,10 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
 
         params.filters = filters;
-        params.populate = { photo: true };
+        params.populate = { 
+            photo: true,
+            salaryCurrency: true,
+        };
         const result = await super.find(params);
 
         for(let i = 0; i < result.results.length; i++){
@@ -247,6 +267,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             tags: true,
             referrals: true,
             disqualifyReason: true,
+            salaryCurrency: true,
         };
 
         const result = await strapi.entityService.findMany(api, params);

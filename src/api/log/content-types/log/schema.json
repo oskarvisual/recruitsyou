@@ -41,7 +41,10 @@
     "ip": {
       "type": "string"
     },
-    "data": {
+    "result": {
+      "type": "json"
+    },
+    "params": {
       "type": "json"
     }
   }

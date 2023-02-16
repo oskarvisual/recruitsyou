@@ -8,7 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": false
+    "draftAndPublish": true
   },
   "pluginOptions": {},
   "attributes": {
@@ -169,47 +169,16 @@
       "type": "boolean",
       "default": true
     },
-    "country": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::country.country"
-    },
-    "street": {
-      "type": "string"
-    },
-    "streetNumber": {
-      "type": "string"
-    },
-    "state": {
-      "type": "string"
-    },
-    "city": {
-      "type": "string"
-    },
-    "zip": {
-      "type": "string"
-    },
-    "taxNumber": {
-      "type": "string"
-    },
     "website": {
-      "type": "string"
-    },
-    "billingFirstName": {
-      "type": "string"
-    },
-    "billingLastName": {
-      "type": "string"
-    },
-    "billingEmail": {
-      "type": "string"
-    },
-    "billingPhone": {
       "type": "string"
     },
     "customerID": {
       "type": "string",
       "private": true
+    },
+    "expireDaysLinks": {
+      "type": "integer",
+      "default": 5
     }
   }
 }

@@ -14,14 +14,50 @@ module.exports = {
     async createCustomer(companyId, email){
         const customer = await Stripe.customers.create({
             email,
-            description: `ID: ${companyId}`,
+            description: `CompanyID: ${companyId}`,
         }); 
 
         return customer;
     },
-    async findOneCustomer(id){
-        const customer = await Stripe.customers.retrieve(id)
+    async findOneCustomer(customerId){
+        const customer = await Stripe.customers.retrieve(customerId);
 
         return customer;
+    },
+    async updateCustomer(customerId, params){
+        const customer = await Stripe.customers.update(customerId, params);
+
+        return customer;
+    },
+    async createPaymentMethod(customerId, params){
+        const paymentMethod = await Stripe.paymentMethods.create(params);
+
+        const customerPaymentMethod = await Stripe.paymentMethods.attach(
+            paymentMethod.id,
+            {customer: customerId}
+        );
+
+        return customerPaymentMethod;
+    },
+    async detachPaymentMethod(customerId, id){
+        
+        const paymentMethod = await strapi.service('api::stripe.stripe').findOnePaymentMethod(customerId, id);
+
+        const detachPaymentMethod = await Stripe.paymentMethods.detach(paymentMethod.id);
+
+        return detachPaymentMethod;
+    },
+    async findPaymentMethod(customerId, type){
+        const paymentMethod = await Stripe.customers.listPaymentMethods(
+            customerId,
+            {type: type},
+        );
+
+        return paymentMethod;
+    },
+    async findOnePaymentMethod(customerId, id){
+        const paymentMethod = await Stripe.customers.retrievePaymentMethod(customerId, id);
+        
+        return paymentMethod;
     },
 }

@@ -1,14 +1,24 @@
 const collection = "stage";
-
+//TODO: REPLICAR ESTO EN JOBS
 module.exports = {
     async afterCreate(event) {
         const { result, params } = event;
 
+        const pipeline = await strapi.entityService.findMany('api::pipeline.pipeline', {
+            id: params.data.pipeline,
+        });
+
+        let parent = '';
+        if(pipeline.length > 0){
+            parent = pipeline[0].pipeline;
+        }
+        
         await strapi.service('api::log.log').create({
             data:{
-                log: `Added ${collection}`,
+                log: `Added ${collection} in ${parent}`,
                 type: `add-${collection}`,
-                data: result
+                result: result,
+                params: params,
             }
         });
     },
@@ -19,7 +29,8 @@ module.exports = {
             data:{
                 log: `Updated ${collection}`,
                 type: `update-${collection}`,
-                data: result
+                result: result,
+                params: params,
             }
         });
     },
@@ -30,7 +41,8 @@ module.exports = {
             data:{
                 log: `Deleted ${collection}`,
                 type: `delete-${collection}`,
-                data: result
+                result: result,
+                params: params,
             }
         });
     },
