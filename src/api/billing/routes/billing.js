@@ -41,6 +41,11 @@ module.exports = {
             handler: 'billing.createSubscription'
         },
         {
+            method: 'PUT',
+            path: '/billing/subscriptions/:id',
+            handler: 'billing.resumeSubscription'
+        },
+        {
             method: 'GET',
             path: '/billing/subscriptions',
             handler: 'billing.findSubscription'

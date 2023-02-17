@@ -3,12 +3,12 @@
 /**
  * stripe service
  */
-
+//TODO: FALTAN WEBHOOKS DESDE STRIPE
 const stripe = require('stripe');
 
-const Stripe = stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2020-08-27'
-});
+const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
+
+const moment = require('moment');
 
 module.exports = {
     async createCustomer(companyId, email){
@@ -61,12 +61,88 @@ module.exports = {
         return paymentMethod;
     },
     async createSubscription(customerId, priceId){
-        const subscription = await Stripe.subscriptions.create({
-            customer: customerId,
-            items: [
-                { price: priceId },
-            ],
-        });
+        const user = await strapi.service('api::user.user').me();
+
+        let subscription = {};
+
+        const subscriptions = await strapi.service('api::stripe.stripe').findSubscription(customerId);
+        if(subscriptions.data.length == 0){
+            subscription = await Stripe.subscriptions.create({
+                customer: customerId,
+                items: [
+                    {
+                        price: priceId
+                    },
+                ],
+            });
+        }else{
+            subscription = await Stripe.subscriptions.update(
+                subscriptions.data[0].id,
+                {
+                    items: [
+                        {
+                            price: priceId 
+                        },
+                    ],
+                }
+            );
+
+            const deleted = await Stripe.subscriptionItems.del(
+                subscriptions.data[0].items.data[0].id
+            );
+
+            subscription = await strapi.service('api::stripe.stripe').findOneSubscription(subscriptions.data[0].id);
+        }
+
+        if(subscription.status == "active"){
+            const plans = await strapi.entityService.findMany('api::plan.plan', {
+                filters: {
+                    productAPI: subscription.plan.product,
+                },
+            });
+
+            if(plans.length > 0){
+                const dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
+    
+                await strapi.entityService.update('api::company.company', user.company.id, {
+                    data: {
+                        dueDate: dueDate,
+                        plan: plans[0].id,
+                    },
+                });
+            }
+        }
+        
+        return subscription;
+    },
+    async resumeSubscription(subscriptionId){
+        let subscription = await Stripe.subscriptions.resume(
+            subscriptionId,
+            {
+                billing_cycle_anchor: 'now'
+            }
+        );
+
+        subscription = await strapi.service('api::stripe.stripe').findOneSubscription(subscriptionId);
+        
+        if(subscription.status == "active"){
+            const plans = await strapi.entityService.findMany('api::plan.plan', {
+                filters: {
+                    productAPI: subscription.plan.product,
+                },
+            });
+
+            if(plans.length > 0){
+                const dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
+    
+                await strapi.entityService.update('api::company.company', user.company.id, {
+                    data: {
+                        dueDate: dueDate,
+                        plan: plans[0].id,
+                    },
+                });
+            }
+        }
         
         return subscription;
     },

@@ -20,6 +20,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 favicon: true,
                 menu: true,
                 socialNetwork: true,
+                plan: true,
             }
 
             const result = await super.findOne(entityId, params);
@@ -84,6 +85,15 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             params.data.removeBranding = 0;
         }
         const response = await super.update(entityId, params);
+
+        await strapi.service('api::log.log').create({
+            data:{
+                log: `Updated company settings`,
+                type: "update-company",
+                result: response,
+                params: params,
+            }
+        });
     
         return response;
     },

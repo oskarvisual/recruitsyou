@@ -62,6 +62,9 @@
     },
     "aiPerDay": {
       "type": "integer"
+    },
+    "productAPI": {
+      "type": "string"
     }
   }
 }

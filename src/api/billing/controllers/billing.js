@@ -45,7 +45,7 @@ module.exports = {
 
             await strapi.service('api::log.log').create({
                 data:{
-                    log: `Updated billing`,
+                    log: `Updated billing details`,
                     type: "update-billing",
                     result: customer,
                     params: data
@@ -256,8 +256,36 @@ module.exports = {
 
             await strapi.service('api::log.log').create({
                 data:{
-                    log: `Deleted subscription`,
-                    type: "delete-subscription",
+                    log: `Created subscription`,
+                    type: "create-subscription",
+                    result: subscription,
+                    params: {}
+                }
+            });
+
+            ctx.body = {
+                data: subscription,
+                meta: {}
+            };
+        } catch (err) {
+            ctx.send({
+                data: null,
+                ...err,
+            }, 500);
+        }
+    },
+    async resumeSubscription(ctx){
+        try { 
+            const { id } = ctx.params;
+
+            const user = await strapi.service('api::user.user').me();
+            
+            const subscription = await strapi.service('api::stripe.stripe').resumeSubscription(id);
+
+            await strapi.service('api::log.log').create({
+                data:{
+                    log: `Resumed subscription`,
+                    type: "resume-subscription",
                     result: subscription,
                     params: {}
                 }
@@ -280,7 +308,7 @@ module.exports = {
 
             const user = await strapi.service('api::user.user').me();
             
-            const subscription = await strapi.service('api::stripe.stripe').createSubscription(id);
+            const subscription = await strapi.service('api::stripe.stripe').cancelSubscription(id);
 
             await strapi.service('api::log.log').create({
                 data:{
