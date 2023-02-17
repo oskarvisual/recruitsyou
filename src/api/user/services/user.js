@@ -118,7 +118,7 @@ module.exports = {
 
         for(let i = 0; i < result.length; i++){
             if(result[i].photo != null){
-                result[i].photo.url = await strapi.service('api::s3.s3').SignedUrl(`${result[i].photo.hash}${result[i].photo.ext}`, result[i].photo.mime, 10 * 60);
+                result[i].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result[i].photo.hash}${result[i].photo.ext}`, result[i].photo.mime, 10 * 60);
                 delete result[i].photo.hash;
                 delete result[i].photo.provider;
                 delete result[i].photo.provider_metadata;
@@ -214,7 +214,7 @@ module.exports = {
         if(result.length == 0){ return null; }
 
         if(result[0].photo != null){
-            result[0].photo.url = await strapi.service('api::s3.s3').SignedUrl(`${result[0].photo.hash}${result[0].photo.ext}`, result[0].photo.mime, 10 * 60);
+            result[0].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result[0].photo.hash}${result[0].photo.ext}`, result[0].photo.mime, 10 * 60);
             delete result[0].photo.hash;
             delete result[0].photo.provider;
             delete result[0].photo.provider_metadata;

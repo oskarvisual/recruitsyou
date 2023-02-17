@@ -21,7 +21,7 @@ const s3Client = new S3({
 });
 
 module.exports = {
-    async SignedUrl(Key, ContentType, expiresIn) { 
+    async signedUrl(Key, ContentType, expiresIn) { 
         try {
             const command = new GetObjectCommand({
                 Bucket: process.env.AWS_S3_BUCKET,

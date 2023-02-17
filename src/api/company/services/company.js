@@ -30,11 +30,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const result = await strapi.entityService.findMany(api, {
             fields: [
                 'company', 
-                'street', 
-                'streetNumber', 
-                'state', 
-                'city', 
-                'zip', 
                 'searchEngineIndexing', 
                 'googleAnalytics', 
                 'facebookPixel', 

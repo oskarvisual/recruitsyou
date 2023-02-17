@@ -14,7 +14,7 @@ module.exports = {
             let userId = user.id;
 
             if(user.photo != null){
-                user.photo.url = await strapi.service('api::s3.s3').SignedUrl(`${user.photo.hash}${user.photo.ext}`, user.photo.mime, 10 * 60);
+                user.photo.url = await strapi.service('api::s3.s3').signedUrl(`${user.photo.hash}${user.photo.ext}`, user.photo.mime, 10 * 60);
                 delete user.photo.hash;
                 delete user.photo.provider;
                 delete user.photo.provider_metadata;

@@ -225,14 +225,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
 
         for(let i = 0; i < result.results.length; i++){
             if(result.results[i].resume != null){
-                result.results[i].resume.url = await strapi.service('api::s3.s3').SignedUrl(`${result.results[i].resume.hash}${result.results[i].resume.ext}`, result.results[i].resume.mime, 10 * 60);
+                result.results[i].resume.url = await strapi.service('api::s3.s3').signedUrl(`${result.results[i].resume.hash}${result.results[i].resume.ext}`, result.results[i].resume.mime, 10 * 60);
                 delete result.results[i].resume.hash;
                 delete result.results[i].resume.provider;
                 delete result.results[i].resume.provider_metadata;
             }
     
             if(result.results[i].photo != null){
-                result.results[i].photo.url = await strapi.service('api::s3.s3').SignedUrl(`${result.results[i].photo.hash}${result.results[i].photo.ext}`, result.results[i].photo.mime, 10 * 60);
+                result.results[i].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result.results[i].photo.hash}${result.results[i].photo.ext}`, result.results[i].photo.mime, 10 * 60);
                 delete result.results[i].photo.hash;
                 delete result.results[i].photo.provider;
                 delete result.results[i].photo.provider_metadata;
@@ -274,14 +274,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         if(result.length == 0){ return null; }
 
         if(result[0].resume != null){
-            result[0].resume.url = await strapi.service('api::s3.s3').SignedUrl(`${result[0].resume.hash}${result[0].resume.ext}`, result[0].resume.mime, 10 * 60);
+            result[0].resume.url = await strapi.service('api::s3.s3').signedUrl(`${result[0].resume.hash}${result[0].resume.ext}`, result[0].resume.mime, 10 * 60);
             delete result[0].resume.hash;
             delete result[0].resume.provider;
             delete result[0].resume.provider_metadata;
         }
 
         if(result[0].photo != null){
-            result[0].photo.url = await strapi.service('api::s3.s3').SignedUrl(`${result[0].photo.hash}${result[0].photo.ext}`, result[0].photo.mime, 10 * 60);
+            result[0].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result[0].photo.hash}${result[0].photo.ext}`, result[0].photo.mime, 10 * 60);
             delete result[0].photo.hash;
             delete result[0].photo.provider;
             delete result[0].photo.provider_metadata;

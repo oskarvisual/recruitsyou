@@ -60,4 +60,48 @@ module.exports = {
         
         return paymentMethod;
     },
+    async createSubscription(customerId, priceId){
+        const subscription = await Stripe.subscriptions.create({
+            customer: customerId,
+            items: [
+                { price: priceId },
+            ],
+        });
+        
+        return subscription;
+    },
+    async findSubscription(customerId){
+        const subscriptions = await Stripe.subscriptions.list({
+            customer: customerId,
+        });
+        
+        return subscriptions;
+    },
+    async findOneSubscription(subscriptionId){
+        const subscription = await Stripe.subscriptions.retrieve(subscriptionId);
+        
+        return subscription;
+    },
+    async cancelSubscription(subscriptionId){
+        const subscription = await Stripe.subscriptions.del(subscriptionId);
+        
+        return subscription;
+    },
+    async findInvoice(customerId){
+        const invoices = await Stripe.invoices.list({
+            customer: customerId,
+        });
+        
+        return invoices;
+    },
+    async findOneInvoice(invoceId){
+        const invoce = await Stripe.invoices.retrieve(invoceId);
+        
+        return invoce;
+    },
+    async findOnePrice(priceId){
+        const price = await Stripe.prices.retrieve(priceId);
+        
+        return price;
+    },
 }
