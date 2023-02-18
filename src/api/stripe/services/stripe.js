@@ -106,6 +106,7 @@ module.exports = {
     
                 await strapi.entityService.update('api::company.company', user.company.id, {
                     data: {
+                        demo: 0,
                         dueDate: dueDate,
                         plan: plans[0].id,
                     },
@@ -137,6 +138,7 @@ module.exports = {
     
                 await strapi.entityService.update('api::company.company', user.company.id, {
                     data: {
+                        demo: 0,
                         dueDate: dueDate,
                         plan: plans[0].id,
                     },
@@ -179,5 +181,11 @@ module.exports = {
         const price = await Stripe.prices.retrieve(priceId);
         
         return price;
+    },
+    async findOneEvent(/* The event id that is sent from Stripe. */
+    eventId){
+        const event = await Stripe.events.retrieve(eventId);
+        
+        return event;
     },
 }

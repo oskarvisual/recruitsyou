@@ -266,6 +266,7 @@ module.exports = {
                     phone: data.phone,
                     timezone: data.timezone,
                     confirmed: 1,
+                    administrator: 0,
                 }
             }
 
@@ -382,7 +383,7 @@ module.exports = {
 
             if(data != undefined){
                 params.data = {
-                    role: data.role,
+                    role: (userData.administrator) ? userData.role.id : data.role,
                     firstName: data.firstName,
                     lastName: data.lastName,
                     phone: data.phone,
@@ -450,6 +451,17 @@ module.exports = {
                     error: {
                         name: "NotFoundError",
                         message: "Not Found",
+                        details: {}
+                    }
+                }, 404);
+            }
+
+            if(userData.administrator){
+                ctx.send({
+                    data: null,
+                    error: {
+                        name: "AdminUserRemoveError",
+                        message: "Administrator user cannot be removed",
                         details: {}
                     }
                 }, 404);

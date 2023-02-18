@@ -450,4 +450,26 @@ module.exports = {
             }, 500);
         }
     },
+    async webhook(ctx){
+        try { 
+            const data = ctx.request.body;
+            
+            const event = await strapi.service('api::stripe.stripe').findOneEvent(data.id);
+
+            if(event.type == 'payment_intent.succeeded'){
+
+            }
+
+            ctx.body = {
+                data: event,
+                meta: {}
+            };
+
+        } catch (err) {
+            ctx.send({
+                data: null,
+                ...err,
+            }, 500);
+        }
+    },
 };

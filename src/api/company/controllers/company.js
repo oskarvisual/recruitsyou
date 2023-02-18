@@ -139,10 +139,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     email: data.email,
                     provider: 'local',
                     password: password,
-                    role: 4,
+                    role: process.env.ATS_ADMINISTRATOR_ROLE,
                     firstName: data.firstName,
                     lastName: data.lastName,
                     confirmed: 1,
+                    administrator: 1,
                 }
             });
             delete user.username;
@@ -181,7 +182,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
             await strapi.entityService.update('api::company.company', company.data.id, {
                 data: {
-                    plan: 2,
+                    plan: process.env.ATS_PRO_PLAN,
                     users: user.id,
                     customerID: customer.id,
                 },
