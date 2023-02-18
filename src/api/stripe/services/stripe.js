@@ -30,12 +30,22 @@ module.exports = {
         return customer;
     },
     async createPaymentMethod(customerId, params){
+        const paymentMethods = await strapi.service('api::stripe.stripe').findPaymentMethod(customerId, 'card');
+
         const paymentMethod = await Stripe.paymentMethods.create(params);
 
         const customerPaymentMethod = await Stripe.paymentMethods.attach(
             paymentMethod.id,
             {customer: customerId}
         );
+
+        if(paymentMethods.data.length == 0){
+            const customer = await strapi.service('api::stripe.stripe').updateCustomer(customerId, {
+                invoice_settings: {
+                    default_payment_method: paymentMethod.id,
+                }
+            });
+        }
 
         return customerPaymentMethod;
     },
@@ -48,15 +58,39 @@ module.exports = {
         return detachPaymentMethod;
     },
     async findPaymentMethod(customerId, type){
-        const paymentMethod = await Stripe.customers.listPaymentMethods(
+        const customer = await strapi.service('api::stripe.stripe').findOneCustomer(customerId);
+
+        const paymentMethods = await Stripe.customers.listPaymentMethods(
             customerId,
             {type: type},
         );
 
-        return paymentMethod;
+        if(paymentMethods.data.length > 0){
+            for(let i = 0; i < paymentMethods.data.length; i++){
+                paymentMethods.data[i].default = false;
+
+                if(customer.invoice_settings != undefined || customer.invoice_settings != null){
+                    if(paymentMethods.data[i].id == customer.invoice_settings.default_payment_method){
+                        paymentMethods.data[i].default = true;
+                    }
+                }
+            }
+        }
+
+        return paymentMethods;
     },
     async findOnePaymentMethod(customerId, id){
+        const customer = await strapi.service('api::stripe.stripe').findOneCustomer(customerId);
+
         const paymentMethod = await Stripe.customers.retrievePaymentMethod(customerId, id);
+
+        paymentMethod.default = false;
+
+        if(customer.invoice_settings != undefined || customer.invoice_settings != null){
+            if(paymentMethod.id == customer.invoice_settings.default_payment_method){
+                paymentMethod.default = true;
+            }
+        }
         
         return paymentMethod;
     },

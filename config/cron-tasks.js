@@ -113,6 +113,7 @@ module.exports = {
                                 }
                             }
                         }
+
                         if(userData){
                             await strapi.plugins['email'].services.email.send({
                                 from: process.env.SMTP_FROM,
@@ -184,6 +185,7 @@ module.exports = {
                                 }
                             }
                         }
+                        
                         if(userData){
                             await strapi.plugins['email'].services.email.send({
                                 from: process.env.SMTP_FROM,
