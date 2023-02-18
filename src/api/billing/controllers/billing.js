@@ -32,7 +32,6 @@ module.exports = {
                 email: data.email,
                 name: data.name,
                 phone: data.phone,
-                default_source: data.default_source,
                 address:{
                     country: data.country,
                     state: data.state,
@@ -102,6 +101,21 @@ module.exports = {
             const data = ctx.request.body.data;
 
             const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
+            
+            if(
+                customer.address == null || 
+                customer.name == null || 
+                customer.email == null || 
+                customer.phone == null
+            ){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        name: 'ValidationError',
+                        message: 'You must first update your billing contact information.',
+                    }
+                }, 400);
+            }
 
             const paymentMethod = await strapi.service('api::stripe.stripe').createPaymentMethod(user.company.customerID, {
                 type: data.type,
@@ -147,6 +161,23 @@ module.exports = {
             const { id } = ctx.params;
 
             const user = await strapi.service('api::user.user').me();       
+
+            const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
+            
+            if(
+                customer.address == null || 
+                customer.name == null || 
+                customer.email == null || 
+                customer.phone == null
+            ){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        name: 'ValidationError',
+                        message: 'You must first update your billing contact information.',
+                    }
+                }, 400);
+            }
 
             const paymentMethod = await strapi.service('api::stripe.stripe').detachPaymentMethod(user.company.customerID, id);
 
@@ -251,6 +282,23 @@ module.exports = {
             const data = ctx.request.body.data;
 
             const user = await strapi.service('api::user.user').me();
+
+            const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
+            
+            if(
+                customer.address == null || 
+                customer.name == null || 
+                customer.email == null || 
+                customer.phone == null
+            ){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        name: 'ValidationError',
+                        message: 'You must first update your billing contact information.',
+                    }
+                }, 400);
+            }
             
             const subscription = await strapi.service('api::stripe.stripe').createSubscription(user.company.customerID, data.price_id);
 
@@ -279,6 +327,23 @@ module.exports = {
             const { id } = ctx.params;
 
             const user = await strapi.service('api::user.user').me();
+
+            const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
+            
+            if(
+                customer.address == null || 
+                customer.name == null || 
+                customer.email == null || 
+                customer.phone == null
+            ){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        name: 'ValidationError',
+                        message: 'You must first update your billing contact information.',
+                    }
+                }, 400);
+            }
             
             const subscription = await strapi.service('api::stripe.stripe').resumeSubscription(id);
 
@@ -307,6 +372,23 @@ module.exports = {
             const { id } = ctx.params;
 
             const user = await strapi.service('api::user.user').me();
+
+            const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
+            
+            if(
+                customer.address == null || 
+                customer.name == null || 
+                customer.email == null || 
+                customer.phone == null
+            ){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        name: 'ValidationError',
+                        message: 'You must first update your billing contact information.',
+                    }
+                }, 400);
+            }
             
             const subscription = await strapi.service('api::stripe.stripe').cancelSubscription(id);
 

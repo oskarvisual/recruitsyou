@@ -3,7 +3,7 @@
 /**
  * stripe service
  */
-//TODO: FALTAN WEBHOOKS DESDE STRIPE
+
 const stripe = require('stripe');
 
 const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
