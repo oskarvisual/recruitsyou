@@ -115,6 +115,10 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
 
+        if(result.default){
+            params.data.default = 1;
+        }
+
         const response = await super.update(entityId, params);
     
         return response;

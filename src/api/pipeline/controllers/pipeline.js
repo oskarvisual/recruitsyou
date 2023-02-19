@@ -11,8 +11,8 @@ module.exports = createCoreController('api::pipeline.pipeline', ({ strapi }) => 
         try{
             const response = await super.create(ctx);
 
-            if(response.data.attributes.default == true){
-                await strapi.service('api::pipeline.pipeline').default(response.data.id, response.data.attributes.type);
+            if(response.data.attributes.default){
+                await strapi.service('api::pipeline.pipeline').default(response.data.id);
             }
             
             return response;
@@ -27,8 +27,8 @@ module.exports = createCoreController('api::pipeline.pipeline', ({ strapi }) => 
         try{
             const response = await super.update(ctx);
             
-            if(response.data.attributes.default == true){
-                await strapi.service('api::pipeline.pipeline').default(response.data.id, response.data.attributes.type);
+            if(response.data.attributes.default){
+                await strapi.service('api::pipeline.pipeline').default(response.data.id);
             }
         
             return response;

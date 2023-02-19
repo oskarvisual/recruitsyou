@@ -11,7 +11,7 @@ module.exports = createCoreController('api::email-template.email-template', ({ s
         try{
             const response = await super.create(ctx);
 
-            if(response.data.attributes.default == true){
+            if(response.data.attributes.default){
                 await strapi.service('api::email-template.email-template').default(response.data.id, response.data.attributes.type);
             }
             
@@ -27,7 +27,7 @@ module.exports = createCoreController('api::email-template.email-template', ({ s
         try{
             const response = await super.update(ctx);
             
-            if(response.data.attributes.default == true){
+            if(response.data.attributes.default){
                 await strapi.service('api::email-template.email-template').default(response.data.id, response.data.attributes.type);
             }
         

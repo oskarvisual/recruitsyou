@@ -19,8 +19,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 default: 0,
             },
         });
-        params.populate = {}
-
 
         const response = await super.update(entityId, {
             data: {
@@ -166,6 +164,10 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
+
+        if(result.default){
+            params.data.default = 1;
+        }
 
         const response = await super.update(entityId, params);
     
