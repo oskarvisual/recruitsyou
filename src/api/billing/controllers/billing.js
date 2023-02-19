@@ -461,113 +461,108 @@ module.exports = {
             if(event.type == 'invoice.paid'){
                 const invoice = await strapi.service('api::stripe.stripe').findOneInvoice(event.data.object.id);
 
-                const subscription = await strapi.service('api::stripe.stripe').findOneSubscription(invoice.subscription);
-
-                if(subscription.status != "active"){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: 'SubscriptionError',
-                            message: 'Subscription is not active',
-                            details: {}
-                        }
-                    }, 500);
-                }
-
-                const plans = await strapi.entityService.findMany('api::plan.plan', {
-                    filters: {
-                        productAPI: subscription.plan.product,
-                    },
-                });
-        
-                if(plans.length == 0){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: 'ValidationError',
-                            message: 'PlanNoExist',
-                            details: {}
-                        }
-                    }, 500);
-                }
+                if(invoice.subscription != null){
+                    const subscription = await strapi.service('api::stripe.stripe').findOneSubscription(invoice.subscription);
     
-                const dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
-
-                const companies = await strapi.entityService.findMany('api::company.company', {
-                    fields: [
-                        'id', 
-                        'company',
-                        'dueDate',
-                        'demo',
-                        'customerID'
-                    ],
-                    filters: {
-                        customerID: invoice.customer,
-                    },
-                    publicationState: 'live',
-                    populate: ['plan', 'users'],
-                });
-
-                if(companies.length > 0){
-                    const company = companies[0];
+                    if(subscription.status != "active"){
+                        return ctx.send({
+                            data: null,
+                            error: {
+                                name: 'SubscriptionError',
+                                message: 'Subscription is not active',
+                                details: {}
+                            }
+                        }, 500);
+                    }
     
-                    await strapi.entityService.update('api::company.company', company.id, {
-                        data: {
-                            demo: 0,
-                            dueDate: dueDate,
-                            plan: plans[0].id,
+                    const plans = await strapi.entityService.findMany('api::plan.plan', {
+                        filters: {
+                            productAPI: subscription.plan.product,
                         },
                     });
-
-                    if(process.env.SMTP_SEND == "true"){
-                        let userData = false;
-                        if(company.users.length > 0){
-                            for(let o = 0; o < company.users.length; o++){
-                                if(company.users[o].administrator){
-                                    userData = company.users[o];
-                                }
+            
+                    if(plans.length == 0){
+                        return ctx.send({
+                            data: null,
+                            error: {
+                                name: 'ValidationError',
+                                message: 'PlanNoExist',
+                                details: {}
                             }
-                        }
-
-                        if(userData){
-                            await strapi.plugins['email'].services.email.send({
-                                from: process.env.SMTP_FROM,
-                                to: userData.email,
-                                subject: `Invoice Payment Confirmation for ${process.env.ATS_NAME} Subscription`,
-                                html: `<p>Dear ${userData.firstName},</p>
+                        }, 500);
+                    }
+        
+                    const dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
+    
+                    const companies = await strapi.entityService.findMany('api::company.company', {
+                        fields: [
+                            'id', 
+                            'company',
+                            'dueDate',
+                            'demo',
+                            'customerID'
+                        ],
+                        filters: {
+                            customerID: invoice.customer,
+                        },
+                        publicationState: 'live',
+                        populate: ['plan', 'users'],
+                    });
+    
+                    if(companies.length > 0){
+                        const company = companies[0];
+        
+                        await strapi.entityService.update('api::company.company', company.id, {
+                            data: {
+                                demo: 0,
+                                dueDate: dueDate,
+                                plan: plans[0].id,
+                            },
+                        });
+    
+                        if(invoice.customer_email != null){
+                            await strapi.service('api::email.email').create({
+                                data:{
+                                    from: process.env.SMTP_FROM,
+                                    replyTo: process.env.SMTP_FROM,
+                                    to: invoice.customer_email,
+                                    subject: `Invoice Payment Confirmation for ${process.env.ATS_NAME} Subscription`,
+                                    body: `<p>Dear ${invoice.customer_name},</p>
                                 
-                                <p>We are pleased to inform you that your invoice for ${process.env.ATS_NAME} has been successfully paid. Thank you for your prompt payment.</p>
+                                    <p>We are pleased to inform you that your invoice for ${process.env.ATS_NAME} has been successfully paid. Thank you for your prompt payment.</p>
+                                    
+                                    <p>Please find below the details of your invoice:</p>
                                 
-                                <p>Please find below the details of your invoice:</p>
-                            
-                                <table style="border-collapse: collapse; width: 50%;">
-                                    <tr>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">Invoice Number:</td>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">${invoice.number}</td>
-                                    </tr>
-                                    <tr>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">Amount Paid:</td>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">${invoice.amount_paid}</td>
-                                    </tr>
-                                    <tr>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">Currency:</td>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">${invoice.currency}</td>
-                                    </tr>
-                                    <tr>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">Description:</td>
-                                    <td style="border: 1px solid #ddd; padding: 5px;">${invoice.lines.data[0].description}</td>
-                                    </tr>
-                                </table>
-                                
-                                <p>We confirm that the payment has been received in full. You can now continue to enjoy uninterrupted access to all the features and benefits of our powerful software.</p>
-                                
-                                <p>You can download your invoice from your account on our platform.</p>
-                                
-                                <p>If you have any queries or concerns regarding this invoice or your subscription, please feel free to contact our customer support team.</p>
-                                
-                                <p>Thank you for choosing our services. We look forward to your continued patronage.</p>
-
-                                <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                                    <table style="border-collapse: collapse; width: 50%;">
+                                        <tr>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">Invoice Number:</td>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">${invoice.number}</td>
+                                        </tr>
+                                        <tr>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">Amount Paid:</td>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">${parseFloat(invoice.amount_paid / 100).toFixed(2).toString()}</td>
+                                        </tr>
+                                        <tr>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">Currency:</td>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">${invoice.currency}</td>
+                                        </tr>
+                                        <tr>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">Description:</td>
+                                        <td style="border: 1px solid #ddd; padding: 5px;">${invoice.lines.data[0].description}</td>
+                                        </tr>
+                                    </table>
+                                    
+                                    <p>We confirm that the payment has been received in full. You can now continue to enjoy uninterrupted access to all the features and benefits of our powerful software.</p>
+                                    
+                                    <p>You can download your invoice from your account on our platform.</p>
+                                    
+                                    <p>If you have any queries or concerns regarding this invoice or your subscription, please feel free to contact our customer support team.</p>
+                                    
+                                    <p>Thank you for choosing our services. We look forward to your continued patronage.</p>
+        
+                                    <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                                    sent: 0,
+                                }
                             });
                         }
                     }

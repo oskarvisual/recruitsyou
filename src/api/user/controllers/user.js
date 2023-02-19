@@ -291,13 +291,13 @@ module.exports = {
                 }, 404);
             }
 
-            if(process.env.SMTP_SEND == "true"){
-                await strapi.plugins['email'].services.email.send({
+            await strapi.service('api::email.email').create({
+                data:{
                     from: process.env.SMTP_FROM,
+                    replyTo: process.env.SMTP_FROM,
                     to: result.email,
                     subject: `Invitation to ${process.env.ATS_NAME}`,
-                    html: `
-                    <p>Dear ${result.firstName},</p>
+                    body: `<p>Dear ${result.firstName},</p>
 
                     <p>${user.company.company} uses ${process.env.ATS_NAME} for its personnel selection.</p>
 
@@ -315,14 +315,9 @@ module.exports = {
 
                     <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>
                     `,
-                });
-            }else{
-                console.log({
-                    URL: process.env.ATS_URL,
-                    Email: result.email,
-                    Password: password
-                });
-            }
+                    sent: 0,
+                }
+            });
 
             delete result.password;
             delete result.resetPasswordToken;

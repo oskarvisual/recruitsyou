@@ -1062,12 +1062,13 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                 }
             });
 
-            if(process.env.SMTP_SEND == "true"){
-                await strapi.plugins['email'].services.email.send({
+            await strapi.service('api::email.email').create({
+                data:{
                     from: process.env.SMTP_FROM,
+                    replyTo: process.env.SMTP_FROM,
                     to: user.email,
                     subject: `Welcome to ${process.env.ATS_NAME}`,
-                    html: `<p>Dear ${user.firstName},</p>
+                    body: `<p>Dear ${user.firstName},</p>
 
                     <p>We are excited to welcome you to ${process.env.ATS_NAME}. Your account has been created and you can now begin using our Applicant Tracking System (ATS) to manage your job applications.</p>
 
@@ -1092,14 +1093,9 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     </ul>
 
                     <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
-                });
-            }else{
-                console.log({
-                    URL: process.env.ATS_URL,
-                    Email: user.email,
-                    Password: password
-                });
-            }
+                    sent: 0,
+                }
+            });
 
             await strapi.service('api::mailing.mailing').addContact(user.firstName, user.email, process.env.MJ_CONTACT_ADMINS_LIST);
 
