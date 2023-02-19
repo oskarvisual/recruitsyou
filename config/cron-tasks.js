@@ -13,212 +13,6 @@ const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format(
 //TODO: Logica en jobs que no permita activar mas de uno si es free
 //TODO: Despublicar todas las paginas menos las basicas
 module.exports = {
-    '0 0 10 * * *': async ({ strapi }) => {
-        try {
-            const companies = await strapi.entityService.findMany('api::company.company', {
-                fields: [
-                    'id', 
-                    'company',
-                    'dueDate',
-                    'demo',
-                    'customerID'
-                ],
-                filters: {
-                    plan: { 
-                        id: {
-                            $ne: process.env.ATS_FREE_PLAN,    
-                        }
-                    },
-                    dueDate: { 
-                        $lte: moment(new Date()).format('YYYY-MM-DD'),
-                    },
-                },
-                publicationState: 'live',
-                populate: ['plan'],
-            });
-
-            if(companies.length > 0){
-                for(let i = 0; i < companies.length; i++){
-                    let subscriptions = await strapi.service('api::stripe.stripe').findSubscription(companies[i].customerID);
-
-                    if(subscriptions.data.length == 0){
-                        continue;
-                    }
-
-                    let subscription = await strapi.service('api::stripe.stripe').findOneSubscription(subscriptions.data[0].id);
-
-                    if(subscription.status != "active"){
-                        continue;
-                    }
-                    
-                    let plans = await strapi.entityService.findMany('api::plan.plan', {
-                        filters: {
-                            productAPI: subscription.plan.product,
-                        },
-                    });
-        
-                    if(plans.length == 0){
-                        continue;
-                    }
-
-                    let dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
-        
-                    await strapi.entityService.update('api::company.company', companies[i].id, {
-                        data: {
-                            demo: 0,
-                            dueDate: dueDate,
-                            plan: plans[0].id,
-                        },
-                    });
-                }
-            }
-
-        } catch(err){
-            console.log(err);
-        }
-    },
-    '0 0 11 * * *': async ({ strapi }) => {
-        try {            
-            const companies = await strapi.entityService.findMany('api::company.company', {
-                fields: [
-                    'id', 
-                    'company',
-                    'dueDate',
-                    'demo',
-                    'customerID'
-                ],
-                filters: {
-                    plan: { 
-                        id: {
-                            $ne: process.env.ATS_FREE_PLAN,     
-                        }
-                    },
-                    demo: 0,
-                    dueDate: { 
-                        $lte: moment(new Date()).subtract(7, 'days').format('YYYY-MM-DD'),
-                    },
-                },
-                publicationState: 'live',
-                populate: ['plan', 'users'],
-            });
-
-            if(companies.length > 0){
-                for(let i = 0; i < companies.length; i++){
-                    if(process.env.SMTP_SEND == "true"){
-                        let userData = false;
-                        if(companies[i].users.length > 0){
-                            for(let o = 0; o < companies.users.length; o++){
-                                if(companies[i].users[o].administrator){
-                                    userData = companies[i].users[o];
-                                }
-                            }
-                        }
-
-                        if(userData){
-                            await strapi.plugins['email'].services.email.send({
-                                from: process.env.SMTP_FROM,
-                                to: userData.email,
-                                subject: `${process.env.ATS_NAME} downgrade to free plan due to non-payment`,
-                                html: `<p>Dear ${userData.firstName},</p>
-                                
-                                <p>I hope this email finds you well. We are writing to inform you that your subscription to ${process.env.ATS_NAME} has been downgraded from its previous paid plan to the current Free plan due to unpaid or cancelled subscription.</p>
-                                
-                                <p>We understand that circumstances can change and that financial constraints can arise unexpectedly. However, it is important to note that our ATS is a premium service that requires a paid subscription to access its full features and functionality.</p>
-                                
-                                <p>While your account has been downgraded to the Free plan, you will still have access to basic features, such as free posting job openings and reviewing applications. However, some of the more advanced features, such as automated candidate communication, ai, unlimited jobs and users, custom actions, etc. will no longer be available to you.</p>
-                                
-                                <p>We understand that this may be inconvenient for your hiring needs, but we hope that you will continue to find value in the basic features offered by the Free plan.</p>
-                                
-                                <p>Thank you for your understanding and for being a valued customer of ${process.env.ATS_NAME}. Please do not hesitate to contact us if you have any questions or concerns.</p>
-
-                                <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
-                            });
-                        }
-                    }
-                    
-                    await strapi.entityService.update('api::company.company', companies[0].id, {
-                        data: {
-                            demo: 0,
-                            plan: process.env.ATS_FREE_PLAN,
-                        },
-                    });
-                }
-            }
-
-        } catch(err){
-            console.log(err);
-        }
-    },
-    '0 0 12 * * *': async ({ strapi }) => {
-        try {
-            const companies = await strapi.entityService.findMany('api::company.company', {
-                fields: [
-                    'id', 
-                    'company',
-                    'dueDate',
-                    'demo',
-                    'customerID'
-                ],
-                filters: {
-                    plan: { 
-                        id: {
-                            $ne: process.env.ATS_FREE_PLAN,     
-                        }
-                    },
-                    demo: 1,
-                    dueDate: { 
-                        $lte: moment(new Date()).format('YYYY-MM-DD'),
-                    },
-                },
-                publicationState: 'live',
-                populate: ['plan', 'users'],
-            });
-
-            if(companies.length > 0){
-                for(let i = 0; i < companies.length; i++){
-                    if(process.env.SMTP_SEND == "true"){
-                        let userData = false;
-                        if(companies[i].users.length > 0){
-                            for(let o = 0; o < companies.users.length; o++){
-                                if(companies[i].users[o].administrator){
-                                    userData = companies[i].users[o];
-                                }
-                            }
-                        }
-                        
-                        if(userData){
-                            await strapi.plugins['email'].services.email.send({
-                                from: process.env.SMTP_FROM,
-                                to: userData.email,
-                                subject: `Your ${process.env.ATS_NAME} Demo Trial Has Ended`,
-                                html: `<p>Dear ${userData.firstName},</p>
-                                
-                                <p>We hope this email finds you well. We wanted to remind you that your ${process.env.ATS_TRIAL_DAYS}-day demo trial of ${process.env.ATS_NAME} has come to an end. We hope you found the system valuable and informative for your recruitment needs.</p>
-                                
-                                <p>Now that your demo trial has ended, your account will be automatically downgraded to the Free plan. As a result, some of the advanced features of ${process.env.ATS_NAME}, such as automated candidate communication, ai, unlimited jobs and users, custom actions, etc. will no longer be available to you.</p>
-                                
-                                <p>However, you will still be able to use the basic features of the Free plan, including free posting job openings and reviewing applications. If you would like to continue using the advanced features of ${process.env.ATS_NAME}, you can upgrade your subscription at any time.</p>
-                                
-                                <p>We appreciate your interest in ${process.env.ATS_NAME} and hope that you will consider subscribing to our service. If you have any questions or concerns about your account, please do not hesitate to contact us.</p>
-                                
-                                <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
-                            });
-                        }
-                    }
-                    
-                    await strapi.entityService.update('api::company.company', companies[0].id, {
-                        data: {
-                            demo: 0,
-                            plan: process.env.ATS_FREE_PLAN,
-                        },
-                    });
-                }
-            }
-
-        } catch(err){
-            console.log(err);
-        }
-    },
     '0 * * * * *': async ({ strapi }) => {
         try {
             if(process.env.SMTP_SEND == "true"){
@@ -314,6 +108,242 @@ module.exports = {
                     }
                 }
             }
+        } catch(err){
+            console.log(err);
+        }
+    },
+    '0 0 * * * *': async ({ strapi }) => {
+        try {
+            const companies = await strapi.entityService.findMany('api::company.company', {
+                fields: [
+                    'id', 
+                    'company',
+                    'dueDate',
+                    'demo',
+                    'customerID'
+                ],
+                filters: {
+                    plan: { 
+                        id: {
+                            $ne: process.env.ATS_FREE_PLAN,    
+                        }
+                    },
+                    dueDate: { 
+                        $lte: moment(new Date()).format('YYYY-MM-DD'),
+                    },
+                },
+                publicationState: 'live',
+                populate: ['plan', 'users'],
+            });
+
+            if(companies.length > 0){
+                for(let i = 0; i < companies.length; i++){
+                    let subscriptions = await strapi.service('api::stripe.stripe').findSubscription(companies[i].customerID);
+
+                    if(subscriptions.data.length == 0){
+                        continue;
+                    }
+
+                    let subscription = subscriptions.data[0];
+
+                    if(subscription.status != "active"){
+                        continue;
+                    }
+                    
+                    let plans = await strapi.entityService.findMany('api::plan.plan', {
+                        filters: {
+                            productAPI: subscription.plan.product,
+                        },
+                    });
+        
+                    if(plans.length == 0){
+                        continue;
+                    }
+
+                    let dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
+
+                    if(companies[i].dueDate != dueDate){
+                        if(process.env.SMTP_SEND == "true"){
+                            let userData = false;
+                            if(companies[i].users.length > 0){
+                                for(let o = 0; o < companies[i].users.length; o++){
+                                    if(companies[i].users[o].administrator){
+                                        userData = companies[i].users[o];
+                                    }
+                                }
+                            }
+
+                            if(userData){
+                                await strapi.plugins['email'].services.email.send({
+                                    from: process.env.SMTP_FROM,
+                                    to: userData.email,
+                                    subject: `Confirmation of Payment for ${process.env.ATS_NAME}`,
+                                    html: `<p>Dear ${userData.firstName},</p>
+                                    
+                                    <p>We are writing to confirm that we have received your payment for your subscription <strong>${plans[0].plan} plan</strong> to ${process.env.ATS_NAME}. Thank you for your prompt payment and continued business.</p>
+                                    
+                                    <p>As a valued customer, we would like to inform you that your invoice for this payment will be available on our platform for you to download and view at any time. Simply log in to your account and navigate to the Billing section to access the invoice.</p>
+                                    
+                                    <p>Thank you again for your payment and for being a valued customer of our ATS. We look forward to serving your recruitment needs in the future.</p>
+
+                                    <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                                });
+                            }
+                        }
+        
+                        await strapi.entityService.update('api::company.company', companies[i].id, {
+                            data: {
+                                demo: 0,
+                                dueDate: dueDate,
+                                plan: plans[0].id,
+                            },
+                        });
+                    }
+                }
+            }
+
+        } catch(err){
+            console.log(err);
+        }
+    },
+    '0 0 11 * * *': async ({ strapi }) => {
+        try {            
+            const companies = await strapi.entityService.findMany('api::company.company', {
+                fields: [
+                    'id', 
+                    'company',
+                    'dueDate',
+                    'demo',
+                    'customerID'
+                ],
+                filters: {
+                    plan: { 
+                        id: {
+                            $ne: process.env.ATS_FREE_PLAN,     
+                        }
+                    },
+                    demo: 0,
+                    dueDate: { 
+                        $lte: moment(new Date()).subtract(7, 'days').format('YYYY-MM-DD'),
+                    },
+                },
+                publicationState: 'live',
+                populate: ['plan', 'users'],
+            });
+
+            if(companies.length > 0){
+                for(let i = 0; i < companies.length; i++){
+                    if(process.env.SMTP_SEND == "true"){
+                        let userData = false;
+                        if(companies[i].users.length > 0){
+                            for(let o = 0; o < companies[i].users.length; o++){
+                                if(companies[i].users[o].administrator){
+                                    userData = companies[i].users[o];
+                                }
+                            }
+                        }
+
+                        if(userData){
+                            await strapi.plugins['email'].services.email.send({
+                                from: process.env.SMTP_FROM,
+                                to: userData.email,
+                                subject: `${process.env.ATS_NAME} downgrade to free plan due to non-payment`,
+                                html: `<p>Dear ${userData.firstName},</p>
+                                
+                                <p>I hope this email finds you well. We are writing to inform you that your subscription to ${process.env.ATS_NAME} has been downgraded from its previous paid plan to the current Free plan due to unpaid or cancelled subscription.</p>
+                                
+                                <p>We understand that circumstances can change and that financial constraints can arise unexpectedly. However, it is important to note that our ATS is a premium service that requires a paid subscription to access its full features and functionality.</p>
+                                
+                                <p>While your account has been downgraded to the Free plan, you will still have access to basic features, such as free posting job openings and reviewing applications. However, some of the more advanced features, such as automated candidate communication, ai, unlimited jobs and users, custom actions, etc. will no longer be available to you.</p>
+                                
+                                <p>We understand that this may be inconvenient for your hiring needs, but we hope that you will continue to find value in the basic features offered by the Free plan.</p>
+                                
+                                <p>Thank you for your understanding and for being a valued customer of ${process.env.ATS_NAME}. Please do not hesitate to contact us if you have any questions or concerns.</p>
+
+                                <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                            });
+                        }
+                    }
+                    
+                    await strapi.entityService.update('api::company.company', companies[0].id, {
+                        data: {
+                            demo: 0,
+                            plan: process.env.ATS_FREE_PLAN,
+                        },
+                    });
+                }
+            }
+
+        } catch(err){
+            console.log(err);
+        }
+    },
+    '0 0 12 * * *': async ({ strapi }) => {
+        try {
+            const companies = await strapi.entityService.findMany('api::company.company', {
+                fields: [
+                    'id', 
+                    'company',
+                    'dueDate',
+                    'demo',
+                    'customerID'
+                ],
+                filters: {
+                    plan: { 
+                        id: {
+                            $ne: process.env.ATS_FREE_PLAN,     
+                        }
+                    },
+                    demo: 1,
+                    dueDate: { 
+                        $lte: moment(new Date()).format('YYYY-MM-DD'),
+                    },
+                },
+                publicationState: 'live',
+                populate: ['plan', 'users'],
+            });
+
+            if(companies.length > 0){
+                for(let i = 0; i < companies.length; i++){
+                    if(process.env.SMTP_SEND == "true"){
+                        let userData = false;
+                        if(companies[i].users.length > 0){
+                            for(let o = 0; o < companies[i].users.length; o++){
+                                if(companies[i].users[o].administrator){
+                                    userData = companies[i].users[o];
+                                }
+                            }
+                        }
+
+                        if(userData){
+                            await strapi.plugins['email'].services.email.send({
+                                from: process.env.SMTP_FROM,
+                                to: userData.email,
+                                subject: `Your ${process.env.ATS_NAME} Demo Trial Has Ended`,
+                                html: `<p>Dear ${userData.firstName},</p>
+                                
+                                <p>We hope this email finds you well. We wanted to remind you that your ${process.env.ATS_TRIAL_DAYS}-day demo trial of ${process.env.ATS_NAME} has come to an end. We hope you found the system valuable and informative for your recruitment needs.</p>
+                                
+                                <p>Now that your demo trial has ended, your account will be automatically downgraded to the Free plan. As a result, some of the advanced features of ${process.env.ATS_NAME}, such as automated candidate communication, ai, unlimited jobs and users, custom actions, etc. will no longer be available to you.</p>
+                                
+                                <p>However, you will still be able to use the basic features of the Free plan, including free posting job openings and reviewing applications. If you would like to continue using the advanced features of ${process.env.ATS_NAME}, you can upgrade your subscription at any time.</p>
+                                
+                                <p>We appreciate your interest in ${process.env.ATS_NAME} and hope that you will consider subscribing to our service. If you have any questions or concerns about your account, please do not hesitate to contact us.</p>
+                                
+                                <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                            });
+                        }
+                    }
+                    
+                    await strapi.entityService.update('api::company.company', companies[0].id, {
+                        data: {
+                            demo: 0,
+                            plan: process.env.ATS_FREE_PLAN,
+                        },
+                    });
+                }
+            }
+
         } catch(err){
             console.log(err);
         }
