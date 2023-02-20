@@ -13,7 +13,7 @@ const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format(
 //TODO: Logica en jobs que no permita activar mas de uno si es free
 //TODO: Despublicar todas las paginas menos las basicas
 module.exports = {
-    '0 * * * * *': async ({ strapi }) => {
+    '*/30 * * * * *': async ({ strapi }) => {
         try {
             if(process.env.SMTP_SEND == "true"){
 
