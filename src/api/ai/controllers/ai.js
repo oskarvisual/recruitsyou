@@ -170,7 +170,7 @@ module.exports = {
             const user = await strapi.service('api::user.user').me();
             const data = ctx.request.body.data;
 
-            const prompt = `Write a ${data.type} email as the company ${user.company.company} for this subject ${data.subject} to a candidate in one selection process with this details: '${data.details}', my name is ${user.firstName}, you can use this variables. company name: {company.company}, candidate first name: {candidate.firstName}, candidate last name: {candidate.lastName}, job title: {job.title}`;
+            const prompt = `Write a ${data.type} email as the company ${user.company.company} for this subject ${data.subject} to a candidate in one selection process with this details: '${data.details}', my name is ${user.firstName} ${user.lastName}, the company name is ${user.company.company} and you can use this variables. candidate first name: {candidate.firstName}, candidate last name: {candidate.lastName}, job title: {job.title}`;
 
             const result = await strapi.service('api::ai.ai').generateText(prompt);
 

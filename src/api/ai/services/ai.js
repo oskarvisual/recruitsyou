@@ -47,12 +47,8 @@ module.exports = {
 
             if(!user.company.plan.ai || aiGenerated >= user.company.plan.aiPerDay){
                 throw new Error({
-                    data: null,
-                    error: {
-                        name: "PlanLimitationError",
-                        message: "Your plan does not allow you to perform this action",
-                        details: {}
-                    }
+                    name: "PlanLimitationError",
+                    message: "Your plan does not allow you to perform this action",
                 });
             }
             
@@ -76,6 +72,7 @@ module.exports = {
 
             return result.data;
         } catch(err){
+            console.log(err);
             ctx.send({
                 data: null,
                 ...err
