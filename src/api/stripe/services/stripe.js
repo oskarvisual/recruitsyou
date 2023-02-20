@@ -11,6 +11,11 @@ const Stripe = stripe(process.env.STRIPE_SECRET_KEY);
 const moment = require('moment');
 
 module.exports = {
+    async checkSignature(data, sig){
+        const event = await Stripe.webhooks.constructEvent(data, sig, process.env.STRIPE_SECRET_SIGNING);
+
+        return event;
+    },
     async createCustomer(companyId, email){
         const customer = await Stripe.customers.create({
             email,

@@ -97,14 +97,16 @@ module.exports = {
                             },
                         });
 
-                        await strapi.service('api::log.log').create({
-                            data:{
-                                company: emails[i].company.id,
-                                log: `Sent email`,
-                                type: `send-email`,
-                                data: dataEmail
-                            }
-                        });
+                        if(emails[i].company != null){
+                            await strapi.service('api::log.log').create({
+                                data:{
+                                    company: emails[i].company.id,
+                                    log: `Sent email`,
+                                    type: `send-email`,
+                                    data: dataEmail
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -139,23 +141,16 @@ module.exports = {
 
             if(companies.length > 0){
                 for(let i = 0; i < companies.length; i++){
-                    let userData = false;
-                    if(companies[i].users.length > 0){
-                        for(let o = 0; o < companies[i].users.length; o++){
-                            if(companies[i].users[o].administrator){
-                                userData = companies[i].users[o];
-                            }
-                        }
-                    }
+                    const customer = await strapi.service('api::stripe.stripe').findOneCustomer(companies[i].customerID);
 
-                    if(userData){
+                    if(customer.email != null){
                         await strapi.service('api::email.email').create({
                             data:{
                                 from: process.env.SMTP_FROM,
                                 replyTo: process.env.SMTP_FROM,
-                                to: userData.email,
+                                to: customer.email,
                                 subject: `${process.env.ATS_NAME} downgrade to free plan due to non-payment`,
-                                body: `<p>Dear ${userData.firstName},</p>
+                                body: `<p>Dear ${customer.name},</p>
                                 
                                 <p>I hope this email finds you well. We are writing to inform you that your subscription to ${process.env.ATS_NAME} has been downgraded from its previous paid plan to the current Free plan due to unpaid or cancelled subscription.</p>
                                 
@@ -213,23 +208,16 @@ module.exports = {
 
             if(companies.length > 0){
                 for(let i = 0; i < companies.length; i++){
-                    let userData = false;
-                    if(companies[i].users.length > 0){
-                        for(let o = 0; o < companies[i].users.length; o++){
-                            if(companies[i].users[o].administrator){
-                                userData = companies[i].users[o];
-                            }
-                        }
-                    }
+                    const customer = await strapi.service('api::stripe.stripe').findOneCustomer(companies[i].customerID);
 
-                    if(userData){
+                    if(customer.email != null){
                         await strapi.service('api::email.email').create({
                             data:{
                                 from: process.env.SMTP_FROM,
                                 replyTo: process.env.SMTP_FROM,
-                                to: userData.email,
+                                to: customer.email,
                                 subject: `Your ${process.env.ATS_NAME} Demo Trial Has Ended`,
-                                body: `<p>Dear ${userData.firstName},</p>
+                                body: `<p>Dear ${customer.name},</p>
                             
                                 <p>We hope this email finds you well. We wanted to remind you that your ${process.env.ATS_TRIAL_DAYS}-day demo trial of ${process.env.ATS_NAME} has come to an end. We hope you found the system valuable and informative for your recruitment needs.</p>
                                 

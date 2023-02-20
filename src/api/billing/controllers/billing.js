@@ -5,6 +5,7 @@
  */
 
 const moment = require('moment');
+const unparsed = require("koa-body/unparsed.js");
 
 module.exports = {
     async getBilling(ctx){
@@ -455,11 +456,12 @@ module.exports = {
     async webhook(ctx){
         try { 
             const data = ctx.request.body;
-            
-            const event = await strapi.service('api::stripe.stripe').findOneEvent(data.id);
+            const headers = ctx.request.headers;
 
+            const event = await strapi.service('api::stripe.stripe').checkSignature(ctx.request.body[unparsed], headers['stripe-signature']);
+           
             if(event.type == 'invoice.paid'){
-                const invoice = await strapi.service('api::stripe.stripe').findOneInvoice(event.data.object.id);
+                const invoice = event.data.object;
 
                 if(invoice.subscription != null){
                     const subscription = await strapi.service('api::stripe.stripe').findOneSubscription(invoice.subscription);
@@ -568,6 +570,65 @@ module.exports = {
                     }
                 }
             }
+            
+            if(event.type == 'customer.subscription.deleted'){
+                const subscription = event.data.object;
+    
+                const customer = await strapi.service('api::stripe.stripe').findOneCustomer(subscription.customer);
+
+                if(customer.email != null){
+                    await strapi.service('api::email.email').create({
+                        data:{
+                            from: process.env.SMTP_FROM,
+                            replyTo: process.env.SMTP_FROM,
+                            to: customer.email,
+                            subject: `Confirmation of Cancellation of ${process.env.ATS_NAME} Subscription`,
+                            body: `<p>Dear ${customer.name},</p>
+                            
+                            <p>We are writing to confirm that your ${process.env.ATS_NAME} subscription has been successfully cancelled, as per your request.</p>
+
+                            <p>Your account will not be downgraded until the end of your billing period.</p>
+
+                            <p>If you have any further questions about the cancellation, please feel free to contact our customer support team. We'll be happy to assist you in any way we can.</p>
+
+                            <p>Thank you for being a part of our community, and we hope to see you again in the future.</p>
+
+                            <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                            sent: 0,
+                        }
+                    });
+                }
+            }
+            
+            if(event.type == 'customer.subscription.paused'){
+                const subscription = event.data.object;
+    
+                const customer = await strapi.service('api::stripe.stripe').findOneCustomer(subscription.customer);
+
+                if(customer.email != null){
+                    await strapi.service('api::email.email').create({
+                        data:{
+                            from: process.env.SMTP_FROM,
+                            replyTo: process.env.SMTP_FROM,
+                            to: customer.email,
+                            subject: `Confirmation of Pausing of ${process.env.ATS_NAME} Subscription`,
+                            body: `<p>Dear ${customer.name},</p>
+                            
+                            <pWe are writing to confirm that your ${process.env.ATS_NAME} subscription has been successfully paused, as per your request.</p>
+
+                            <p>During the pause period, you will not be charged and your account will not be downgraded until the end of your billing period.</p>
+
+                            <p>If you have any further questions about the pause, please feel free to contact our customer support team. We'll be happy to assist you in any way we can.</p>
+                            
+                            <p>Thank you for being a part of our community, and we look forward to serving you in the future.</p>
+
+                            <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                            sent: 0,
+                        }
+                    });
+                }
+                
+            }
 
             ctx.body = {
                 data: event,
@@ -575,6 +636,7 @@ module.exports = {
             };
 
         } catch (err) {
+            console.log(err);
             ctx.send({
                 data: null,
                 ...err,
