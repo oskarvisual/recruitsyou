@@ -132,58 +132,16 @@ module.exports = {
 
             subscription = await strapi.service('api::stripe.stripe').findOneSubscription(subscriptions.data[0].id);
         }
-
-        if(subscription.status == "active"){
-            const plans = await strapi.entityService.findMany('api::plan.plan', {
-                filters: {
-                    productAPI: subscription.plan.product,
-                },
-            });
-
-            if(plans.length > 0){
-                const dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
-    
-                await strapi.entityService.update('api::company.company', user.company.id, {
-                    data: {
-                        demo: 0,
-                        dueDate: dueDate,
-                        plan: plans[0].id,
-                    },
-                });
-            }
-        }
         
         return subscription;
     },
     async resumeSubscription(subscriptionId){
-        let subscription = await Stripe.subscriptions.resume(
+        const subscription = await Stripe.subscriptions.resume(
             subscriptionId,
             {
                 billing_cycle_anchor: 'now'
             }
         );
-
-        subscription = await strapi.service('api::stripe.stripe').findOneSubscription(subscriptionId);
-        
-        if(subscription.status == "active"){
-            const plans = await strapi.entityService.findMany('api::plan.plan', {
-                filters: {
-                    productAPI: subscription.plan.product,
-                },
-            });
-
-            if(plans.length > 0){
-                const dueDate = moment.unix(subscription.current_period_end).format('YYYY-MM-DD');
-    
-                await strapi.entityService.update('api::company.company', user.company.id, {
-                    data: {
-                        demo: 0,
-                        dueDate: dueDate,
-                        plan: plans[0].id,
-                    },
-                });
-            }
-        }
         
         return subscription;
     },

@@ -1094,6 +1094,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
                     <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                     sent: 0,
+                    publishedAt: new Date(),
                 }
             });
 

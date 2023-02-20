@@ -25,7 +25,7 @@ module.exports = {
                             },
                             {
                                 publishedAt: { 
-                                    $lt: new Date() 
+                                    $lte: new Date() 
                                 },
                             },
                         ]
@@ -33,7 +33,7 @@ module.exports = {
                     populate: ['company'],
                     sort: { publishedAt: 'ASC' },
                     offset: 0, 
-                    limit: 25,
+                    limit: 50,
                 });
 
                 for (let i = 0; i < emails.length; i++) {
@@ -103,7 +103,8 @@ module.exports = {
                                     company: emails[i].company.id,
                                     log: `Sent email`,
                                     type: `send-email`,
-                                    data: dataEmail
+                                    result: email,
+                                    params: dataEmail
                                 }
                             });
                         }
@@ -164,6 +165,7 @@ module.exports = {
     
                                 <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                                 sent: 0,
+                                publishedAt: new Date(),
                             }
                         });
                     }
@@ -229,6 +231,7 @@ module.exports = {
                                 
                                 <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                                 sent: 0,
+                                publishedAt: new Date(),
                             }
                         });
                     }

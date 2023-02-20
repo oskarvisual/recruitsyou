@@ -564,9 +564,20 @@ module.exports = {
         
                                     <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                                     sent: 0,
+                                    publishedAt: new Date(),
                                 }
                             });
                         }
+
+                        await strapi.service('api::log.log').create({
+                            data:{
+                                company: company.id,
+                                log: `Paid invoice`,
+                                type: "pay-invoice",
+                                result: invoice,
+                                params: {}
+                            }
+                        });
                     }
                 }
             }
@@ -595,6 +606,7 @@ module.exports = {
 
                             <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                             sent: 0,
+                            publishedAt: new Date(),
                         }
                     });
                 }
@@ -624,6 +636,7 @@ module.exports = {
 
                             <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                             sent: 0,
+                            publishedAt: new Date(),
                         }
                     });
                 }

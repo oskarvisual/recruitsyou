@@ -316,6 +316,7 @@ module.exports = {
                     <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>
                     `,
                     sent: 0,
+                    publishedAt: new Date(),
                 }
             });
 
