@@ -234,6 +234,9 @@
     "adzuna": {
       "type": "boolean",
       "default": false
+    },
+    "skills": {
+      "type": "string"
     }
   }
 }

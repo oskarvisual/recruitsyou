@@ -55,31 +55,26 @@ module.exports = {
                     }
                 });
             }
-
+            
             const result = await openai.createCompletion({
-                model: "text-davinci-003",
+                model: process.env.OPENAI_API_MODEL,
                 prompt: prompt,
-                temperature: 0.6,
-                max_tokens: 10,
-                top_p: 1,
-                n: 1,
-                stream: false,
-                logprobs: null,
-                stop: "\n"
+                max_tokens: parseInt(process.env.OPENAI_API_MAX_TOKENS),
+                temperature: parseFloat(process.env.OPENAI_API_TEMPERATURE),
             });
 
             await strapi.service('api::log.log').create({
                 data:{
                     log: `Generated AI text`,
                     type: 'generate-ai',
-                    result: result,
+                    result: result.data,
                     params: {
                         prompt: prompt
                     },
                 }
             });
 
-            return result.choices;
+            return result.data;
         } catch(err){
             ctx.send({
                 data: null,

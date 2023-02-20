@@ -8,7 +8,7 @@ module.exports = (plugin) => {
   
     plugin.routes['content-api'].routes.push({
         method: 'POST',
-        path: '/auth/refreshtoken',
+        path: '/auth/refresh-token',
         handler: 'auth.refreshToken',
         config: {
             prefix: ''

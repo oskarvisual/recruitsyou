@@ -754,10 +754,10 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     company: company.data.id,
                     type: 'confirmation',
                     template: 'Confirmation',
-                    subject: `Confirmation of your application for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We wanted to take a moment to thank you for submitting your application for the {{job.title}} role at {{company.company}}. We have received your application and are currently reviewing it.</p>
+                    subject: `Confirmation of your application for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We wanted to take a moment to thank you for submitting your application for the {job.title} role at {company.company}. We have received your application and are currently reviewing it.</p>
                     
                     <p>We appreciate your interest in our organization and the time you have taken to apply for this position. We will be in touch with you shortly regarding the next steps in the hiring process.</p>
                     
@@ -769,20 +769,20 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'referral',
                     template: 'Referral Notification',
-                    subject: `Referral Notification for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We are writing to inform you that you have been referred for the {{job.title}} role at {{company.company}} by {{referral.firstName}}. We appreciate the referral and are excited to review your application.</p>
+                    subject: `Referral Notification for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We are writing to inform you that you have been referred for the {job.title} role at {company.company} by {referral.firstName}. We appreciate the referral and are excited to review your application.</p>
                     
                     <p>We take referrals very seriously and value the input of our current employees and colleagues in the industry. Your referral is a testament to your qualifications and experience, and we are excited to learn more about you.</p>
                     
-                    <p>If you have not yet completed your resume for this position, please follow this link {{job.url.referral}} and submit your application. If you have already applied, please disregard this email.</p>
+                    <p>If you have not yet completed your resume for this position, please follow this link {job.url.referral} and submit your application. If you have already applied, please disregard this email.</p>
                     
                     <p>We will be in touch with you shortly regarding the next steps in the hiring process. If you have any questions or concerns, please do not hesitate to reach out to us.</p>
                     
@@ -792,18 +792,18 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'scheduler',
                     template: 'Interview Invitation',
-                    subject: `Interview Invitation for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We are writing to invite you for an interview for the {{job.title}} role at {{company.company}}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about you and discuss how you can contribute to our organization.</p>
-
-                    <p>Please click on the following link {{job.url.scheduler}} to access our calendar and schedule a time that works best for you.</p>
+                    subject: `Interview Invitation for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We are writing to invite you for an interview for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about you and discuss how you can contribute to our organization.</p>
+            
+                    <p>Please click on the following link {job.url.scheduler} to access our calendar and schedule a time that works best for you.</p>
                     
                     <p>Please make sure to review the instructions on the calendar page before scheduling your interview. We recommend that you find a quiet place, with a reliable internet connection and a web camera, to participate in the interview.</p>
                     
@@ -815,20 +815,20 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'test',
                     template: 'Test Invitation',
-                    subject: `Test Invitation for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We are writing to invite you to participate in a series of psychological and/or psychometric tests as part of the hiring process for the {{job.title}} role at {{company.company}}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your cognitive and behavioral characteristics to ensure that you are the best fit for the role.</p>
-
+                    subject: `Test Invitation for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We are writing to invite you to participate in a series of psychological and/or psychometric tests as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your cognitive and behavioral characteristics to ensure that you are the best fit for the role.</p>
+            
                     <p>The tests will be conducted online. They will assess your cognitive abilities, personality traits, work-related values, intelligence, etc. The results will be used to evaluate your suitability for the position and to provide feedback on your strengths and areas for improvement.</p>
                     
-                    <p>Please click on the following link {{job.url.test}} to access the test platform and schedule a time that works best for you. We recommend that you find a quiet place, with a reliable internet connection, to participate in the tests.</p>
+                    <p>Please click on the following link {job.url.test} to access the test platform and schedule a time that works best for you. We recommend that you find a quiet place, with a reliable internet connection, to participate in the tests.</p>
                     
                     <p>If you have any questions or concerns, please do not hesitate to reach out to us. We will be happy to assist you.</p>
                     
@@ -838,20 +838,20 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'questionnaire',
                     template: 'Questionnaire Invitation',
-                    subject: `Questionnaire Invitation for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We are writing to invite you to participate in a questionnaire as part of the hiring process for the {{job.title}} role at {{company.company}}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your skills, experiences and interests to ensure that you are the best fit for the role.</p>
-
+                    subject: `Questionnaire Invitation for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We are writing to invite you to participate in a questionnaire as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your skills, experiences and interests to ensure that you are the best fit for the role.</p>
+            
                     <p>The questionnaire will be conducted online. It will cover various aspects of your professional and personal background, such as your job experience, education, and career goals. The results will be used to evaluate your suitability for the position and to provide feedback on your strengths and areas for improvement.</p>
                     
-                    <p>Please click on the following link {{job.url.questionnaire}} to access the questionnaire and complete it at your earliest convenience. We recommend that you review the questions carefully and provide honest and thoughtful answers.</p>
+                    <p>Please click on the following link {job.url.questionnaire} to access the questionnaire and complete it at your earliest convenience. We recommend that you review the questions carefully and provide honest and thoughtful answers.</p>
                     
                     <p>If you have any questions or concerns, please do not hesitate to reach out to us. We will be happy to assist you.</p>
                     
@@ -861,20 +861,20 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'gpdr',
                     template: 'GPDR Data Deletion',
                     subject: `GPDR Automated Data Deletion Notification`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We are writing to inform you that, in accordance with the General Data Protection Regulation (GDPR), in 3 days we will be automating the deletion of your personal data that we collected as part of your application for the {{job.title}} role at {{company.company}}.</p>
-
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We are writing to inform you that, in accordance with the General Data Protection Regulation (GDPR), in 3 days we will be automating the deletion of your personal data that we collected as part of your application for the {job.title} role at {company.company}.</p>
+            
                     <p>As you may know, GDPR requires us to delete personal data that is no longer necessary for the purpose for which it was collected, and you have not given us explicit consent to keep it. Therefore, we will be automatically deleting your personal data, including your resume, cover letter, and any other documents you have submitted, as well as any notes or comments that our recruiters have made.</p>
                     
-                    <p>Please note that this deletion will be permanent and irreversible, and that we will not be able to restore your data after it has been deleted. Therefore, If you want to keep your information, click on the following link {{job.url.gpdr}} to give us your consent and keep your information in our database for future job opportunities.</p>
+                    <p>Please note that this deletion will be permanent and irreversible, and that we will not be able to restore your data after it has been deleted. Therefore, If you want to keep your information, click on the following link {job.url.gpdr} to give us your consent and keep your information in our database for future job opportunities.</p>
                     
                     <p>We would like to thank you for your interest in our organization and for the time you have taken to apply for this position. We wish you all the best in your job search.</p>
                     
@@ -882,22 +882,22 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'nps',
                     template: 'Candidate NPS Feedback Request',
-                    subject: `{{company.company}} Candidate Feedback Request`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We hope you are doing well. We wanted to take a moment to thank you for your interest in the {{job.title}} role at {{company.company}}. We appreciate the time and effort you have put into the recruitment process.</p>
-
-                    <p>As part of our ongoing efforts to improve our recruitment process, we would like to request your feedback on your experience with {{company.company}}. We value your input and would like to know how we can continue to improve our service to you.</p>
+                    subject: `{company.company} Candidate Feedback Request`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We hope you are doing well. We wanted to take a moment to thank you for your interest in the {job.title} role at {company.company}. We appreciate the time and effort you have put into the recruitment process.</p>
+            
+                    <p>As part of our ongoing efforts to improve our recruitment process, we would like to request your feedback on your experience with {company.company}. We value your input and would like to know how we can continue to improve our service to you.</p>
                     
                     <p>Please take a moment to complete the following survey by clicking on the link below. Your feedback will be completely anonymous and will only take a few minutes of your time.</p>
                     
-                    <p>{{job.url.nps}}</p>
+                    <p>{job.url.nps}</p>
                     
                     <p>We understand that you may not be selected for the role at this time, but we hope that you will consider applying for future opportunities with our company.</p>
                     
@@ -907,19 +907,19 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'disqualify',
                     template: 'Disqualified candidate',
-                    subject: `Decision on your application for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>Thank you for taking the time to apply for the {{job.title}} role at {{company.company}}. We appreciate your interest in our organization.</p>
-
+                    subject: `Decision on your application for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>Thank you for taking the time to apply for the {job.title} role at {company.company}. We appreciate your interest in our organization.</p>
+            
                     <p>After careful consideration, we have decided to move forward with other candidates who better fit the qualifications and experience required for the role.</p>
-
+            
                     <p>We wish you all the best in your job search and career endeavors.</p>
                     
                     <p>Thank you again for your application.</p>
@@ -928,20 +928,20 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'candidate',
                     template: 'Sharing Candidates',
-                    subject: `Sharing Candidates forr {{job.title}}`,
-                    message: `<p>Dear {{email.firstName}},</p>
-
-                    <p>I hope this email finds you well. I wanted to reach out and share some candidates that I believe would be a great fit for the {{job.title}} role that we are currently recruiting for.</p>
-
+                    subject: `Sharing Candidates forr {job.title}`,
+                    message: `<p>Dear {email.firstName},</p>
+            
+                    <p>I hope this email finds you well. I wanted to reach out and share some candidates that I believe would be a great fit for the {job.title} role that we are currently recruiting for.</p>
+            
                     <p>You can view the candidates on the following link:</p>
-
-                    <p>{{candidate.url}}</p>
+            
+                    <p>{candidate.url}</p>
                     
                     <p>I would highly recommend scheduling an interview with these candidates as soon as possible, as they are highly sought after in the job market and may not be available for long.</p>
                     
@@ -951,22 +951,22 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'onboarding',
                     template: 'Onboarding',
-                    subject: `Welcome to {{company.company}} - Next Steps for Onboarding`,
-                    message: `<p>Dear {{email.firstName}},</p>
-
-                    <p>We are thrilled to have you join our team at {{company.company}}!</p>
+                    subject: `Welcome to {company.company} - Next Steps for Onboarding`,
+                    message: `<p>Dear {email.firstName},</p>
+            
+                    <p>We are thrilled to have you join our team at {company.company}!</p>
                     
                     <p>As a next step in the onboarding process, we would like to ask you to review and sign a few important documents.</p>
                     
                     <p>Please access the files using the link below:</p>
                     
-                    <p>{{job.url.onboarding}}</p>
+                    <p>{job.url.onboarding}</p>
                     
                     <p>If you have any questions or concerns regarding these documents, please don't hesitate to reach out to our HR team.</p>
                     
@@ -976,39 +976,39 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 1,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'general',
                     template: 'Referral outreach',
-                    subject: `Referral Outreach for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We hope this email finds you well. We are writing to reach out to you regarding a new opportunity that has become available at our company {{company.company}}. The {{job.title}} role is a great fit for your skills and experience and we would like to invite you to apply for the role.</p>
-
+                    subject: `Referral Outreach for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We hope this email finds you well. We are writing to reach out to you regarding a new opportunity that has become available at our company {company.company}. The {job.title} role is a great fit for your skills and experience and we would like to invite you to apply for the role.</p>
+            
                     <p>We understand that you may not be actively seeking a new opportunity at this time, but we wanted to make sure you were aware of this opportunity. We believe that you would be a great fit for the role and we would be honored to have you as part of our team.</p>
-
-                    <p>To apply for the position, please follow this link {{job.url}} and submit your application. If you have any questions or concerns, please do not hesitate to reach out to us. We will be happy to assist you.</p>
-
+            
+                    <p>To apply for the position, please follow this link {job.url} and submit your application. If you have any questions or concerns, please do not hesitate to reach out to us. We will be happy to assist you.</p>
+            
                     <p>We appreciate your time and consideration, and we look forward to the opportunity to meet you.</p>
                     
                     <p>Kind regards,</p>`,
                     default: 0,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'general',
                     template: 'Phone Interview',
-                    subject: `Phone Interview Invitation for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We are writing to invite you for a phone interview as part of the hiring process for the {{job.title}} role at {{company.company}}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about you and discuss how you can contribute to our organization.</p>
-
-                    <p>The phone interview is scheduled for {{calendar.date}}. Please confirm your availability by replying to this email or by calling {{user.phone}}. We recommend that you find a quiet place, with a reliable phone connection, to participate in the interview.</p>
+                    subject: `Phone Interview Invitation for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We are writing to invite you for a phone interview as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about you and discuss how you can contribute to our organization.</p>
+            
+                    <p>The phone interview is scheduled for {calendar.date}. Please confirm your availability by replying to this email or by calling {user.phone}. We recommend that you find a quiet place, with a reliable phone connection, to participate in the interview.</p>
                     
                     <p>During the interview, we will ask you a series of questions related to your qualifications, experience, and motivation for the role. We will also provide you with more information about the position and the company, and give you an opportunity to ask any questions you may have.</p>
                     
@@ -1018,17 +1018,17 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     default: 0,
                 }
             });
-
+            
             await strapi.entityService.create('api::email-template.email-template',{
                 data: {
                     company: company.data.id,
                     type: 'general',
                     template: 'Reviewing Status',
-                    subject: `Checking and Reviewing Status of your application for {{job.title}}`,
-                    message: `<p>Dear {{candidate.firstName}},</p>
-
-                    <p>We wanted to reach out to you regarding the status of your application for the {{job.title}} role at {{company.company}}. We have received your application and are currently reviewing it.</p>
-
+                    subject: `Checking and Reviewing Status of your application for {job.title}`,
+                    message: `<p>Dear {candidate.firstName},</p>
+            
+                    <p>We wanted to reach out to you regarding the status of your application for the {job.title} role at {company.company}. We have received your application and are currently reviewing it.</p>
+            
                     <p>We understand that you may be eager to know the outcome of your application and we want to assure you that we are giving your application the attention it deserves. Our recruitment team is working diligently to review all applications and will be in touch with you shortly regarding the next steps in the hiring process.</p>
                     
                     <p>We appreciate your interest in our organization and the time you have taken to apply for this position. We will be in touch with you soon to provide an update on your application.</p>
