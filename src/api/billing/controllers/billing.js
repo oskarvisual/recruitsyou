@@ -207,8 +207,9 @@ module.exports = {
     async findPaymentMethod(ctx){
         try { 
             const user = await strapi.service('api::user.user').me();
-
-            const paymentMethods = await strapi.service('api::stripe.stripe').findPaymentMethod(user.company.customerID, 'card');
+            const query = ctx.request.query;
+            
+            const paymentMethods = await strapi.service('api::stripe.stripe').findPaymentMethod(user.company.customerID, 'card', query);
 
             ctx.body = {
                 data: paymentMethods.data,
@@ -245,8 +246,9 @@ module.exports = {
     async findSubscription(ctx){
         try { 
             const user = await strapi.service('api::user.user').me();
+            const query = ctx.request.query;
 
-            const subscriptions = await strapi.service('api::stripe.stripe').findSubscription(user.company.customerID);
+            const subscriptions = await strapi.service('api::stripe.stripe').findSubscription(user.company.customerID, query);
 
             ctx.body = {
                 data: subscriptions.data,
@@ -418,8 +420,9 @@ module.exports = {
     async findInvoice(ctx){
         try { 
             const user = await strapi.service('api::user.user').me();
+            const query = ctx.request.query;
 
-            const invoices = await strapi.service('api::stripe.stripe').findInvoice(user.company.customerID);
+            const invoices = await strapi.service('api::stripe.stripe').findInvoice(user.company.customerID, query);
 
             ctx.body = {
                 data: invoices.data,

@@ -36,7 +36,7 @@ module.exports = {
     },
     async createPaymentMethod(customerId, params){
         const paymentMethods = await strapi.service('api::stripe.stripe').findPaymentMethod(customerId, 'card');
-
+        
         const paymentMethod = await Stripe.paymentMethods.create(params);
 
         const customerPaymentMethod = await Stripe.paymentMethods.attach(
@@ -62,12 +62,18 @@ module.exports = {
 
         return detachPaymentMethod;
     },
-    async findPaymentMethod(customerId, type){
+    async findPaymentMethod(customerId, type, query = {}){
+        let filters = { type: type }
+
+        if(query.starting_after != undefined){
+            filters.starting_after = query.starting_after;
+        }
+        
         const customer = await strapi.service('api::stripe.stripe').findOneCustomer(customerId);
 
         const paymentMethods = await Stripe.customers.listPaymentMethods(
             customerId,
-            {type: type},
+            filters,
         );
 
         if(paymentMethods.data.length > 0){
@@ -145,9 +151,16 @@ module.exports = {
         
         return subscription;
     },
-    async findSubscription(customerId){
+    async findSubscription(customerId, query = {}){
+        let filters = {}
+
+        if(query.starting_after != undefined){
+            filters.starting_after = query.starting_after;
+        }
+
         const subscriptions = await Stripe.subscriptions.list({
             customer: customerId,
+            ...filters,
         });
         
         return subscriptions;
@@ -162,9 +175,16 @@ module.exports = {
         
         return subscription;
     },
-    async findInvoice(customerId){
+    async findInvoice(customerId, query = {}){
+        let filters = {}
+
+        if(query.starting_after != undefined){
+            filters.starting_after = query.starting_after;
+        }
+
         const invoices = await Stripe.invoices.list({
             customer: customerId,
+            ...filters,
         });
         
         return invoices;

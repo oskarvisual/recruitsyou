@@ -17,9 +17,8 @@ const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format(
 
 module.exports = {
     async generateText(prompt) {  
-        const user = await strapi.service('api::user.user').me();
-
         const ctx = strapi.requestContext.get();
+        const user = await strapi.service('api::user.user').me();
 
         try{
             const aiGenerated = await strapi.db.query('api::log.log').count({
@@ -46,10 +45,14 @@ module.exports = {
             });
 
             if(!user.company.plan.ai || aiGenerated >= user.company.plan.aiPerDay){
-                throw new Error({
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                });
+                ctx.send({
+                    data: null,
+                    error: {
+                        name: "PlanLimitationError",
+                        message: "Your plan does not allow you to perform this action",
+                        details: {}
+                    }
+                }, 500); 
             }
             
             const result = await openai.createCompletion({
@@ -72,7 +75,6 @@ module.exports = {
 
             return result.data;
         } catch(err){
-            console.log(err);
             ctx.send({
                 data: null,
                 ...err
