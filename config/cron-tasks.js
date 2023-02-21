@@ -115,6 +115,22 @@ module.exports = {
             console.log(err);
         }
     },
+    '0 0 0 * * *': async ({ strapi }) => {
+        const emails = await strapi.db.query('api::email.email').deleteMany({
+            where: {
+                $and: [
+                    {
+                        sent: 1,
+                    },
+                    {
+                        publishedAt: { 
+                            $lte: moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD'),
+                        },
+                    },
+                ]
+            },
+        });
+    },
     '0 0 10 * * *': async ({ strapi }) => {
         try {            
             const companies = await strapi.entityService.findMany('api::company.company', {
