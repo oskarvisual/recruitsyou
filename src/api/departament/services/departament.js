@@ -50,7 +50,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     message: "Your plan does not allow you to perform this action",
                     details: {}
                 }
-            }, 500); 
+            }, 401); 
         }
 
         const result = await strapi.entityService.findMany(api, {
@@ -84,7 +84,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     message: "Your plan does not allow you to perform this action",
                     details: {}
                 }
-            }, 500); 
+            }, 401); 
         }
         
         const result = await strapi.service(api).findOne(entityId);

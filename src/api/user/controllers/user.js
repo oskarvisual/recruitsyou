@@ -223,7 +223,7 @@ module.exports = {
                         message: "Your plan does not allow you to perform this action",
                         details: {}
                     }
-                }, 500);
+                }, 401);
             }
             
             const data = ctx.request.body.data;

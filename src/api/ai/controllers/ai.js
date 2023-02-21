@@ -10,21 +10,64 @@ module.exports = {
             const user = await strapi.service('api::user.user').me();
             const data = ctx.request.body.data;
 
-            const departament = await strapi.service('api::departament.departament').findOne(data.departament);
+            const attributes = [];
+
+            const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
+            if(departament == null){ attributes.push('departament'); }         
+
             const type = await strapi.service('api::type-job.type-job').findOne(data.type);
+            if(type == null){ attributes.push('type'); }      
+
             const industry = await strapi.service('api::industry.industry').findOne(data.industry);
+            if(industry == null){ attributes.push('industry'); }      
+            
+            
             const experience = await strapi.service('api::experience.experience').findOne(data.experience);
+            if(experience == null){ attributes.push('experience'); }      
+            
+            
             const education = await strapi.service('api::education.education').findOne(data.education);
+            if(education == null){ attributes.push('education'); }      
+            
+            
             const country = await strapi.service('api::country.country').findOne(data.country);
+            if(country == null){ attributes.push('country'); }      
+            
+            
             const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
+            if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
             
             let tags = "";
             if(data.tags.length > 0){
                 for(let i = 0; i < data.tags.length; i++){
                     let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                    if(tags != ""){ tags = tags.concat(", ") }
-                    tags = tags.concat(tag.tag);
+                    if(tag == null){
+                        if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }     
+                    }else{
+                        if(tags != ""){ tags = tags.concat(", ") }
+                        tags = tags.concat(tag.tag);
+                    }
                 }
+            }   
+            
+            if(attributes.length > 0){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        status: 404,
+                        name: "NotFoundError",
+                        message: "Not Found",
+                        details: {
+                            errors: [
+                            {
+                                path: attributes,
+                                message: "These attributes were not found.",
+                                name: "ValidationError"
+                            }
+                            ]
+                        }
+                    }
+                }, 404);
             }
 
             let location = (data.remote) ? "remote" : "onsite";
@@ -50,21 +93,64 @@ module.exports = {
             const user = await strapi.service('api::user.user').me();
             const data = ctx.request.body.data;
 
-            const departament = await strapi.service('api::departament.departament').findOne(data.departament);
+            const attributes = [];
+
+            const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
+            if(departament == null){ attributes.push('departament'); }         
+
             const type = await strapi.service('api::type-job.type-job').findOne(data.type);
+            if(type == null){ attributes.push('type'); }      
+
             const industry = await strapi.service('api::industry.industry').findOne(data.industry);
+            if(industry == null){ attributes.push('industry'); }      
+            
+            
             const experience = await strapi.service('api::experience.experience').findOne(data.experience);
+            if(experience == null){ attributes.push('experience'); }      
+            
+            
             const education = await strapi.service('api::education.education').findOne(data.education);
+            if(education == null){ attributes.push('education'); }      
+            
+            
             const country = await strapi.service('api::country.country').findOne(data.country);
+            if(country == null){ attributes.push('country'); }      
+            
+            
             const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
+            if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
             
             let tags = "";
             if(data.tags.length > 0){
                 for(let i = 0; i < data.tags.length; i++){
                     let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                    if(tags != ""){ tags = tags.concat(", ") }
-                    tags = tags.concat(tag.tag);
+                    if(tag == null){
+                        if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }   
+                    }else{
+                        if(tags != ""){ tags = tags.concat(", ") }
+                        tags = tags.concat(tag.tag);
+                    }
                 }
+            }   
+            
+            if(attributes.length > 0){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        status: 404,
+                        name: "NotFoundError",
+                        message: "Not Found",
+                        details: {
+                            errors: [
+                            {
+                                path: attributes,
+                                message: "These attributes were not found.",
+                                name: "ValidationError"
+                            }
+                            ]
+                        }
+                    }
+                }, 404);
             }
 
             let location = (data.remote) ? "remote" : "onsite";
@@ -90,21 +176,64 @@ module.exports = {
             const user = await strapi.service('api::user.user').me();
             const data = ctx.request.body.data;
 
-            const departament = await strapi.service('api::departament.departament').findOne(data.departament);
+            const attributes = [];
+
+            const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
+            if(departament == null){ attributes.push('departament'); }         
+
             const type = await strapi.service('api::type-job.type-job').findOne(data.type);
+            if(type == null){ attributes.push('type'); }      
+
             const industry = await strapi.service('api::industry.industry').findOne(data.industry);
+            if(industry == null){ attributes.push('industry'); }      
+            
+            
             const experience = await strapi.service('api::experience.experience').findOne(data.experience);
+            if(experience == null){ attributes.push('experience'); }      
+            
+            
             const education = await strapi.service('api::education.education').findOne(data.education);
+            if(education == null){ attributes.push('education'); }      
+            
+            
             const country = await strapi.service('api::country.country').findOne(data.country);
+            if(country == null){ attributes.push('country'); }      
+            
+            
             const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
+            if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
             
             let tags = "";
             if(data.tags.length > 0){
                 for(let i = 0; i < data.tags.length; i++){
                     let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                    if(tags != ""){ tags = tags.concat(", ") }
-                    tags = tags.concat(tag.tag);
+                    if(tag == null){
+                        if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }    
+                    }else{
+                        if(tags != ""){ tags = tags.concat(", ") }
+                        tags = tags.concat(tag.tag);
+                    }
                 }
+            }   
+            
+            if(attributes.length > 0){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        status: 404,
+                        name: "NotFoundError",
+                        message: "Not Found",
+                        details: {
+                            errors: [
+                            {
+                                path: attributes,
+                                message: "These attributes were not found.",
+                                name: "ValidationError"
+                            }
+                            ]
+                        }
+                    }
+                }, 404);
             }
 
             let location = (data.remote) ? "remote" : "onsite";
@@ -130,21 +259,64 @@ module.exports = {
             const user = await strapi.service('api::user.user').me();
             const data = ctx.request.body.data;
 
-            const departament = await strapi.service('api::departament.departament').findOne(data.departament);
+            const attributes = [];
+
+            const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
+            if(departament == null){ attributes.push('departament'); }         
+
             const type = await strapi.service('api::type-job.type-job').findOne(data.type);
+            if(type == null){ attributes.push('type'); }      
+
             const industry = await strapi.service('api::industry.industry').findOne(data.industry);
+            if(industry == null){ attributes.push('industry'); }      
+            
+            
             const experience = await strapi.service('api::experience.experience').findOne(data.experience);
+            if(experience == null){ attributes.push('experience'); }      
+            
+            
             const education = await strapi.service('api::education.education').findOne(data.education);
+            if(education == null){ attributes.push('education'); }      
+            
+            
             const country = await strapi.service('api::country.country').findOne(data.country);
+            if(country == null){ attributes.push('country'); }      
+            
+            
             const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
+            if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
             
             let tags = "";
             if(data.tags.length > 0){
                 for(let i = 0; i < data.tags.length; i++){
                     let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                    if(tags != ""){ tags = tags.concat(", ") }
-                    tags = tags.concat(tag.tag);
+                    if(tag == null){
+                        if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }   
+                    }else{
+                        if(tags != ""){ tags = tags.concat(", ") }
+                        tags = tags.concat(tag.tag);
+                    }
                 }
+            }   
+            
+            if(attributes.length > 0){
+                return ctx.send({
+                    data: null,
+                    error: {
+                        status: 404,
+                        name: "NotFoundError",
+                        message: "Not Found",
+                        details: {
+                            errors: [
+                            {
+                                path: attributes,
+                                message: "These attributes were not found.",
+                                name: "ValidationError"
+                            }
+                            ]
+                        }
+                    }
+                }, 404);
             }
 
             let location = (data.remote) ? "remote" : "onsite";
