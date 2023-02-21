@@ -41,6 +41,11 @@
     "done": {
       "type": "boolean",
       "default": false
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
     }
   }
 }
