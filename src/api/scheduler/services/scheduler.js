@@ -54,6 +54,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async create(params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
 
         params.data.company = user.company.id;
@@ -63,14 +64,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
 
             if(params.data.timezone == undefined){
                 if(user.timezone == null){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: "ValidationError",
-                            message: "You must add a timezone to your profile",
-                            details: {}
-                        }
-                    }, 404);
+                    return ctx.badRequest('You must add a timezone to your profile', {});
                 }
 
                 params.data.timezone = user.timezone.id;
@@ -82,26 +76,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 }
             });
             if(userData == null){
-                return ctx.send({
-                    data: null,
-                    error: {
-                        name: "NotFoundError",
-                        message: "user Not Found",
-                        details: {}
-                    }
-                }, 404);
+                return ctx.notFound('user Not Found', {});
             }
 
             if(params.data.timezone == undefined){
                 if(userData.data.timezone == null){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: "ValidationError",
-                            message: "The user must add a timezone to their profile",
-                            details: {}
-                        }
-                    }, 404);
+                    return ctx.badRequest('the user must add a timezone to their profile', {});
                 }
 
                 params.data.timezone = userData.timezone.id;
@@ -111,25 +91,11 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const timezone = await strapi.service('api::timezone.timezone').findOne(params.data.timezone);
 
         if(timezone == null){
-            return ctx.send({
-                data: null,
-                error: {
-                    name: "NotFoundError",
-                    message: "timezone Not Found",
-                    details: {}
-                }
-            }, 404);
+            return ctx.notFound('timezone Not Found', {});
         }
         
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const response = await super.create(params);
@@ -138,6 +104,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async update(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         
         params.data.company = user.company.id;
@@ -148,26 +115,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             const dataUser = await strapi.service('api::user.user').findOne(params.data.user);
         
             if(dataUser == null){
-                return ctx.send({
-                    data: null,
-                    error: {
-                        name: "NotFoundError",
-                        message: "User Not Found",
-                        details: {}
-                    }
-                }, 404);
+                return ctx.notFound('user Not Found', {});
             }
         }
         
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
         const result = await strapi.service(api).findOne(entityId);

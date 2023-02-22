@@ -24,14 +24,14 @@ module.exports = {
                                 sent: 0,
                             },
                             {
-                                publishedAt: { 
+                                sendDate: { 
                                     $lte: new Date() 
                                 },
                             },
                         ]
                     },
                     populate: ['company'],
-                    sort: { publishedAt: 'ASC' },
+                    sort: { sendDate: 'ASC' },
                     offset: 0, 
                     limit: 50,
                 });
@@ -123,7 +123,7 @@ module.exports = {
                         sent: 1,
                     },
                     {
-                        publishedAt: { 
+                        sendDate: { 
                             $lte: moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD'),
                         },
                     },
@@ -181,7 +181,7 @@ module.exports = {
     
                                 <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                                 sent: 0,
-                                publishedAt: new Date(),
+                                sendDate: new Date(),
                             }
                         });
                     }
@@ -247,7 +247,7 @@ module.exports = {
                                 
                                 <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                                 sent: 0,
-                                publishedAt: new Date(),
+                                sendDate: new Date(),
                             }
                         });
                     }

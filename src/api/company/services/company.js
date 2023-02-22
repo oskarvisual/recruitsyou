@@ -4,6 +4,8 @@
  * company service
  */
 
+const utils = require('@strapi/utils');
+
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::company.company';
 

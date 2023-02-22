@@ -3,6 +3,7 @@
 /**
  * departament service
  */
+
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::departament.departament';
 
@@ -39,18 +40,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async create(params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
         const result = await strapi.entityService.findMany(api, {
@@ -73,18 +68,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async update(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const result = await strapi.service(api).findOne(entityId);

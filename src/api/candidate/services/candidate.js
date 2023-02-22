@@ -4,6 +4,8 @@
  * candidate service
  */
 
+const utils = require('@strapi/utils');
+
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::candidate.candidate';
 
@@ -348,50 +350,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
-
-        const jobCandidates = await strapi.db.query('api::job-candidate.job-candidate').findMany({
-            filters: {
-                candidate: entityId,
-            },
-        });
-
-        if(jobCandidates.length > 0){
-            const jobCandidateIds = [];
-            for(let i = 0; i < jobCandidates.length; i++){
-                jobCandidateIds.push(jobCandidates[i].id);
-            }
-    
-            await strapi.db.query('api::job-candidate.job-candidate').deleteMany({
-                where: {
-                    id: {
-                        $in: jobCandidateIds,
-                    },
-                },
-            });
-            
-        }
-
-        const fileCandidates = await strapi.db.query('api::candidate-file.candidate-file').findMany({
-            filters: {
-                candidate: entityId,
-            },
-        });
-
-        if(fileCandidates.length > 0){
-            const fileCandidateIds = [];
-            for(let i = 0; i < fileCandidates.length; i++){
-                fileCandidateIds.push(fileCandidates[i].id);
-            }
-    
-            await strapi.db.query('api::candidate-file.candidate-file').deleteMany({
-                where: {
-                    id: {
-                        $in: fileCandidateIds,
-                    },
-                },
-            });
-            
-        }
         
         const response = await super.delete(entityId, params);
 

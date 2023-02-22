@@ -8,7 +8,7 @@
     "description": ""
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {
@@ -38,6 +38,9 @@
     },
     "event": {
       "type": "json"
+    },
+    "sendDate": {
+      "type": "datetime"
     }
   }
 }

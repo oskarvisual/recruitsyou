@@ -8,7 +8,7 @@ module.exports = {
         {
             method: 'POST',
             path: '/candidates/import/csv',
-            handler: 'candidate.importcsv',
+            handler: 'candidate.importCsv',
         },
         {
             method: 'POST',

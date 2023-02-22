@@ -97,19 +97,12 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
 
         return response;
     },
-    async importcsv(ctx){
+    async importCsv(ctx){
         const user = await strapi.service('api::user.user').me();
         const data = await this.sanitizeInput(ctx.request.body.data);
 
-        if(!user.company.plan.customize){ 
-            return ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+        if(!user.company.plan.files){ 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
 
@@ -119,14 +112,7 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                 const mimeType = mime.lookup(ctx.request.files[ 'csv' ].name);
 
                 if(mimeType != 'text/csv'){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: "ImportError",
-                            message: "Import Resume File Format Error",
-                            details: {}
-                        }
-                    }, 500);
+                    return ctx.badRequest('Import Resume File Format Error', {});
                 }
 
                 const sourceName = 'Import ' + moment(new Date()).format('YYYY-MM-DD');
@@ -265,27 +251,14 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
             }
         }
 
-        return ctx.send({
-            data: null,
-            error: {
-                name: 'ValidationError',
-                message: 'Resume no uploaded',
-            }
-        }, 500);
+        return ctx.internalServerError('Resume no uploaded', {});
     },
     async import(ctx){
         const user = await strapi.service('api::user.user').me();
         const data = await this.sanitizeInput(ctx.request.body.data);
 
-        if(!user.company.plan.customize){ 
-            return ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+        if(!user.company.plan.files){ 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
         const config = strapi.config.get("plugin.upload");
@@ -299,14 +272,7 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
 
                 if(mimeType != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                 && mimeType != 'application/msword' && mimeType != 'application/pdf'){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: "ImportError",
-                            message: "Import Resume File Format Error",
-                            details: {}
-                        }
-                    }, 500);
+                    return ctx.badRequest('Import Resume File Format Error', {});
                 }
 
                 const entity = {
@@ -340,25 +306,13 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                 const resume = await resumeFetch.json();
 
                 if(resume == undefined){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: "ImportError",
-                            message: "Import Resume File Error",
-                            details: {}
-                        }
-                    }, 500);
+                    return ctx.badRequest('Import Resume File Error', { 
+                        details: {}
+                    });
                 }
 
                 if(resume.message != undefined || resume.email == undefined || resume.name == undefined){
-                    return ctx.send({
-                        data: null,
-                        error: {
-                            name: "ImportError",
-                            message: "Import Resume File Error",
-                            details: {}
-                        }
-                    }, 500);
+                    return ctx.badRequest('Import Resume File Error', {});
                 }
 
                 let firstName = resume.name;
@@ -505,12 +459,6 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
             }
         }
 
-        return ctx.send({
-            data: null,
-            error: {
-                name: 'ValidationError',
-                message: 'Resume no uploaded',
-            }
-        }, 500);
+        return ctx.internalServerError('Resume no uploaded', {});
     },
 }));

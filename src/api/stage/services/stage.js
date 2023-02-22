@@ -54,56 +54,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async create(params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
-        }
-
-        if(params.data.pipeline == undefined){
-            return ctx.send({
-                data: null,
-                error: {
-                    name: 'ValidationError',
-                    message: 'pipeline must be defined.',
-                    details: {
-                        errors: [
-                            {
-                                path: ['pipeline'],
-                                message: 'pipeline must be defined',
-                                name: 'ValidationError'
-                            }
-                        ]
-                    }
-                }
-            }, 400);
-        }
-
-        if(params.data.stage == ""){
-            return ctx.send({
-                data: null,
-                error: {
-                    name: 'ValidationError',
-                    message: 'stage must be defined.',
-                    details: {
-                        errors: [
-                            {
-                                path: ['stage'],
-                                message: 'stage must be defined',
-                                name: 'ValidationError'
-                            }
-                        ]
-                    }
-                }
-            }, 400);
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
         const countStages = await strapi.db.query('api::stage.stage').count({ 
@@ -120,13 +76,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         });
 
         if(countStages >= 15){
-            ctx.send({
-                data: null,
-                error: {
-                    name: 'ValidationError',
-                    message: 'Exceeds the maximum stage limit (100)',
-                }
-            }, 400);
+            return ctx.badRequest('Exceeds the maximum question limit (15)', {});
         }
 
         const names = [];
@@ -161,41 +111,27 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
 
         if(types.includes(params.data.type)){
-            return ctx.send({
-                data: null,
-                error: {
-                    name: 'ValidationError',
-                    message: 'This attribute must be unique.',
-                    details: {
-                        errors: [
-                            {
-                                path: ['type'],
-                                message: 'This attribute must be unique.',
-                                name: 'ValidationError'
-                            }
-                        ]
+            return ctx.badRequest('This attribute must be unique', {
+                errors: [
+                    {
+                        path: ['type'],
+                        message: 'This attribute must be unique',
+                        name: 'ValidationError'
                     }
-                }
-            }, 400);
+                ]
+            });
         }
 
         if(names.includes(params.data.stage)){
-            return ctx.send({
-                data: null,
-                error: {
-                    name: 'ValidationError',
-                    message: 'This attribute must be unique.',
-                    details: {
-                        errors: [
-                            {
-                                path: ['stage'],
-                                message: 'This attribute must be unique.',
-                                name: 'ValidationError'
-                            }
-                        ]
+            return ctx.badRequest('This attribute must be unique', {
+                errors: [
+                    {
+                        path: ['stage'],
+                        message: 'This attribute must be unique',
+                        name: 'ValidationError'
                     }
-                }
-            }, 400);
+                ]
+            });
         }
 
         params.data.order = order + 1;
@@ -206,18 +142,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async update(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const result = await strapi.service(api).findOne(entityId);
@@ -241,28 +171,22 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async delete(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
 
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
 
         if(result.type == 'sourced' || result.type == 'apply'){
-            return ctx.send({
-                data: null,
-                error: {
-                    name: "DefaultDeleteError",
-                    message: "It is not possible to delete that element",
-                    details: {
-                        errors: [
-                            {
-                                path: ['type'],
-                                message: `It is not possible to delete an element of type ${result.type}`,
-                                name: 'ValidationError'
-                            }
-                        ]
+            return ctx.badRequest('It is not possible to delete that element', {
+                errors: [
+                    {
+                        path: ['type'],
+                        message: `It is not possible to delete an element of type ${result.type}`,
+                        name: 'ValidationError'
                     }
-                }
-            }, 400); 
+                ]
+            });
         }
 
         const response = await super.delete(entityId, params);

@@ -11,22 +11,38 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async default(entityId) {
         const user = await strapi.service('api::user.user').me();
 
-        await strapi.db.query(api).updateMany({
+        const pipelines = await strapi.db.query(api).findMany({
+            fields: ['id'],
             filters: {
-                company: user.company.id,
-            },
-            data: {
-                default: 0,
+                $and: [
+                    {
+                        company: user.company.id,
+                    },
+                    {
+                        id: {
+                            $ne: entityId,
+                        }
+                    },
+                ],
             },
         });
+        
+        if(pipelines.length > 0){
+            const pipelinesIds = pipelines.map(s => s.id);
+            
+            const response = await strapi.db.query(api).updateMany({
+                where: {
+                    id: {
+                        $in: pipelinesIds,
+                    },
+                },
+                data: {
+                    default: 0,
+                },
+            });
+        }
 
-        const response = await super.update(entityId, {
-            data: {
-                default: 1,
-            }
-        });
-
-        return response;
+        return true;
     },
     async find(params) {
         const user = await strapi.service('api::user.user').me();
@@ -58,18 +74,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async create(params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const response = await super.create(params);
@@ -148,26 +158,16 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async update(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
-
-        if(result.default){
-            params.data.default = 1;
-        }
 
         const response = await super.update(entityId, params);
     
@@ -175,20 +175,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async delete(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
 
         if(result.default == true){ 
-            return ctx.send({
-                data: null,
-                error: {
-                    name: "DefaultDeleteError",
-                    message: "It is not possible to delete a default element",
-                    details: {}
-                }
-            }, 400); 
+            return ctx.badRequest('It is not possible to delete a default element', {});
         }
 
         const stages = await strapi.db.query('api::stage.stage').findMany({

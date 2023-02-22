@@ -3,7 +3,6 @@
 /**
  * tag-job service
  */
-
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::tag-job.tag-job';
 //TODO: FALTA LOGICA PARA LIMITAR ACCION POR PLAN
@@ -38,8 +37,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         return result[0];
     },
     async create(params) {
+        const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
+
+        if(!user.company.plan.customize){ 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
+        }
 
         const result = await strapi.entityService.findMany(api, {
             filters: {
@@ -60,8 +65,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         return response;
     },
     async update(entityId, params) {
+        const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
+
+        if(!user.company.plan.customize){ 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
+        }
         
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }

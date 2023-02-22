@@ -3,6 +3,7 @@
 /**
  * email-template service
  */
+
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::email-template.email-template';
 
@@ -10,7 +11,8 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async default(entityId, type) {
         const user = await strapi.service('api::user.user').me();
 
-        await strapi.db.query(api).updateMany({
+        const templates = await strapi.db.query(api).findMany({
+            fields: ['id'],
             filters: {
                 $and: [
                     {
@@ -19,20 +21,31 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     {
                         type: type,
                     },
+                    {
+                        id: {
+                            $ne: entityId,
+                        },
+                    }
                 ],
             },
-            data: {
-                default: 0,
-            },
         });
+        
+        if(templates.length > 0){
+            const templatesIds = templates.map(s => s.id);
+            
+            const response = await strapi.db.query(api).updateMany({
+                where: {
+                    id: {
+                        $in: templatesIds,
+                    },
+                },
+                data: {
+                    default: 0,
+                },
+            });
+        }
 
-        const response = await super.update(entityId, {
-            data: {
-                default: 1,
-            }
-        });
-
-        return response;
+        return true;
     },
     async find(params) {
         const user = await strapi.service('api::user.user').me();
@@ -78,18 +91,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async create(params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const response = await super.create(params);
@@ -98,26 +105,16 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async update(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
-
-        if(result.default){
-            params.data.default = 1;
-        }
 
         const response = await super.update(entityId, params);
     
@@ -125,20 +122,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async delete(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         
         const result = await strapi.service(api).findOne(entityId);
         if(result == null){ return null; }
 
         if(result.default == true){ 
-            return ctx.send({
-                data: null,
-                error: {
-                    name: "DefaultDeleteError",
-                    message: "It is not possible to delete a default element",
-                    details: {}
-                }
-            }, 400); 
+            return ctx.badRequest('It is not possible to delete a default element', {});
         }
         
         const response = await super.delete(entityId, params);

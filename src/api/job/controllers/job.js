@@ -11,71 +11,56 @@ const { createCoreController } = require('@strapi/strapi').factories;
 //TODO: AGREGAR DUPLICAR O USAR COMO PLANTILLA LO MAS FACIL
 module.exports = createCoreController('api::job.job', ({ strapi }) => ({
     async report(ctx){
-        try {
-            const { id } = ctx.params;
-            const data = await strapi.service('api::job.job').findOne(id, ctx);
-            
-            if(data == null){
-                return ctx.send({
-                    data: null,
-                    error: {
-                        name: "NotFoundError",
-                        message: "Not Found",
-                        details: {}
-                    }
-                }, 404);
-            }
-
-            const report = {
-                candidates: {
-                    total: 0,
-                    disqualified: 0,
-                    apply: 0,
-                    interview: 0,
-                    hire: 0,
-                    hired: 0,
-                    overTime: {
-                        
-                    }
-                },
-                sources: {
-                    linkedin: 0,
-                    indeed: 0,
-                    careeSite: 0,
-                },
-                time: {
-                    toHire: 0,
-                    toDisqualify: 0,
-                },
-                nps: 0,
-                disqualify: {
-                    reasons: {
-
-                    },
-                    stages: {
-
-                    }
-                },
-                evaluation:{
-                    total: 0,
-                    avg: 0,
-                    no: 0,
-                    yes: 0,
-                    great: 0,
-                }
-            };
-
-
-            ctx.body = {
-                data: report,
-                meta: {}
-            };
-            
-        } catch (err) {
-            ctx.send({
-                data: null,
-                ...err,
-            }, 500);
+        const { id } = ctx.params;
+        const data = await strapi.service('api::job.job').findOne(id, ctx);
+        
+        if(data == null){
+            return ctx.notFound('Not Found', {});
         }
+
+        const report = {
+            candidates: {
+                total: 0,
+                disqualified: 0,
+                apply: 0,
+                interview: 0,
+                hire: 0,
+                hired: 0,
+                overTime: {
+                    
+                }
+            },
+            sources: {
+                linkedin: 0,
+                indeed: 0,
+                careeSite: 0,
+            },
+            time: {
+                toHire: 0,
+                toDisqualify: 0,
+            },
+            nps: 0,
+            disqualify: {
+                reasons: {
+
+                },
+                stages: {
+
+                }
+            },
+            evaluation:{
+                total: 0,
+                avg: 0,
+                no: 0,
+                yes: 0,
+                great: 0,
+            }
+        };
+
+
+        ctx.body = {
+            data: report,
+            meta: {}
+        };
     }
 }));

@@ -4,7 +4,6 @@
  * s3 service
  */
 
-
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { S3, GetObjectCommand } = require("@aws-sdk/client-s3");
 
@@ -22,17 +21,13 @@ const s3Client = new S3({
 
 module.exports = {
     async signedUrl(Key, ContentType, expiresIn) { 
-        try {
-            const command = new GetObjectCommand({
-                Bucket: process.env.AWS_S3_BUCKET,
-                Key: Key,
-                ContentType: ContentType
-            });
+        const command = new GetObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET,
+            Key: Key,
+            ContentType: ContentType
+        });
 
-            const url = await getSignedUrl(s3Client, command, { expiresIn: expiresIn });
-            return url;
-        } catch (err) {
-            console.log("Error", err);
-        }
+        const url = await getSignedUrl(s3Client, command, { expiresIn: expiresIn });
+        return url;
     }
 }

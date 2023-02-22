@@ -16,25 +16,11 @@ module.exports = (plugin) => {
     });
     
     plugin.controllers.user.find = async (ctx) => {
-        ctx.send({
-            data: null,
-            error: {
-                status: 404,
-                name: 'NotFoundError',
-                message: 'Not Found'
-            }
-        }, 404);
+        ctx.notFound('Not Found', {});
     };
     
     plugin.controllers.user.findOne = async (ctx) => {
-        ctx.send({
-            data: null,
-            error: {
-                status: 404,
-                name: 'NotFoundError',
-                message: 'Not Found'
-            }
-        }, 404);
+        ctx.notFound('Not Found', {});
     };
   
     return plugin

@@ -4,6 +4,10 @@ module.exports = {
     async afterCreate(event) {
         const { result, params } = event;
 
+        if(result.default){
+            await strapi.service('api::email-template.email-template').default(result.id, result.type);
+        }
+
         await strapi.service('api::log.log').create({
             data:{
                 log: `Added ${collection}`,
@@ -15,6 +19,10 @@ module.exports = {
     },
     async afterUpdate(event) {
         const { result, params } = event;
+
+        if(result.default){
+            await strapi.service('api::email-template.email-template').default(result.id, result.type);
+        }
 
         await strapi.service('api::log.log').create({
             data:{

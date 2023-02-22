@@ -57,37 +57,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async create(params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
-        }
-
-        if(params.data.questionnaire == undefined){
-            return ctx.send({
-                data: null,
-                error: {
-                    name: 'ValidationError',
-                    message: 'questionnaire must be defined.',
-                    details: {
-                        errors: [
-                            {
-                                path: ['questionnaire'],
-                                message: 'questionnaire must be defined',
-                                name: 'ValidationError'
-                            }
-                        ]
-                    }
-                }
-            }, 400);
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
         const countQuestions = await strapi.db.query('api::question.question').count({ 
@@ -104,13 +79,9 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         });
 
         if(countQuestions >= 100){
-            ctx.send({
-                data: null,
-                error: {
-                    name: 'ValidationError',
-                    message: 'Exceeds the maximum question limit (100)',
-                }
-            }, 400);
+            if(!user.company.plan.customize){ 
+                return ctx.forbidden('Exceeds the maximum question limit (100)', {});
+            }
         }
 
         let questions = await strapi.db.query('api::question.question').findMany({
@@ -143,18 +114,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async update(entityId, params) {
         const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
 
         if(!user.company.plan.customize){ 
-            ctx.send({
-                data: null,
-                error: {
-                    name: "PlanLimitationError",
-                    message: "Your plan does not allow you to perform this action",
-                    details: {}
-                }
-            }, 401); 
+            return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
         
         const result = await strapi.service(api).findOne(entityId);
