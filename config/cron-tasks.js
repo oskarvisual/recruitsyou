@@ -61,12 +61,12 @@ module.exports = {
                                             sent: 1,
                                         },
                                         {
-                                            createdAt: {
+                                            sendDate: {
                                                 $gte: startToday,
                                             },
                                         },
                                         {
-                                            createdAt: {
+                                            sendDate: {
                                                 $lte: endToday,
                                             },
                                         },
@@ -75,6 +75,11 @@ module.exports = {
                             });
     
                             if(emailSents >= emails[i].company.emailsPerDay){
+                                await strapi.entityService.update('api::email.email', emails[i].id, {
+                                    data: {
+                                        sendDate: moment(emails[i].sendDate).add(1, 'days').format(),
+                                    },
+                                });
                                 continue;
                             }
                         }
