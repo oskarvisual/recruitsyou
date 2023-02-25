@@ -21,7 +21,10 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 },
             ],
         }
-        params.populate = { candidate: true };
+        params.populate = { 
+            candidate: true,
+            job: true,
+        };
         
         const result = await super.find(params);
         
@@ -43,7 +46,10 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 },
             ],
         }
-        params.populate = { candidate: true };
+        params.populate = { 
+            candidate: true,
+            job: true,
+        };
 
         const result = await strapi.entityService.findMany(api, params);
         if(result.length == 0){ return null; }

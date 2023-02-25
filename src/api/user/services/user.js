@@ -4,6 +4,8 @@
  * user service
  */
 
+const { ApplicationError } = require('@strapi/utils').errors;
+
 const { rest } = require('../../../../config/api');
 
 module.exports = {
@@ -23,6 +25,7 @@ module.exports = {
                 'firstName',
                 'lastName',
                 'phone',
+                'administrator',
                 'createdAt',
                 'updatedAt',
             ],
@@ -35,7 +38,9 @@ module.exports = {
             }
         });
 
-        if (user == null) { return false; }
+        if (user.company == null) { 
+            throw new ApplicationError('Company does not exist', {});
+        }
         
         user.company = await strapi.db.query('api::company.company').findOne({
             select: [
@@ -55,7 +60,13 @@ module.exports = {
             },
         });
 
-        if(user.company == null || user.company.publishedAt == null) { return false; }
+        if(user.company.publishedAt == null) {
+            throw new ApplicationError('Deactivated company', {});
+        }
+
+        if(!user.administrator && user.company.plan.plan == 'Free') {
+            throw new ApplicationError('The current plan does not allow you to access the system', {});
+        }
 
         return user;
     },
@@ -72,6 +83,7 @@ module.exports = {
             'firstName',
             'lastName',
             'phone',
+            'administrator',
             'createdAt',
             'updatedAt',
         ];
@@ -190,6 +202,7 @@ module.exports = {
             'firstName',
             'lastName',
             'phone',
+            'administrator',
             'createdAt',
             'updatedAt',
         ];
