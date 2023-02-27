@@ -136,11 +136,6 @@
     "sundayTo": {
       "type": "time",
       "default": "18:00"
-    },
-    "timezone": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::timezone.timezone"
     }
   }
 }

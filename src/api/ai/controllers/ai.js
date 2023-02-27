@@ -4,6 +4,8 @@
  * A set of functions called "actions" for `ai`
  */
 
+const ct = require('countries-and-timezones');
+
 module.exports = {
     async jobDescription(ctx){
         const user = await strapi.service('api::user.user').me();
@@ -28,13 +30,9 @@ module.exports = {
         const education = await strapi.service('api::education.education').findOne(data.education);
         if(education == null){ attributes.push('education'); }      
         
+        const country = ct.getCountry(data.country);           
         
-        const country = await strapi.service('api::country.country').findOne(data.country);
-        if(country == null){ attributes.push('country'); }      
-        
-        
-        const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
-        if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
+        const salaryCurrency = data.salaryCurrency;  
         
         let tags = "";
         if(data.tags.length > 0){
@@ -63,7 +61,7 @@ module.exports = {
 
         let location = (data.remote) ? "remote" : "onsite";
 
-        const prompt = `Write ${type.type} ${location} job description for this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.countryName}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
+        const prompt = `Write ${type.type} ${location} job description for this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.name}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
 
         const response = await strapi.service('api::ai.ai').generateText(prompt);
 
@@ -90,15 +88,11 @@ module.exports = {
         
         
         const education = await strapi.service('api::education.education').findOne(data.education);
-        if(education == null){ attributes.push('education'); }      
+        if(education == null){ attributes.push('education'); }    
         
-        
-        const country = await strapi.service('api::country.country').findOne(data.country);
-        if(country == null){ attributes.push('country'); }      
-        
-        
-        const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
-        if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
+        const country = ct.getCountry(data.country);    
+
+        const salaryCurrency = data.salaryCurrency;  
         
         let tags = "";
         if(data.tags.length > 0){
@@ -127,7 +121,7 @@ module.exports = {
 
         let location = (data.remote) ? "remote" : "onsite";
 
-        const prompt = `Write only the requirements for a job ${type.type} ${location} with this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.countryName}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
+        const prompt = `Write only the requirements for a job ${type.type} ${location} with this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.name}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
 
         const response = await strapi.service('api::ai.ai').generateText(prompt);
 
@@ -154,15 +148,11 @@ module.exports = {
         
         
         const education = await strapi.service('api::education.education').findOne(data.education);
-        if(education == null){ attributes.push('education'); }      
+        if(education == null){ attributes.push('education'); }   
         
+        const country = ct.getCountry(data.country);                    
         
-        const country = await strapi.service('api::country.country').findOne(data.country);
-        if(country == null){ attributes.push('country'); }      
-        
-        
-        const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
-        if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
+        const salaryCurrency = data.salaryCurrency;    
         
         let tags = "";
         if(data.tags.length > 0){
@@ -191,7 +181,7 @@ module.exports = {
 
         let location = (data.remote) ? "remote" : "onsite";
 
-        const prompt = `Write only the benefits for a job ${type.type} ${location} with this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.countryName}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
+        const prompt = `Write only the benefits for a job ${type.type} ${location} with this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.name}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
 
         const response = await strapi.service('api::ai.ai').generateText(prompt);
 
@@ -218,15 +208,11 @@ module.exports = {
         
         
         const education = await strapi.service('api::education.education').findOne(data.education);
-        if(education == null){ attributes.push('education'); }      
+        if(education == null){ attributes.push('education'); }    
         
+        const country = ct.getCountry(data.country);                   
         
-        const country = await strapi.service('api::country.country').findOne(data.country);
-        if(country == null){ attributes.push('country'); }      
-        
-        
-        const salaryCurrency = await strapi.service('api::currency.currency').findOne(data.salaryCurrency);
-        if(salaryCurrency == null){ attributes.push('salaryCurrency'); }   
+        const salaryCurrency = data.salaryCurrency;  
         
         let tags = "";
         if(data.tags.length > 0){
@@ -255,7 +241,7 @@ module.exports = {
 
         let location = (data.remote) ? "remote" : "onsite";
 
-        const prompt = `Write only 10 or less questions of selection process to a candidate for a job ${type.type} ${location} with this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.countryName}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
+        const prompt = `Write only 10 or less questions of selection process to a candidate for a job ${type.type} ${location} with this job title '${data.title}', for ${experience.experience} and ${education.education} candidate, for the ${departament.departament} departament in ${country.name}, in the ${industry.industry} industry, with this tags '${tags}' and this skills '${data.skills}'`;
 
         const response = await strapi.service('api::ai.ai').generateText(prompt);
 

@@ -11,6 +11,8 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async default(entityId, type) {
         const user = await strapi.service('api::user.user').me();
 
+        if(!user){ return false; }
+
         const templates = await strapi.db.query(api).findMany({
             fields: ['id'],
             filters: {

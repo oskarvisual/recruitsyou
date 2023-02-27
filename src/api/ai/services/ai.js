@@ -8,8 +8,8 @@ const openai = new OpenAIApi(configuration);
 
 const moment = require('moment');
 
-const startToday =  moment(new Date(new Date().setUTCHours(0,0,0,0))).format();
-const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format();
+const startToday =  moment(new Date()).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+const endToday =  moment(new Date()).endOf('day').format('YYYY-MM-DD HH:mm:ss');
 
 /**
  * ai service
@@ -32,12 +32,7 @@ module.exports = {
                     },
                     {
                         createdAt: {
-                            $gte: startToday,
-                        },
-                    },
-                    {
-                        createdAt: {
-                            $lte: endToday,
+                            $between: [startToday, endToday]
                         },
                     },
                 ],

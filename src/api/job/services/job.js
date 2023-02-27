@@ -45,8 +45,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 industry: true,
                 experience: true,
                 education: true,
-                country: true,
-                salaryCurrency: true,
                 tags: true,
                 tests: true,
             }
@@ -74,8 +72,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             industry: true,
             experience: true,
             education: true,
-            country: true,
-            salaryCurrency: true,
             tags: true,
         }
 

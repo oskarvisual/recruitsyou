@@ -36,10 +36,7 @@ module.exports = {
         });
 
         if(jobCandidates.length > 0){
-            const jobCandidateIds = [];
-            for(let i = 0; i < jobCandidates.length; i++){
-                jobCandidateIds.push(jobCandidates[i].id);
-            }
+            const jobCandidateIds = jobCandidates.map(s => s.id);
     
             await strapi.db.query('api::job-candidate.job-candidate').deleteMany({
                 where: {
@@ -59,10 +56,7 @@ module.exports = {
         });
 
         if(fileCandidates.length > 0){
-            const fileCandidateIds = [];
-            for(let i = 0; i < fileCandidates.length; i++){
-                fileCandidateIds.push(fileCandidates[i].id);
-            }
+            const fileCandidateIds = fileCandidates.map(s => s.id);
     
             await strapi.db.query('api::candidate-file.candidate-file').deleteMany({
                 where: {

@@ -26,14 +26,29 @@ module.exports = {
                 'lastName',
                 'phone',
                 'administrator',
+                'timezone',
                 'createdAt',
                 'updatedAt',
             ],
             where: { id: ctx.state.user.id },
             populate: { 
                 role: true,
-                company: true,
-                timezone: true,
+                company: {
+                    select: [
+                        'id',
+                        'company',
+                        'domain',
+                        'subdomain',
+                        'dueDate',
+                        'customerID',
+                        'demo',
+                        'createdAt',
+                        'publishedAt',
+                    ],
+                    populate: { 
+                        plan: true,
+                    }
+                },
                 photo: true,
             }
         });
@@ -42,24 +57,6 @@ module.exports = {
             throw new ApplicationError('Company does not exist', {});
         }
         
-        user.company = await strapi.db.query('api::company.company').findOne({
-            select: [
-                'id',
-                'company',
-                'domain',
-                'subdomain',
-                'dueDate',
-                'customerID',
-                'demo',
-                'createdAt',
-                'publishedAt',
-            ],
-            where: { id: user.company.id },
-            populate: { 
-                plan: true,
-            },
-        });
-
         if(user.company.publishedAt == null) {
             throw new ApplicationError('Deactivated company', {});
         }
@@ -84,6 +81,7 @@ module.exports = {
             'lastName',
             'phone',
             'administrator',
+            'timezone',
             'createdAt',
             'updatedAt',
         ];
@@ -106,7 +104,6 @@ module.exports = {
         params.filters = filters;
         params.populate = { 
             role: true,
-            timezone: true,
             photo: true,
         }
 
@@ -141,26 +138,6 @@ module.exports = {
                 let attributes = result[i].photo;
                 result[i].photo = {
                     id: photoId,
-                    attributes: attributes,
-                }
-            }
-    
-            if(result[i].timezone != null){
-                let timezoneId = result[i].timezone.id;
-                delete result[i].timezone.id;
-                let attributes = result[i].timezone;
-                result[i].timezone = {
-                    id: timezoneId,
-                    attributes: attributes,
-                }
-            }
-    
-            if(result[i].company != null){
-                let companyId = result[i].company.id;
-                delete result[i].company.id;
-                let attributes = result[i].company;
-                result[i].company = {
-                    id: companyId,
                     attributes: attributes,
                 }
             }
@@ -203,6 +180,7 @@ module.exports = {
             'lastName',
             'phone',
             'administrator',
+            'timezone',
             'createdAt',
             'updatedAt',
         ];
@@ -219,7 +197,6 @@ module.exports = {
         }
         params.populate = { 
             role: true,
-            timezone: true,
             photo: true,
         }
         
@@ -238,26 +215,6 @@ module.exports = {
             let attributes = result[0].photo;
             result[0].photo = {
                 id: photoId,
-                attributes: attributes,
-            }
-        }
-
-        if(result[0].timezone != null){
-            let timezoneId = result[0].timezone.id;
-            delete result[0].timezone.id;
-            let attributes = result[0].timezone;
-            result[0].timezone = {
-                id: timezoneId,
-                attributes: attributes,
-            }
-        }
-
-        if(result[0].company != null){
-            let companyId = result[0].company.id;
-            delete result[0].company.id;
-            let attributes = result[0].company;
-            result[0].company = {
-                id: companyId,
                 attributes: attributes,
             }
         }

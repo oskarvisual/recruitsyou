@@ -11,6 +11,8 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async default(entityId) {
         const user = await strapi.service('api::user.user').me();
 
+        if(!user){ return false; }
+
         const pipelines = await strapi.db.query(api).findMany({
             fields: ['id'],
             filters: {
@@ -192,10 +194,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         });
 
         if(stages.length > 0){
-            const stagesIds = [];
-            for(let i = 0; i < stages.length; i++){
-                stagesIds.push(stages[i].id);
-            }
+            const stagesIds = stages.map(s => s.id);
     
             await strapi.db.query('api::stage.stage').deleteMany({
                 where: {

@@ -36,7 +36,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             job: true,
             users: true,
             candidates: true,
-            timezone: true,
         }
 
         const result = await strapi.entityService.findMany(api, params);

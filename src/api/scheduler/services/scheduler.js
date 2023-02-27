@@ -61,37 +61,13 @@ module.exports = createCoreService(api, ({ strapi }) => ({
 
         if(user.role.name != 'Administrator' || params.data.user == undefined){
             params.data.user = user.id;
-
-            if(params.data.timezone == undefined){
-                if(user.timezone == null){
-                    return ctx.badRequest('You must add a timezone to your profile', {});
-                }
-
-                params.data.timezone = user.timezone.id;
-            }
         }else{
             const userData = await strapi.service('api::user.user').findOne(params.data.user, {
-                populate: { 
-                    timezone: true,
-                }
+                populate: {}
             });
             if(userData == null){
                 return ctx.notFound('user Not Found', {});
             }
-
-            if(params.data.timezone == undefined){
-                if(userData.data.timezone == null){
-                    return ctx.badRequest('the user must add a timezone to their profile', {});
-                }
-
-                params.data.timezone = userData.timezone.id;
-            }
-        }
-
-        const timezone = await strapi.service('api::timezone.timezone').findOne(params.data.timezone);
-
-        if(timezone == null){
-            return ctx.notFound('timezone Not Found', {});
         }
         
         if(!user.company.plan.customize){ 

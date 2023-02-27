@@ -375,7 +375,10 @@ module.exports = {
                         customerID: invoice.customer,
                     },
                     publicationState: 'live',
-                    populate: ['plan', 'users'],
+                    populate: { 
+                        plan: true,
+                        users: true,
+                    },
                 });
 
                 if(companies.length > 0){

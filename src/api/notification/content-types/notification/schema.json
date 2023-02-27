@@ -20,15 +20,19 @@
     "notification": {
       "type": "string"
     },
-    "url": {
-      "type": "string"
-    },
     "description": {
-      "type": "string"
+      "type": "text"
     },
     "viewed": {
       "type": "boolean",
       "default": false
+    },
+    "type": {
+      "type": "string"
+    },
+    "typeId": {
+      "type": "integer",
+      "default": 0
     }
   }
 }

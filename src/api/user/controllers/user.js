@@ -28,16 +28,6 @@ module.exports = {
             }
         }
 
-        if(user.timezone != null){
-            let timezoneId = user.timezone.id;
-            delete user.timezone.id;
-            let attributes = user.timezone;
-            user.timezone = {
-                id: timezoneId,
-                attributes: attributes,
-            }
-        }
-
         if(user.company != null){
             let companyId = user.company.id;
             delete user.company.id;

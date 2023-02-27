@@ -51,11 +51,6 @@
       "relation": "oneToOne",
       "target": "api::education.education"
     },
-    "country": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::country.country"
-    },
     "state": {
       "type": "string"
     },
@@ -93,11 +88,6 @@
         "yearly"
       ],
       "default": "monthly"
-    },
-    "salaryCurrency": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::currency.currency"
     },
     "description": {
       "type": "richtext",
@@ -236,6 +226,12 @@
       "default": false
     },
     "skills": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "salaryCurrency": {
       "type": "string"
     }
   }

@@ -62,18 +62,8 @@
     "summary": {
       "type": "text"
     },
-    "nationality": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::country.country"
-    },
     "birthDate": {
       "type": "date"
-    },
-    "timezone": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::timezone.timezone"
     },
     "skills": {
       "type": "text"
@@ -150,10 +140,14 @@
       ],
       "default": "monthly"
     },
+    "timezone": {
+      "type": "string"
+    },
+    "nationality": {
+      "type": "string"
+    },
     "salaryCurrency": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::currency.currency"
+      "type": "string"
     }
   }
 }

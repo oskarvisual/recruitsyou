@@ -14,6 +14,9 @@ const { nanoid } = require("nanoid");
 
 const moment = require('moment');
 
+const ip = require('ip');
+const geoip = require('geoip-lite');
+
 //TODO: TODO DEBE TENER SU POPULATE INCLUIDO EN LA CONSULTA PARA NO PONERLO EN LA URL
 //TODO: FALTA CREAR PLANTILLA DE PAGINAS CON (publishedAt: new Date())
 //TODO: FALTA MODIFICAR PLANTILLA DE CORREOS CON VARIABLES REALES
@@ -22,6 +25,11 @@ const moment = require('moment');
 module.exports = createCoreController('api::company.company', ({ strapi }) => ({
     async create(ctx){
         const data = await this.sanitizeInput(ctx.request.body.data);
+
+        const userIp = ip.address();
+        const userGeo = geoip.lookup(userIp);
+        console.log(userIp);
+        console.log(userGeo);
 
         if(!CompanyEmailValidator.isCompanyEmail(data.email)){
             return ctx.badRequest('Only business emails are allowed', {});
@@ -102,6 +110,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                 lastName: data.lastName,
                 confirmed: 1,
                 administrator: 1,
+                timezone: (userGeo != null) ? userGeo.timezone : null,
             }
         });
         delete user.username;
@@ -457,7 +466,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                 industry: 25,
                 experience: 6,
                 education: 9,
-                country: 236,
+                country: 'US',
                 state: faker.address.state(),
                 city: faker.address.city(),
                 street: faker.address.streetAddress(),
@@ -467,7 +476,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                 salaryFrom: 2000,
                 salaryTo: 6000,
                 salaryPeriod: 'monthly',
-                salaryCurrency: 2,
+                salaryCurrency: 'USD',
                 description: `<p>We are seeking a highly skilled Computer Software Engineer to join our team. In this role, you will be responsible for designing, developing, and maintaining software applications. You will work with a team of developers to create innovative solutions for our clients and collaborate with stakeholders to understand their needs and requirements.</p>`,
                 requirements: `
                 <ul>
@@ -527,8 +536,8 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     phone: faker.phone.number(),
                     firstName: firstName,
                     lastName: lastName,
-                    timezone: 392,
-                    nationality: 236,
+                    timezone: 'America/Los_Angeles',
+                    nationality: 'US',
                     birthDate:  moment(new Date(birthDates[i].toISOString())).format('YYYY-MM-DD'),
                     gender: (gender == 'male' || gender == 'female') ? gender :  'not specified',
                     source: sourceIds[Math.floor(Math.random() * sourceIds.length)],

@@ -3,9 +3,6 @@
 /**
  * notification service
  */
-//TODO: AGREGAR EN USUARIO OPCIONES PARA ACTIVAR O DESACTIVAR NOTIFICACIONES (EN ME MODIFICAR)
-//TODO: CONFIGURAR WEB PUSH
-//const webpush = require('web-push');
 
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::notification.notification';
@@ -45,13 +42,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         });
     
         return result[0];
-    },
-    //TODO: CONFIGURAR ENVIO DE WEB PUSH
-    //TODO:: ENVIO POR USUARIO Y POR JOB
-    async create(params) {
-        const result = await super.create(params);
-
-        return result;
     },
     async delete(entityId, params) {
         const user = await strapi.service('api::user.user').me();

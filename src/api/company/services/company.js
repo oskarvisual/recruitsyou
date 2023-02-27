@@ -16,7 +16,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         if(user){
             if(entityId != user.company.id){ return null; }
             params.populate = { 
-                country: true,
                 logo: true,
                 navLogo: true,
                 favicon: true,
@@ -59,7 +58,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 ],
             },
             populate: { 
-                country: true,
                 logo: true,
                 navLogo: true,
                 favicon: true,

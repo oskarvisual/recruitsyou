@@ -66,7 +66,9 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                                 },
                             ],
                         },
-                        populate: ['candidate'],
+                        populate: { 
+                            candidate: true,
+                        },
                     });
     
 
@@ -113,7 +115,9 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                                         },
                                     ],
                                 },
-                                populate: ['candidate'],
+                                populate: { 
+                                    candidate: true,
+                                },
                             });
             
                             for(let i = 0; i < stageCandidates.length; i++){
@@ -153,7 +157,9 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                         filters: {
                             stage: stages
                         },
-                        populate: ['candidate'],
+                        populate: { 
+                            candidate: true,
+                        },
                     });
 
                     for(let i = 0; i < stageCandidates.length; i++){
@@ -221,7 +227,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         params.filters = filters;
         params.populate = { 
             photo: true,
-            salaryCurrency: true,
         };
         const result = await super.find(params);
 
@@ -262,14 +267,11 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             socialNetwork: true,
             source: true,
             resume: true,
-            nationality: true,
-            timezone: true,
             experience: true,
             education: true,
             tags: true,
             referrals: true,
             disqualifyReason: true,
-            salaryCurrency: true,
         };
 
         const result = await strapi.entityService.findMany(api, params);

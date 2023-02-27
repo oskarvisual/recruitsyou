@@ -53,17 +53,15 @@
       ],
       "default": "on-site"
     },
-    "timezone": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::timezone.timezone"
-    },
     "location": {
       "type": "string"
     },
     "code": {
       "type": "customField",
       "customField": "plugin::field-uuid.uuid"
+    },
+    "timezone": {
+      "type": "string"
     }
   }
 }

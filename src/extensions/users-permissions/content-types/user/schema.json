@@ -72,11 +72,6 @@
     "phone": {
       "type": "string"
     },
-    "timezone": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::timezone.timezone"
-    },
     "photo": {
       "type": "media",
       "multiple": false,
@@ -107,6 +102,9 @@
     "administrator": {
       "type": "boolean",
       "default": false
+    },
+    "timezone": {
+      "type": "string"
     }
   }
 }

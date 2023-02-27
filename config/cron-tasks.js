@@ -1,9 +1,5 @@
 const moment = require('moment');
-const startToday =  moment(new Date(new Date().setUTCHours(0,0,0,0))).format();
-const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format();
 
-//TODO: RECORDATORIO DE TASKS 
-//TODO: VENCIMIENTO DE TASK
 //TODO: ENVIAR AVISO DE GPDR
 //TODO: PROBAR SI FUNCIONA
 
@@ -15,6 +11,9 @@ const endToday =  moment(new Date(new Date().setUTCHours(23,59,59,999))).format(
 module.exports = {
     '*/30 * * * * *': async ({ strapi }) => {
         try {
+            const startToday =  moment(new Date()).startOf('day').format('YYYY-MM-DD HH:mm:ss');
+            const endToday =  moment(new Date()).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+
             if(process.env.SMTP_SEND == "true"){
 
                 const emails = await strapi.db.query('api::email.email').findMany({
@@ -30,7 +29,9 @@ module.exports = {
                             },
                         ]
                     },
-                    populate: ['company'],
+                    populate: {
+                        company: true,
+                    },
                     sort: { sendDate: 'ASC' },
                     offset: 0, 
                     limit: 50,
@@ -45,7 +46,7 @@ module.exports = {
                                 'demo',
                             ],
                             where: { id: emails[i].company.id },
-                            populate: { 
+                            populate: {
                                 plan: true,
                             },
                         });
@@ -62,12 +63,7 @@ module.exports = {
                                         },
                                         {
                                             sendDate: {
-                                                $gte: startToday,
-                                            },
-                                        },
-                                        {
-                                            sendDate: {
-                                                $lte: endToday,
+                                                $between: [startToday, endToday]
                                             },
                                         },
                                     ],
@@ -120,6 +116,51 @@ module.exports = {
             console.log(err);
         }
     },
+    '0 * * * * *': async ({ strapi }) => {
+        try {
+            const startMinute =  moment(new Date()).startOf('minute').format('YYYY-MM-DD HH:mm:ss');
+            const endMinute =  moment(new Date()).endOf('minute').format('YYYY-MM-DD HH:mm:ss');
+
+            const tasks = await strapi.db.query('api::task.task').findMany({
+                where: {
+                    $and: [
+                        {
+                            done: 0,
+                        },
+                        {
+                            expireDate: {
+                                $between: [startMinute, endMinute]
+                            },
+                        },
+                    ]
+                },
+                populate: {
+                    user: {
+                        select: ['id']
+                    }
+                },
+            });
+
+            if(tasks.length > 0){
+                for (let i = 0; i < tasks.length; i++) {
+                    await strapi.service('api::notification.notification').create({
+                        data:{
+                            user: tasks[i].user.id,
+                            notification: `Task '${tasks[i].task}' expired`,
+                            description: tasks[i].description,
+                            type: 'tasks',
+                            typeId: tasks[i].id,
+                            viewed: 0
+                        }
+                    });
+                }
+            }
+
+        } catch(err){
+            console.log(err);
+        }
+
+    },
     '0 0 0 * * *': async ({ strapi }) => {
         const emails = await strapi.db.query('api::email.email').deleteMany({
             where: {
@@ -158,7 +199,9 @@ module.exports = {
                     },
                 },
                 publicationState: 'live',
-                populate: ['plan', 'users'],
+                populate: {
+                    plan: true,
+                },
             });
 
             if(companies.length > 0){
@@ -226,7 +269,9 @@ module.exports = {
                     },
                 },
                 publicationState: 'live',
-                populate: ['plan', 'users'],
+                populate: {
+                    plan: true,
+                },
             });
 
             if(companies.length > 0){

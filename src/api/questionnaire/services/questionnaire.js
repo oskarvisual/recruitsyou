@@ -81,10 +81,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         });
 
         if(questions.length > 0){
-            const questionsIds = [];
-            for(let i = 0; i < questions.length; i++){
-                questionsIds.push(questions[i].id);
-            }
+            const questionsIds = questions.map(s => s.id);
     
             await strapi.db.query('api::question.question').deleteMany({
                 where: {
