@@ -13,23 +13,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async find(params) {
         const user = await strapi.service('api::user.user').me();
         
-        params.fields = [
-            'id',
-            'email',
-            'firstName',
-            'lastName',
-            'createdAt',
-            'updatedAt',
-            'birthDate',
-            'salaryExpectation',
-            'salaryPeriod',
-            'gender',
-            'phone',
-            'mobile',
-            'disqualify',
-            'demo',
-        ];
-        
         let filters = {
             $and: [
                 {
