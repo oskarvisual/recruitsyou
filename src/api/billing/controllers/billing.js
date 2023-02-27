@@ -336,6 +336,8 @@ module.exports = {
         if(event.type == 'invoice.paid'){
             const invoice = event.data.object;
 
+            const customer = await strapi.service('api::stripe.stripe').findOneCustomer(invoice.customer);
+
             if(invoice.subscription != null){
                 const subscription = await strapi.service('api::stripe.stripe').findOneSubscription(invoice.subscription);
 
@@ -392,14 +394,14 @@ module.exports = {
                         },
                     });
 
-                    if(invoice.customer_email != null){
+                    if(customer.email != null){
                         await strapi.service('api::email.email').create({
                             data:{
                                 from: process.env.SMTP_FROM,
                                 replyTo: process.env.SMTP_FROM,
-                                to: invoice.customer_email,
+                                to: customer.email,
                                 subject: `Invoice Payment Confirmation for ${process.env.ATS_NAME} Subscription`,
-                                body: `<p>Dear ${invoice.customer_name},</p>
+                                body: `<p>Dear ${customer.name},</p>
                             
                                 <p>We are pleased to inform you that your invoice for ${process.env.ATS_NAME} has been successfully paid. Thank you for your prompt payment.</p>
                                 
@@ -510,7 +512,36 @@ module.exports = {
                     }
                 });
             }
-            
+        }
+        
+        if(event.type == 'payment_intent.payment_failed'){
+            const paymentIntent = event.data.object;
+
+            const customer = await strapi.service('api::stripe.stripe').findOneCustomer(paymentIntent.customer);
+
+            if(customer.email != null){
+                await strapi.service('api::email.email').create({
+                    data:{
+                        from: process.env.SMTP_FROM,
+                        replyTo: process.env.SMTP_FROM,
+                        to: customer.email,
+                        subject: `Action required for ${process.env.ATS_NAME} Subscription`,
+                        body: `<p>Dear ${customer.name},</p>
+
+                        <p>Your default payment method failed when we attempted to charge it for ${process.env.ATS_NAME} subscription on your account.</p>
+
+                        <p>Please take the necessary steps to resolve the payment issue and ensure that your account is up-to-date.</p>
+                        
+                        <p>If you have any questions or concerns, please don't hesitate to contact our customer support team. We'll be happy to assist you in any way we can.</p>
+                        
+                        <p>Thank you for being a part of our community, and we look forward to serving you in the future.</p>
+                        
+                        <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
+                        sent: 0,
+                        sendDate: new Date(),
+                    }
+                });
+            }
         }
 
         ctx.body = {
