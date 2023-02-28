@@ -234,7 +234,7 @@ module.exports = {
                         });
                     }
                     
-                    await strapi.entityService.update('api::company.company', companies[0].id, {
+                    await strapi.entityService.update('api::company.company', companies[i].id, {
                         data: {
                             demo: 0,
                             plan: process.env.ATS_FREE_PLAN,
@@ -302,7 +302,7 @@ module.exports = {
                         });
                     }
                     
-                    await strapi.entityService.update('api::company.company', companies[0].id, {
+                    await strapi.entityService.update('api::company.company', companies[i].id, {
                         data: {
                             demo: 0,
                             plan: process.env.ATS_FREE_PLAN,
