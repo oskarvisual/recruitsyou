@@ -143,7 +143,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         const company = await super.create(ctx);
 
-        const customer = await strapi.service('api::stripe.stripe').createCustomer(company.data.id, user.email);
+        const customer = await strapi.service('api::stripe.stripe').createCustomer(company.data.id, user.email, user.firstName);
 
         await strapi.entityService.update('api::company.company', company.data.id, {
             data: {

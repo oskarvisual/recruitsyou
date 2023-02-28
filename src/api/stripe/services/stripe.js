@@ -16,10 +16,11 @@ module.exports = {
 
         return event;
     },
-    async createCustomer(companyId, email){
+    async createCustomer(companyId, email, firstName){
         const customer = await Stripe.customers.create({
-            email,
+            email: email,
             description: `CompanyID: ${companyId}`,
+            name: firstName,
         }); 
 
         return customer;

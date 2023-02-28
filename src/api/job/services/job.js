@@ -3,6 +3,7 @@
 /**
  * job service
  */
+const { v4: uuidv4 } = require('uuid');
 
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::job.job';
@@ -86,7 +87,9 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         //TODO: LOGICA PARA COPIAR PIPELINE DEFAULT COMO PLANTILAA
         //TODO AGREGAR LOGICA PARA COPIAR DE DEFAULT O PLANTILLA
         const user = await strapi.service('api::user.user').me();
+
         params.data.company = user.company.id;
+        params.data.code = uuidv4();
         
         const response = await super.create(params);
 
@@ -96,6 +99,10 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async update(entityId, params) {
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
+
+        if(params.data.code){
+            delete params.data.code;
+        }
         
         const result = await strapi.service(api).findOne(entityId);
         if(!result){ return null; }
