@@ -24,11 +24,11 @@ module.exports = createCoreService('api::plan.plan', ({ strapi }) => ({
         result.priceMonth = null;
         result.priceYear = null;
 
-        if(result.PriceAPIMonth != '' && result.PriceAPIMonth != null){
+        if(result.PriceAPIMonth){
             result.priceMonth = await strapi.service('api::stripe.stripe').findOnePrice(result.PriceAPIMonth);
         }
 
-        if(result.PriceAPIYear != '' && result.PriceAPIYear != null){
+        if(result.PriceAPIYear){
             result.priceYear = await strapi.service('api::stripe.stripe').findOnePrice(result.PriceAPIYear);
         }
         

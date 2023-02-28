@@ -33,11 +33,11 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
         */
 
-        if(params.filters != undefined){
+        if(params.filters){
             let candidates = [];
 
-            if(params.filters.job != undefined){
-                if(params.filters.stage == undefined){
+            if(params.filters.job){
+                if(!params.filters.stage){
                     const jobCandidates = await strapi.entityService.findMany('api::job-candidate.job-candidate', {
                         filters: {
                             $and: [
@@ -56,7 +56,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     
 
                     for(let i = 0; i < jobCandidates.length; i++){
-                        if(jobCandidates[i].candidate != undefined){
+                        if(jobCandidates[i].candidate){
                             candidates.push(jobCandidates[i].candidate.id);
                         }
                     }
@@ -66,7 +66,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                         }
                     });
                 }else{
-                    if(params.filters.stage != undefined){
+                    if(params.filters.stage){
                         let stage = await strapi.entityService.findMany('api::job-stage.job-stage', {
                             filters: {
                                 $and: [
@@ -104,7 +104,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                             });
             
                             for(let i = 0; i < stageCandidates.length; i++){
-                                if(stageCandidates[i].candidate != undefined){
+                                if(stageCandidates[i].candidate){
                                     candidates.push(stageCandidates[i].candidate.id);
                                 }
                             }
@@ -116,7 +116,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                         }
                     }
                 }
-            }else if(params.filters.stage != undefined){
+            }else if(params.filters.stage){
                 let stage = await strapi.entityService.findMany('api::job-stage.job-stage', {
                     filters: {
                         $and: [
@@ -146,7 +146,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     });
 
                     for(let i = 0; i < stageCandidates.length; i++){
-                        if(stageCandidates[i].candidate != undefined){
+                        if(stageCandidates[i].candidate){
                             candidates.push(stageCandidates[i].candidate.id);
                         }
                     }
@@ -157,52 +157,52 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     });
                 }
             }
-            if(params.filters.createdAt != undefined){
+            if(params.filters.createdAt){
                 filters.$and.push({ rating: {
                         $lte: params.filters.createdAt,
                     } 
                 });
             }
-            if(params.filters.email !== undefined){
+            if(params.filters.email){
                 filters.$and.push({ email: {
                         $contains: params.filters.email,
                     }
                 });
             }
-            if(params.filters.salaryExpectationMin != undefined && params.filters.salaryExpectationMax != undefined){
+            if(params.filters.salaryExpectationMin && params.filters.salaryExpectationMax){
                 filters.$and.push({ rating: {
                         $between: [params.filters.salaryExpectationMin, params.filters.salaryExpectationMax],
                     } 
                 })
             }
-            if(params.filters.salaryExpectationMin != undefined && params.filters.salaryExpectationMax == undefined){
+            if(params.filters.salaryExpectationMin && !params.filters.salaryExpectationMax){
                 filters.$and.push({ rating: {
                         $gte: params.filters.salaryExpectationMin,
                     } 
                 })
             }
-            if(params.filters.salaryExpectationMin == undefined && params.filters.salaryExpectationMax != undefined){
+            if(!params.filters.salaryExpectationMin && params.filters.salaryExpectationMax){
                 filters.$and.push({ rating: {
                         $lte: params.filters.salaryExpectationMax,
                     } 
                 })
             }
-            if(params.filters.disqualify != undefined){
+            if(params.filters.disqualify){
                 filters.$and.push({ disqualify: params.filters.disqualify })
             }
-            if(params.filters.disqualifyReason != undefined){
+            if(params.filters.disqualifyReason){
                 filters.$and.push({ disqualifyReason: params.filters.disqualifyReason })
             }
-            if(params.filters.tags != undefined){
+            if(params.filters.tags){
                 filters.$and.push({ rating: {
                         $in: params.filters.tags,
                     } 
                 })
             }
-            if(params.filters.source != undefined){
+            if(params.filters.source){
                 filters.$and.push({ source: params.filters.source })
             }
-            if(params.filters.referral != undefined){
+            if(params.filters.referral){
                 filters.$and.push({ referral: params.filters.referral })
             }
         }
@@ -214,14 +214,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const result = await super.find(params);
 
         for(let i = 0; i < result.results.length; i++){
-            if(result.results[i].resume != null){
+            if(result.results[i].resume){
                 result.results[i].resume.url = await strapi.service('api::s3.s3').signedUrl(`${result.results[i].resume.hash}${result.results[i].resume.ext}`, result.results[i].resume.mime, 10 * 60);
                 delete result.results[i].resume.hash;
                 delete result.results[i].resume.provider;
                 delete result.results[i].resume.provider_metadata;
             }
     
-            if(result.results[i].photo != null){
+            if(result.results[i].photo){
                 result.results[i].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result.results[i].photo.hash}${result.results[i].photo.ext}`, result.results[i].photo.mime, 10 * 60);
                 delete result.results[i].photo.hash;
                 delete result.results[i].photo.provider;
@@ -260,14 +260,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const result = await strapi.entityService.findMany(api, params);
         if(result.length == 0){ return null; }
 
-        if(result[0].resume != null){
+        if(result[0].resume){
             result[0].resume.url = await strapi.service('api::s3.s3').signedUrl(`${result[0].resume.hash}${result[0].resume.ext}`, result[0].resume.mime, 10 * 60);
             delete result[0].resume.hash;
             delete result[0].resume.provider;
             delete result[0].resume.provider_metadata;
         }
 
-        if(result[0].photo != null){
+        if(result[0].photo){
             result[0].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result[0].photo.hash}${result[0].photo.ext}`, result[0].photo.mime, 10 * 60);
             delete result[0].photo.hash;
             delete result[0].photo.provider;
@@ -294,8 +294,9 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             },
             populate: { resume: true, }
         });
+        
         if(result.length > 0){ 
-            if(result[0].resume == null && params.data.resume != undefined){
+            if(!result[0].resume && params.data.resume){
                 await strapi.service('api::candidate.candidate').update(result[0].id, {
                     data:{
                         resume: resume,
@@ -323,7 +324,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         params.data.company = user.company.id;
 
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
 
         const response = await super.update(entityId, params);
     
@@ -334,7 +335,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         //TODO: ELIMINAR ARCHIVOS Y TAMBIEN DE JOBS CANDIDATES
         
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
         
         const response = await super.delete(entityId, params);
 

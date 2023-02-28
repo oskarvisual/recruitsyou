@@ -28,14 +28,12 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         const userIp = ip.address();
         const userGeo = geoip.lookup(userIp);
-        console.log(userIp);
-        console.log(userGeo);
 
         if(!CompanyEmailValidator.isCompanyEmail(data.email)){
             return ctx.badRequest('Only business emails are allowed', {});
         }
 
-        if(data.company == ""){
+        if(!data.company){
             return ctx.badRequest('company must be defined', { 
                 errors: [
                     {
@@ -47,7 +45,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
             });
         }
 
-        if(data.email == ""){
+        if(!data.email){
             return ctx.badRequest('email must be defined', { 
                 errors: [
                     {
@@ -110,7 +108,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                 lastName: data.lastName,
                 confirmed: 1,
                 administrator: 1,
-                timezone: (userGeo != null) ? userGeo.timezone : null,
+                timezone: (userGeo) ? userGeo.timezone : null,
             }
         });
         delete user.username;

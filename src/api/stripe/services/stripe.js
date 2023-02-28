@@ -65,7 +65,7 @@ module.exports = {
     async findPaymentMethod(customerId, type, query = {}){
         let filters = { type: type }
 
-        if(query.starting_after != undefined){
+        if(query.starting_after){
             filters.starting_after = query.starting_after;
         }
         
@@ -80,7 +80,7 @@ module.exports = {
             for(let i = 0; i < paymentMethods.data.length; i++){
                 paymentMethods.data[i].default = false;
 
-                if(customer.invoice_settings != undefined || customer.invoice_settings != null){
+                if(customer.invoice_settings){
                     if(paymentMethods.data[i].id == customer.invoice_settings.default_payment_method){
                         paymentMethods.data[i].default = true;
                     }
@@ -97,7 +97,7 @@ module.exports = {
 
         paymentMethod.default = false;
 
-        if(customer.invoice_settings != undefined || customer.invoice_settings != null){
+        if(customer.invoice_settings){
             if(paymentMethod.id == customer.invoice_settings.default_payment_method){
                 paymentMethod.default = true;
             }
@@ -154,7 +154,7 @@ module.exports = {
     async findSubscription(customerId, query = {}){
         let filters = {}
 
-        if(query.starting_after != undefined){
+        if(query.starting_after){
             filters.starting_after = query.starting_after;
         }
 
@@ -178,7 +178,7 @@ module.exports = {
     async findInvoice(customerId, query = {}){
         let filters = {}
 
-        if(query.starting_after != undefined){
+        if(query.starting_after){
             filters.starting_after = query.starting_after;
         }
 

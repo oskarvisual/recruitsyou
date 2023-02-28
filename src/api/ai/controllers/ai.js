@@ -14,21 +14,19 @@ module.exports = {
         const attributes = [];
 
         const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
-        if(departament == null){ attributes.push('departament'); }         
+        if(!departament){ attributes.push('departament'); }         
 
         const type = await strapi.service('api::type-job.type-job').findOne(data.type);
-        if(type == null){ attributes.push('type'); }      
+        if(!type){ attributes.push('type'); }      
 
         const industry = await strapi.service('api::industry.industry').findOne(data.industry);
-        if(industry == null){ attributes.push('industry'); }      
-        
+        if(!industry){ attributes.push('industry'); }      
         
         const experience = await strapi.service('api::experience.experience').findOne(data.experience);
-        if(experience == null){ attributes.push('experience'); }      
-        
-        
+        if(!experience){ attributes.push('experience'); }      
+                
         const education = await strapi.service('api::education.education').findOne(data.education);
-        if(education == null){ attributes.push('education'); }      
+        if(!education){ attributes.push('education'); }      
         
         const country = ct.getCountry(data.country);           
         
@@ -38,8 +36,8 @@ module.exports = {
         if(data.tags.length > 0){
             for(let i = 0; i < data.tags.length; i++){
                 let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                if(tag == null){
-                    if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }     
+                if(!tag){
+                    if(!tag && !attributes.includes('tags')){ attributes.push('tags'); }     
                 }else{
                     if(tags != ""){ tags = tags.concat(", ") }
                     tags = tags.concat(tag.tag);
@@ -74,38 +72,36 @@ module.exports = {
         const attributes = [];
 
         const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
-        if(departament == null){ attributes.push('departament'); }         
+        if(!departament){ attributes.push('departament'); }         
 
         const type = await strapi.service('api::type-job.type-job').findOne(data.type);
-        if(type == null){ attributes.push('type'); }      
+        if(!type){ attributes.push('type'); }      
 
         const industry = await strapi.service('api::industry.industry').findOne(data.industry);
-        if(industry == null){ attributes.push('industry'); }      
-        
-        
+        if(!industry){ attributes.push('industry'); }      
+                
         const experience = await strapi.service('api::experience.experience').findOne(data.experience);
-        if(experience == null){ attributes.push('experience'); }      
-        
-        
+        if(!experience){ attributes.push('experience'); }      
+                
         const education = await strapi.service('api::education.education').findOne(data.education);
-        if(education == null){ attributes.push('education'); }    
+        if(!education){ attributes.push('education'); }      
         
-        const country = ct.getCountry(data.country);    
-
+        const country = ct.getCountry(data.country);           
+        
         const salaryCurrency = data.salaryCurrency;  
         
         let tags = "";
         if(data.tags.length > 0){
             for(let i = 0; i < data.tags.length; i++){
                 let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                if(tag == null){
-                    if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }   
+                if(!tag){
+                    if(!tag && !attributes.includes('tags')){ attributes.push('tags'); }     
                 }else{
                     if(tags != ""){ tags = tags.concat(", ") }
                     tags = tags.concat(tag.tag);
                 }
             }
-        }  
+        }   
         
         if(attributes.length > 0){
             return ctx.notFound('These attributes were not found', { 
@@ -134,38 +130,36 @@ module.exports = {
         const attributes = [];
 
         const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
-        if(departament == null){ attributes.push('departament'); }         
+        if(!departament){ attributes.push('departament'); }         
 
         const type = await strapi.service('api::type-job.type-job').findOne(data.type);
-        if(type == null){ attributes.push('type'); }      
+        if(!type){ attributes.push('type'); }      
 
         const industry = await strapi.service('api::industry.industry').findOne(data.industry);
-        if(industry == null){ attributes.push('industry'); }      
-        
-        
+        if(!industry){ attributes.push('industry'); }      
+                
         const experience = await strapi.service('api::experience.experience').findOne(data.experience);
-        if(experience == null){ attributes.push('experience'); }      
-        
-        
+        if(!experience){ attributes.push('experience'); }      
+                
         const education = await strapi.service('api::education.education').findOne(data.education);
-        if(education == null){ attributes.push('education'); }   
+        if(!education){ attributes.push('education'); }      
         
-        const country = ct.getCountry(data.country);                    
+        const country = ct.getCountry(data.country);           
         
-        const salaryCurrency = data.salaryCurrency;    
+        const salaryCurrency = data.salaryCurrency;  
         
         let tags = "";
         if(data.tags.length > 0){
             for(let i = 0; i < data.tags.length; i++){
                 let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                if(tag == null){
-                    if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }    
+                if(!tag){
+                    if(!tag && !attributes.includes('tags')){ attributes.push('tags'); }     
                 }else{
                     if(tags != ""){ tags = tags.concat(", ") }
                     tags = tags.concat(tag.tag);
                 }
             }
-        }   
+        }    
         
         if(attributes.length > 0){
             return ctx.notFound('These attributes were not found', { 
@@ -194,23 +188,21 @@ module.exports = {
         const attributes = [];
 
         const departament = await strapi.service('api::departament.departament').findOne(data.departament); 
-        if(departament == null){ attributes.push('departament'); }         
+        if(!departament){ attributes.push('departament'); }         
 
         const type = await strapi.service('api::type-job.type-job').findOne(data.type);
-        if(type == null){ attributes.push('type'); }      
+        if(!type){ attributes.push('type'); }      
 
         const industry = await strapi.service('api::industry.industry').findOne(data.industry);
-        if(industry == null){ attributes.push('industry'); }      
-        
-        
+        if(!industry){ attributes.push('industry'); }      
+                
         const experience = await strapi.service('api::experience.experience').findOne(data.experience);
-        if(experience == null){ attributes.push('experience'); }      
-        
-        
+        if(!experience){ attributes.push('experience'); }      
+                
         const education = await strapi.service('api::education.education').findOne(data.education);
-        if(education == null){ attributes.push('education'); }    
+        if(!education){ attributes.push('education'); }      
         
-        const country = ct.getCountry(data.country);                   
+        const country = ct.getCountry(data.country);           
         
         const salaryCurrency = data.salaryCurrency;  
         
@@ -218,14 +210,14 @@ module.exports = {
         if(data.tags.length > 0){
             for(let i = 0; i < data.tags.length; i++){
                 let tag = await strapi.service('api::tag-job.tag-job').findOne(data.tags[i]);
-                if(tag == null){
-                    if(tag == null && !attributes.includes('tags')){ attributes.push('tags'); }   
+                if(!tag){
+                    if(!tag && !attributes.includes('tags')){ attributes.push('tags'); }     
                 }else{
                     if(tags != ""){ tags = tags.concat(", ") }
                     tags = tags.concat(tag.tag);
                 }
             }
-        }   
+        }    
         
         if(attributes.length > 0){
             return ctx.notFound('These attributes were not found', { 

@@ -59,13 +59,13 @@ module.exports = createCoreService(api, ({ strapi }) => ({
 
         params.data.company = user.company.id;
 
-        if(user.role.name != 'Administrator' || params.data.user == undefined){
+        if(user.role.name != 'Administrator' || !params.data.user){
             params.data.user = user.id;
         }else{
             const userData = await strapi.service('api::user.user').findOne(params.data.user, {
                 populate: {}
             });
-            if(userData == null){
+            if(!userData){
                 return ctx.notFound('user Not Found', {});
             }
         }
@@ -85,12 +85,12 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         
         params.data.company = user.company.id;
 
-        if(user.role.name != 'Administrator' || params.data.user == undefined){
+        if(user.role.name != 'Administrator' || !params.data.user){
             params.data.user = user.id;
         }else{
             const dataUser = await strapi.service('api::user.user').findOne(params.data.user);
         
-            if(dataUser == null){
+            if(!dataUser){
                 return ctx.notFound('user Not Found', {});
             }
         }
@@ -100,7 +100,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
 
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
 
         const response = await super.update(entityId, params);
 
@@ -110,7 +110,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const user = await strapi.service('api::user.user').me();
 
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
         
         const response = await super.delete(entityId, params);
 

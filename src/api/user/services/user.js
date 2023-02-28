@@ -53,11 +53,11 @@ module.exports = {
             }
         });
 
-        if (user.company == null) { 
+        if (!user.company) { 
             throw new ApplicationError('Company does not exist', {});
         }
         
-        if(user.company.publishedAt == null) {
+        if(!user.company.publishedAt) {
             throw new ApplicationError('Deactivated company', {});
         }
 
@@ -93,8 +93,8 @@ module.exports = {
                 },
             ],
         }
-        if(params.filters !== undefined){
-            if(params.filters.email !== undefined){
+        if(params.filters){
+            if(params.filters.email){
                 filters.$and.push({ email: {
                         $contains: params.filters.email,
                     }
@@ -109,13 +109,12 @@ module.exports = {
 
         let page = 1;
 
-        if(params.pagination !== undefined){ 
-            if(params.pagination.page !== undefined){
-                page = parseInt(params.pagination.page); 
-            }
-            if(params.pagination.pageSize !== undefined){
-                params.limit = parseInt(params.pagination.pageSize); 
-            }
+        if(params.pagination?.page){ 
+            page = parseInt(params.pagination.page); 
+        }
+
+        if(params.pagination?.pageSize){
+            params.limit = parseInt(params.pagination.pageSize); 
         }
         
         const total = await strapi.db.query('plugin::users-permissions.user').count(params);
@@ -126,7 +125,7 @@ module.exports = {
         const result = await strapi.entityService.findMany('plugin::users-permissions.user', params);
 
         for(let i = 0; i < result.length; i++){
-            if(result[i].photo != null){
+            if(result[i].photo){
                 result[i].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result[i].photo.hash}${result[i].photo.ext}`, result[i].photo.mime, 10 * 60);
                 delete result[i].photo.hash;
                 delete result[i].photo.provider;
@@ -142,7 +141,7 @@ module.exports = {
                 }
             }
     
-            if(result[i].role != null){
+            if(result[i].role){
                 let roleId = result[i].role.id;
                 delete result[i].role.id;
                 let attributes = result[i].role;
@@ -203,7 +202,7 @@ module.exports = {
         const result = await strapi.entityService.findMany('plugin::users-permissions.user', params);
         if(result.length == 0){ return null; }
 
-        if(result[0].photo != null){
+        if(result[0].photo){
             result[0].photo.url = await strapi.service('api::s3.s3').signedUrl(`${result[0].photo.hash}${result[0].photo.ext}`, result[0].photo.mime, 10 * 60);
             delete result[0].photo.hash;
             delete result[0].photo.provider;
@@ -219,7 +218,7 @@ module.exports = {
             }
         }
 
-        if(result[0].role != null){
+        if(result[0].role){
             let roleId = result[0].role.id;
             delete result[0].role.id;
             let attributes = result[0].role;

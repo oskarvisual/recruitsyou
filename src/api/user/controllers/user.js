@@ -12,7 +12,7 @@ module.exports = {
 
         let userId = user.id;
 
-        if(user.photo != null){
+        if(user.photo){
             user.photo.url = await strapi.service('api::s3.s3').signedUrl(`${user.photo.hash}${user.photo.ext}`, user.photo.mime, 10 * 60);
             delete user.photo.hash;
             delete user.photo.provider;
@@ -28,7 +28,7 @@ module.exports = {
             }
         }
 
-        if(user.company != null){
+        if(user.company){
             let companyId = user.company.id;
             delete user.company.id;
             let attributes = user.company;
@@ -38,7 +38,7 @@ module.exports = {
             }
         }
 
-        if(user.role != null){
+        if(user.role){
             let roleId = user.role.id;
             delete user.role.id;
             let attributes = user.role;
@@ -68,7 +68,7 @@ module.exports = {
             data: {}
         }
 
-        if(data != undefined){
+        if(data){
             params.data = {
                 firstName: data.firstName,
                 lastName: data.lastName,
@@ -78,8 +78,8 @@ module.exports = {
         }
         
 
-        if(ctx.request.files != undefined){
-            if(ctx.request.files[ 'photo' ] != undefined){
+        if(ctx.request.files){
+            if(ctx.request.files[ 'photo' ]){
                 params.files = {
                     photo: ctx.request.files[ 'photo' ],
                 }
@@ -120,7 +120,7 @@ module.exports = {
 
         const data = [];
 
-        if(result.data != null){
+        if(result.data){
             for (let i = 0; i < result.data.length; i++) {
                 let id = result.data[i].id;
                 delete result.data[i].id;
@@ -146,7 +146,7 @@ module.exports = {
         
         const result = await strapi.service('api::user.user').findOne(id, query);
         
-        if(result == null){
+        if(!result){
             return ctx.notFound('Not Found', {});
         }
 
@@ -191,7 +191,7 @@ module.exports = {
             });
         }
 
-        if(data != undefined){
+        if(data){
             params.data = {
                 company: user.company.id,
                 username: data.email,
@@ -208,8 +208,8 @@ module.exports = {
             }
         }
 
-        if(ctx.request.files != undefined){
-            if(ctx.request.files[ 'photo' ] != undefined){
+        if(ctx.request.files){
+            if(ctx.request.files[ 'photo' ]){
                 params.files = {
                     photo: ctx.request.files[ 'photo' ],
                 }
@@ -218,7 +218,7 @@ module.exports = {
         
         const result = await strapi.entityService.create('plugin::users-permissions.user', params);
 
-        if(result == null){
+        if(!result){
             return ctx.badRequest('Error', {});
         }
 
@@ -286,7 +286,7 @@ module.exports = {
 
         const userData = await strapi.service('api::user.user').findOne(id, ctx);
 
-        if(userData == null){
+        if(!userData){
             return ctx.notFound('Not Found', {});
         }
 
@@ -294,7 +294,7 @@ module.exports = {
             data: {}
         }
 
-        if(data != undefined){
+        if(data){
             params.data = {
                 role: (userData.administrator) ? userData.role.id : data.role,
                 firstName: data.firstName,
@@ -304,8 +304,8 @@ module.exports = {
             }
         }
 
-        if(ctx.request.files != undefined){
-            if(ctx.request.files[ 'photo' ] != undefined){
+        if(ctx.request.files){
+            if(ctx.request.files[ 'photo' ]){
                 params.files = {
                     photo: ctx.request.files[ 'photo' ],
                 }
@@ -314,7 +314,7 @@ module.exports = {
         
         const result = await strapi.entityService.update('plugin::users-permissions.user', id, params);
 
-        if(result != null){
+        if(result){
             delete result.password;
             delete result.resetPasswordToken;
             delete result.confirmationToken;
@@ -351,7 +351,7 @@ module.exports = {
 
         const userData = await strapi.service('api::user.user').findOne(id, ctx);
         
-        if(userData == null){
+        if(!userData){
             return ctx.notFound('Not Found', { 
                 details: {}
             });
@@ -365,7 +365,7 @@ module.exports = {
             data: {}
         });
 
-        if(result == null){
+        if(!result){
             return {
                 data: null,
                 meta: {}

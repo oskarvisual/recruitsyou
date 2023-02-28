@@ -12,9 +12,9 @@ const { createCoreController } = require('@strapi/strapi').factories;
 module.exports = createCoreController('api::job.job', ({ strapi }) => ({
     async report(ctx){
         const { id } = ctx.params;
-        const data = await strapi.service('api::job.job').findOne(id, ctx);
+        const job = await strapi.service('api::job.job').findOne(id, ctx);
         
-        if(data == null){
+        if(!job){
             return ctx.notFound('Not Found', {});
         }
 

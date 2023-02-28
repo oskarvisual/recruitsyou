@@ -19,10 +19,8 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             ],
         }
 
-        if(params.filters != undefined){
-            if(params.filters.pipeline != undefined){
-                filters.$and.push({ pipeline: params.filters.pipeline })
-            }
+        if(params.filters?.pipeline){
+            filters.$and.push({ pipeline: params.filters.pipeline })
         }
 
         const result = await super.find(params);
@@ -62,6 +60,23 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
+        if(!params.data?.pipeline){ 
+            return ctx.badRequest('You must select a pipeline', {});
+        }
+                
+        const pipeline = await strapi.service('api::pipeline.pipeline').findOne(params.data.pipeline);
+        if(!pipeline){ 
+            return ctx.notFound('These attributes were not found', { 
+                errors: [
+                    {
+                        path: ['pipeline'],
+                        message: 'These attributes were not found',
+                        name: 'ValidationError'
+                    }
+                ]
+            });
+        }    
+
         const countStages = await strapi.db.query('api::stage.stage').count({ 
             filters: { 
                 $and: [
@@ -69,7 +84,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                         company: user.company.id,
                     },
                     {
-                        pipeline: params.data.pipeline,
+                        pipeline: pipeline.id,
                     },
                 ]
             }
@@ -88,11 +103,13 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                         company: user.company.id,
                     },
                     {
-                        pipeline: params.data.pipeline,
+                        pipeline: pipeline.id,
                     },
                 ],
             },
-            orderBy: { order: 'DESC' },
+            start: 0, 
+            limit: 1,
+            sort: { order: 'desc' },
         });
         
         let order = 0;
@@ -101,7 +118,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             order = stages[0].order;
             
             for(let i = 0; i < stages.length; i++){
-                if(!types.includes(stages[i].type) && stages[i].type != null){
+                if(!types.includes(stages[i].type) && stages[i].type){
                     types.push(stages[i].type);
                 }
                 if(!names.includes(stages[i].stage)){
@@ -151,17 +168,17 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
         
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
 
-        if(params.data.order != undefined){
+        if(params.data.order){
             delete params.data.order;
         }
 
-        if(params.data.pipeline != undefined){
+        if(params.data.pipeline){
             delete params.data.pipeline;
         }
 
-        if(params.data.type != undefined){
+        if(params.data.type){
             delete params.data.type;
         }
 
@@ -175,7 +192,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const user = await strapi.service('api::user.user').me();
 
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
 
         if(result.type == 'sourced' || result.type == 'apply'){
             return ctx.badRequest('It is not possible to delete that element', {

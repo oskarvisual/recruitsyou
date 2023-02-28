@@ -47,7 +47,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const user = await strapi.service('api::user.user').me();
         
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
         
         const response = await super.delete(entityId, params);
 

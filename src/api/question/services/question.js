@@ -19,10 +19,8 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             ],
         }
 
-        if(params.filters != undefined){
-            if(params.filters.questionnaire != undefined){
-                filters.$and.push({ questionnaire: params.filters.questionnaire })
-            }
+        if(params.filters?.questionnaire){
+            filters.$and.push({ questionnaire: params.filters.questionnaire })
         }
 
         params.filters = filters;
@@ -65,6 +63,23 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
 
+        if(!params.data?.questionnaire){ 
+            return ctx.badRequest('You must select a questionnaire', {});
+        }
+                
+        const questionnaire = await strapi.service('api::questionnaire.questionnaire').findOne(params.data.questionnaire);
+        if(!questionnaire){ 
+            return ctx.notFound('These attributes were not found', { 
+                errors: [
+                    {
+                        path: ['questionnaire'],
+                        message: 'These attributes were not found',
+                        name: 'ValidationError'
+                    }
+                ]
+            });
+        } 
+
         const countQuestions = await strapi.db.query('api::question.question').count({ 
             filters: { 
                 $and: [
@@ -72,7 +87,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                         company: user.company.id,
                     },
                     {
-                        questionnaire: params.data.questionnaire,
+                        questionnaire: questionnaire.id,
                     },
                 ]
             }
@@ -91,13 +106,13 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                         company: user.company.id,
                     },
                     {
-                        questionnaire: params.data.questionnaire,
+                        questionnaire: questionnaire.id,
                     },
                 ],
             },
-            orderBy: { order: 'DESC' },
-            offset: 0, 
+            start: 0, 
             limit: 1,
+            sort: { order: 'desc' },
         });
         
         let order = 0;
@@ -123,13 +138,13 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
         
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
 
-        if(params.data.order != undefined){
+        if(params.data.order){
             delete params.data.order;
         }
 
-        if(params.data.questionnaire != undefined){
+        if(params.data.questionnaire){
             delete params.data.questionnaire;
         }
 
@@ -141,7 +156,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const user = await strapi.service('api::user.user').me();
         
         const result = await strapi.service(api).findOne(entityId);
-        if(result == null){ return null; }
+        if(!result){ return null; }
         
         const response = await super.delete(entityId, params);
 

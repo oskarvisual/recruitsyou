@@ -83,12 +83,7 @@ module.exports = {
 
         const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
         
-        if(
-            customer.address == null || 
-            customer.name == null || 
-            customer.email == null || 
-            customer.phone == null
-        ){
+        if(!customer.address || !customer.name || !customer.email || !customer.phone){
             return ctx.badRequest('You must first update your billing contact information', {});
         }
 
@@ -131,12 +126,7 @@ module.exports = {
 
         const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
         
-        if(
-            customer.address == null || 
-            customer.name == null || 
-            customer.email == null || 
-            customer.phone == null
-        ){
+        if(!customer.address || !customer.name || !customer.email || !customer.phone){
             return ctx.badRequest('You must first update your billing contact information', {});
         }
 
@@ -213,12 +203,7 @@ module.exports = {
 
         const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
         
-        if(
-            customer.address == null || 
-            customer.name == null || 
-            customer.email == null || 
-            customer.phone == null
-        ){
+        if(!customer.address || !customer.name || !customer.email || !customer.phone){
             return ctx.badRequest('You must first update your billing contact information', {});
         }
         
@@ -245,12 +230,7 @@ module.exports = {
 
         const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
         
-        if(
-            customer.address == null || 
-            customer.name == null || 
-            customer.email == null || 
-            customer.phone == null
-        ){
+        if(!customer.address || !customer.name || !customer.email || !customer.phone){
             return ctx.badRequest('You must first update your billing contact information', {});
         }
         
@@ -277,12 +257,7 @@ module.exports = {
 
         const customer = await strapi.service('api::stripe.stripe').findOneCustomer(user.company.customerID);
         
-        if(
-            customer.address == null || 
-            customer.name == null || 
-            customer.email == null || 
-            customer.phone == null
-        ){
+        if(!customer.address || !customer.name || !customer.email || !customer.phone){
             return ctx.badRequest('You must first update your billing contact information', {});
         }
         
@@ -338,7 +313,7 @@ module.exports = {
 
             const customer = await strapi.service('api::stripe.stripe').findOneCustomer(invoice.customer);
 
-            if(invoice.subscription != null){
+            if(invoice.subscription){
                 const subscription = await strapi.service('api::stripe.stripe').findOneSubscription(invoice.subscription);
 
                 if(subscription.status != "active"){
@@ -394,7 +369,7 @@ module.exports = {
                         },
                     });
 
-                    if(customer.email != null){
+                    if(customer.email){
                         await strapi.service('api::email.email').create({
                             data:{
                                 from: process.env.SMTP_FROM,
@@ -459,7 +434,7 @@ module.exports = {
 
             const customer = await strapi.service('api::stripe.stripe').findOneCustomer(subscription.customer);
 
-            if(customer.email != null){
+            if(customer.email){
                 await strapi.service('api::email.email').create({
                     data:{
                         from: process.env.SMTP_FROM,
@@ -489,7 +464,7 @@ module.exports = {
 
             const customer = await strapi.service('api::stripe.stripe').findOneCustomer(subscription.customer);
 
-            if(customer.email != null){
+            if(customer.email){
                 await strapi.service('api::email.email').create({
                     data:{
                         from: process.env.SMTP_FROM,
@@ -519,7 +494,7 @@ module.exports = {
 
             const customer = await strapi.service('api::stripe.stripe').findOneCustomer(paymentIntent.customer);
 
-            if(customer.email != null){
+            if(customer.email){
                 await strapi.service('api::email.email').create({
                     data:{
                         from: process.env.SMTP_FROM,

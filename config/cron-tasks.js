@@ -38,7 +38,7 @@ module.exports = {
                 });
 
                 for (let i = 0; i < emails.length; i++) {
-                    if(emails[i].company != null){
+                    if(emails[i].company){
                         emails[i].company = await strapi.db.query('api::company.company').findOne({
                             select: [
                                 'id',
@@ -98,7 +98,7 @@ module.exports = {
                             },
                         });
 
-                        if(emails[i].company != null){
+                        if(emails[i].company){
                             await strapi.service('api::log.log').create({
                                 data:{
                                     company: emails[i].company.id,
@@ -208,7 +208,7 @@ module.exports = {
                 for(let i = 0; i < companies.length; i++){
                     const customer = await strapi.service('api::stripe.stripe').findOneCustomer(companies[i].customerID);
 
-                    if(customer.email != null){
+                    if(customer.email){
                         await strapi.service('api::email.email').create({
                             data:{
                                 from: process.env.SMTP_FROM,
@@ -278,7 +278,7 @@ module.exports = {
                 for(let i = 0; i < companies.length; i++){
                     const customer = await strapi.service('api::stripe.stripe').findOneCustomer(companies[i].customerID);
 
-                    if(customer.email != null){
+                    if(customer.email){
                         await strapi.service('api::email.email').create({
                             data:{
                                 from: process.env.SMTP_FROM,

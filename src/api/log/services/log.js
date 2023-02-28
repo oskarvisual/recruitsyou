@@ -67,7 +67,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
         params.data.ip = ip.address();
 
-        if(params.data.company == undefined || params.data.company == null){
+        if(!params.data.company){
             return null;
         }
         
