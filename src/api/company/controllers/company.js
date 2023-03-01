@@ -537,7 +537,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     timezone: 'America/Los_Angeles',
                     nationality: 'US',
                     birthDate:  moment(new Date(birthDates[i].toISOString())).format('YYYY-MM-DD'),
-                    gender: (gender == 'male' || gender == 'female') ? gender :  'not specified',
+                    gender: (gender == 'male' || gender == 'female') ? gender :  'not-specified',
                     source: sourceIds[Math.floor(Math.random() * sourceIds.length)],
                     salaryExpectation: faker.datatype.number({ min: 3000, max: 5000 }),
                     address: faker.address.streetAddress(),

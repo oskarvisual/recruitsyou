@@ -77,6 +77,10 @@
         "male",
         "female",
         "non-binary",
+        "gender-fluid",
+        "genderqueer",
+        "trans",
+        "two-spirit",
         "not-specified"
       ]
     },
@@ -148,6 +152,79 @@
     },
     "salaryCurrency": {
       "type": "string"
+    },
+    "ethnicity": {
+      "type": "enumeration",
+      "enum": [
+        "american-indian",
+        "white",
+        "black",
+        "east-asian",
+        "hispanic ",
+        "native-hawaiian",
+        "more-races",
+        "other "
+      ]
+    },
+    "sexualOrientation": {
+      "type": "enumeration",
+      "enum": [
+        "asexual",
+        "bi",
+        "gay-man",
+        "gay-woman",
+        "heterosexual",
+        "pansexual",
+        "queer",
+        "not-specified",
+        "other"
+      ]
+    },
+    "religion": {
+      "type": "enumeration",
+      "enum": [
+        "buddhist",
+        "catholic",
+        "christian",
+        "hindu",
+        "jewish",
+        "muslim",
+        "no-religion",
+        "not-specified",
+        "other"
+      ]
+    },
+    "disability": {
+      "type": "enumeration",
+      "enum": [
+        "yes",
+        "no",
+        "not-specified"
+      ]
+    },
+    "veteranStatus": {
+      "type": "enumeration",
+      "enum": [
+        "active-wartime",
+        "armed-forces-service-medal-veteran",
+        "disabled-veteran",
+        "protected-veteran",
+        "not-protected-veteran",
+        "not-veteran",
+        "recently-separated-veteran",
+        "not-specified"
+      ]
+    },
+    "pronouns": {
+      "type": "enumeration",
+      "enum": [
+        "she",
+        "he",
+        "they",
+        "no-pronouns",
+        "other",
+        "not-specified"
+      ]
     }
   }
 }
