@@ -633,7 +633,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     job: job.id,
                     stage: stageApply.id,
                     candidate: candidateIds[i],
-                    order: i,
+                    order: i - 7,
                 },
             });
         }
@@ -655,7 +655,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     job: job.id,
                     stage: stageInterview.id,
                     candidate: candidateIds[i],
-                    order: i,
+                    order: i - 10,
                 },
             });
         }
@@ -677,7 +677,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     job: job.id,
                     stage: stageAssessment.id,
                     candidate: candidateIds[i],
-                    order: i,
+                    order: i - 13,
                 },
             });
         }
@@ -699,7 +699,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     job: job.id,
                     stage: stageOffer.id,
                     candidate: candidateIds[i],
-                    order: i,
+                    order: i - 15,
                 },
             });
         }

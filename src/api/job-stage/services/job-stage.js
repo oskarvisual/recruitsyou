@@ -39,7 +39,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     
         return result[0];
     },
-    async getJobStageOrder(jobId, type) {
+    async getJobStageOrder(jobId, stageId) {
         const user = await strapi.service('api::user.user').me();
 
         const job = await strapi.service('api::job.job').findOne(jobId);
@@ -48,20 +48,29 @@ module.exports = createCoreService(api, ({ strapi }) => ({
 
         if(!job){ return false }
 
+        let filters = {
+            $and: [
+                {
+                    company: user.company.id,
+                },
+                {
+                    job: job.id,
+                },
+            ],
+        }
+
+        if(typeof(stageId) == 'number'){
+            filters.$and.push({
+                id: stageId,
+            });
+        }else{
+            filters.$and.push({
+                type: stageId,
+            });
+        }
+
         const stage = await strapi.entityService.findMany('api::job-stage.job-stage', {
-            filters: {
-                $and: [
-                    {
-                        company: user.company.id,
-                    },
-                    {
-                        job: job.id,
-                    },
-                    {
-                        type: type,
-                    },
-                ],
-            },
+            filters: filters,
         });
 
         if(stage.length == 0){ return false }
