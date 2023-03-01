@@ -128,7 +128,7 @@ module.exports = {
                             done: 0,
                         },
                         {
-                            expireDate: {
+                            expire: {
                                 $between: [startMinute, endMinute]
                             },
                         },

@@ -34,7 +34,7 @@
     "description": {
       "type": "text"
     },
-    "expireDate": {
+    "expire": {
       "type": "datetime",
       "required": true
     },
