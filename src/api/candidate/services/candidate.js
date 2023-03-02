@@ -21,17 +21,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             ],
         }
         //TODO: VER SI SE PUEDE MEJORAR FILTRO CON ESTO
-        /*
-        filters: {
-            chef: {
-                restaurants: {
-                    stars: {
-                        $eq: 5,
-                    },
-                },
-            },
-        }
-        */
 
         if(params.filters){
             let candidates = [];
@@ -50,115 +39,148 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                             ],
                         },
                         populate: { 
-                            candidate: true,
+                            candidate: {
+                                fields: [
+                                    'id',
+                                ],
+                            },
                         },
                     });
-    
-
-                    for(let i = 0; i < jobCandidates.length; i++){
-                        if(jobCandidates[i].candidate){
-                            candidates.push(jobCandidates[i].candidate.id);
-                        }
+                    
+                    if(jobCandidates.length == 0){
+                        return { results: null, pagination: null };
                     }
 
+                    candidates = jobCandidates.map(s => s.candidate.id);
+                    
                     filters.$and.push({ id: {
                             $in: candidates
                         }
                     });
                 }else{
-                    if(params.filters.stage){
-                        let stage = await strapi.entityService.findMany('api::job-stage.job-stage', {
-                            filters: {
-                                $and: [
-                                    {
-                                        company: user.company.id,
-                                    },
-                                    {
-                                        job: params.filters.job,
-                                    },
-                                    {
-                                        type: params.filters.stage,
-                                    },
-                                ],
-                            },
-                        });
-
-                        if(stage.length > 0){
-                            let stageCandidates = await strapi.entityService.findMany('api::job-candidate.job-candidate', {
-                                filters: {
-                                    $and: [
-                                        {
-                                            company: user.company.id,
-                                        },
-                                        {
-                                            job: params.filters.job,
-                                        },
-                                        {
-                                            stage: stage[0].id,
-                                        },
-                                    ],
-                                },
-                                populate: { 
-                                    candidate: true,
-                                },
-                            });
-            
-                            for(let i = 0; i < stageCandidates.length; i++){
-                                if(stageCandidates[i].candidate){
-                                    candidates.push(stageCandidates[i].candidate.id);
-                                }
-                            }
-
-                            filters.$and.push({ id: {
-                                    $in: candidates
-                                }
-                            });
-                        }
-                    }
-                }
-            }else if(params.filters.stage){
-                let stage = await strapi.entityService.findMany('api::job-stage.job-stage', {
-                    filters: {
+                    let stageFilters = {
                         $and: [
                             {
                                 company: user.company.id,
                             },
                             {
-                                type: params.filters.stage,
+                                job: params.filters.job,
                             },
                         ],
-                    },
-                });
+                    };
 
-                if(stage.length > 0){
-                    let stages = [];
-                    for(let i = 0; i < stage.length; i++){
-                        stages.push(stage[i].id);
+                    if(typeof(params.filters.stage) == 'number'){
+                        stageFilters.$and.push({
+                            id: params.filters.stage,
+                        });
+                    }else{
+                        stageFilters.$and.push({
+                            type: params.filters.stage,
+                        });
+                    }
+
+                    let stage = await strapi.entityService.findMany('api::job-stage.job-stage', {
+                        filters: stageFilters,
+                    });
+
+                    if(stage.length == 0){
+                        return { results: null, pagination: null };
                     }
 
                     let stageCandidates = await strapi.entityService.findMany('api::job-candidate.job-candidate', {
                         filters: {
-                            stage: stages
+                            $and: [
+                                {
+                                    company: user.company.id,
+                                },
+                                {
+                                    job: params.filters.job,
+                                },
+                                {
+                                    stage: stage[0].id,
+                                },
+                            ],
                         },
                         populate: { 
-                            candidate: true,
+                            candidate: {
+                                fields: [
+                                    'id',
+                                ],
+                            },
                         },
                     });
-
-                    for(let i = 0; i < stageCandidates.length; i++){
-                        if(stageCandidates[i].candidate){
-                            candidates.push(stageCandidates[i].candidate.id);
-                        }
+            
+                    if(stageCandidates.length == 0){
+                        return { results: null, pagination: null };
                     }
+
+                    candidates = stageCandidates.map(s => s.candidate.id);
 
                     filters.$and.push({ id: {
                             $in: candidates
                         }
                     });
                 }
+            }else if(params.filters.stage){
+                let stageFilters = {
+                    $and: [
+                        {
+                            company: user.company.id,
+                        },
+                    ],
+                };
+
+                if(typeof(params.filters.stage) == 'number'){
+                    stageFilters.$and.push({
+                        id: params.filters.stage,
+                    });
+                }else{
+                    stageFilters.$and.push({
+                        type: params.filters.stage,
+                    });
+                }
+
+
+                let stage = await strapi.entityService.findMany('api::job-stage.job-stage', {
+                    filters: stageFilters,
+                });
+
+                if(stage.length == 0){
+                    return { results: null, pagination: null };
+                }
+
+                let stages = stage.map(s => s.id);
+
+                let stageCandidates = await strapi.entityService.findMany('api::job-candidate.job-candidate', {
+                    filters: {
+                        stage: {
+                            id: {
+                                $in: stages
+                            }
+                        }
+                    },
+                    populate: { 
+                        candidate: {
+                            fields: [
+                                'id',
+                            ],
+                        },
+                    },
+                });
+                
+                if(stageCandidates.length == 0){
+                    return { results: null, pagination: null };
+                }
+
+                candidates = stageCandidates.map(s => s.candidate.id);
+
+                filters.$and.push({ id: {
+                        $in: candidates
+                    }
+                });
             }
             if(params.filters.createdAt){
-                filters.$and.push({ rating: {
+                filters.$and.push({ createdAt: {
                         $lte: params.filters.createdAt,
                     } 
                 });
@@ -169,20 +191,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     }
                 });
             }
-            if(params.filters.salaryExpectationMin && params.filters.salaryExpectationMax){
-                filters.$and.push({ rating: {
-                        $between: [params.filters.salaryExpectationMin, params.filters.salaryExpectationMax],
-                    } 
-                })
-            }
-            if(params.filters.salaryExpectationMin && !params.filters.salaryExpectationMax){
-                filters.$and.push({ rating: {
+            if(params.filters.salaryExpectationMin){
+                filters.$and.push({ salaryExpectation: {
                         $gte: params.filters.salaryExpectationMin,
                     } 
                 })
             }
-            if(!params.filters.salaryExpectationMin && params.filters.salaryExpectationMax){
-                filters.$and.push({ rating: {
+            if(params.filters.salaryExpectationMax){
+                filters.$and.push({ salaryExpectation: {
                         $lte: params.filters.salaryExpectationMax,
                     } 
                 })
@@ -194,7 +210,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 filters.$and.push({ disqualifyReason: params.filters.disqualifyReason })
             }
             if(params.filters.tags){
-                filters.$and.push({ rating: {
+                filters.$and.push({ tags: {
                         $in: params.filters.tags,
                     } 
                 })
@@ -211,6 +227,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         params.populate = { 
             photo: true,
         };
+        
         const result = await super.find(params);
 
         for(let i = 0; i < result.results.length; i++){

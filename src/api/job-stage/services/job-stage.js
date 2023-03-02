@@ -6,7 +6,7 @@
 
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::job-stage.job-stage';
-//TODO: AGREGAR LIMITE DE 15 STAGES
+//TODO: AGREGAR LIMITE DE 15 STAGES y Validar que job EXISTE COMO EN STAGES()
 module.exports = createCoreService(api, ({ strapi }) => ({
     async find(params) {
         const user = await strapi.service('api::user.user').me();
