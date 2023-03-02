@@ -1,0 +1,43 @@
+{
+  "collectionName": "components_document_signers",
+  "info": {
+    "displayName": "signers",
+    "description": ""
+  },
+  "options": {},
+  "attributes": {
+    "candidate": {
+      "type": "boolean",
+      "default": false
+    },
+    "name": {
+      "type": "string"
+    },
+    "comment": {
+      "type": "text"
+    },
+    "ip": {
+      "type": "string"
+    },
+    "position": {
+      "type": "string"
+    },
+    "email": {
+      "type": "email"
+    },
+    "signed": {
+      "type": "boolean",
+      "default": false
+    },
+    "signedDate": {
+      "type": "datetime"
+    },
+    "code": {
+      "type": "customField",
+      "customField": "plugin::field-uuid.uuid"
+    },
+    "sign": {
+      "type": "text"
+    }
+  }
+}

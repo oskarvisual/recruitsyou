@@ -23,10 +23,8 @@
       "target": "plugin::users-permissions.user"
     },
     "title": {
-      "type": "string"
-    },
-    "document": {
-      "type": "richtext"
+      "type": "string",
+      "required": true
     },
     "file": {
       "type": "media",
@@ -36,19 +34,47 @@
         "files"
       ]
     },
-    "variables": {
-      "type": "json"
-    },
-    "sign": {
-      "type": "boolean"
-    },
     "type": {
       "type": "enumeration",
       "enum": [
-        "document",
-        "file"
+        "sign",
+        "file",
+        "file-request"
       ],
-      "default": "document"
+      "default": "sign",
+      "required": true
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "candidate": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::candidate.candidate"
+    },
+    "code": {
+      "type": "customField",
+      "customField": "plugin::field-uuid.uuid",
+      "required": true
+    },
+    "signers": {
+      "displayName": "signers",
+      "type": "component",
+      "repeatable": true,
+      "component": "document.signers"
+    },
+    "status": {
+      "type": "enumeration",
+      "enum": [
+        "created",
+        "sent",
+        "pending",
+        "done",
+        "rejected"
+      ],
+      "default": "created"
     }
   }
 }

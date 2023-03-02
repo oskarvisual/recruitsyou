@@ -784,12 +784,12 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
                 company: company.data.id,
-                type: 'test',
-                template: 'Test Invitation',
-                subject: `Test Invitation for {job.title}`,
+                type: 'assessment',
+                template: 'Assessment Invitation',
+                subject: `Assessment Invitation for {job.title}`,
                 message: `<p>Dear {candidate.firstName},</p>
         
-                <p>We are writing to invite you to participate in a series of psychological and/or psychometric tests as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your cognitive and behavioral characteristics to ensure that you are the best fit for the role.</p>
+                <p>We are writing to invite you to participate in a series of tests as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your cognitive and behavioral characteristics to ensure that you are the best fit for the role.</p>
         
                 <p>The tests will be conducted online. They will assess your cognitive abilities, personality traits, work-related values, intelligence, etc. The results will be used to evaluate your suitability for the position and to provide feedback on your strengths and areas for improvement.</p>
                 
@@ -920,22 +920,18 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
                 company: company.data.id,
-                type: 'onboarding',
-                template: 'Onboarding',
-                subject: `Welcome to {company.company} - Next Steps for Onboarding`,
+                type: 'document',
+                template: 'Document',
+                subject: `{company.company} sent you a document to {document.type}`,
                 message: `<p>Dear {email.firstName},</p>
-        
-                <p>We are thrilled to have you join our team at {company.company}!</p>
                 
-                <p>As a next step in the onboarding process, we would like to ask you to review and sign a few important documents.</p>
+                <p>{company.company} sent you a document to {document.type}</p>
                 
-                <p>Please access the files using the link below:</p>
+                <p>{document.url}</p>
+
+                <p>Document: {document.title}</p>
                 
-                <p>{job.url.onboarding}</p>
-                
-                <p>If you have any questions or concerns regarding these documents, please don't hesitate to reach out to our HR team.</p>
-                
-                <p>Thank you and we look forward to having you on board!</p>
+                <p>If you have any questions or concerns regarding this document, please don't hesitate to reach out to our HR team.</p>
                 
                 <p>Kind regards,</p>`,
                 default: 1,

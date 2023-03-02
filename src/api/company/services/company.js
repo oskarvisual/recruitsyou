@@ -71,6 +71,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         return result[0];
     },
     async update(entityId, params) {
+        //TODO: VALIDAR URL, QUITAR PROTCOL, ETC...
         const user = await strapi.service('api::user.user').me();
         
         if(entityId != user.company.id){ return null; }

@@ -24,12 +24,12 @@
         "candidate",
         "referral",
         "scheduler",
-        "test",
+        "assessment",
         "questionnaire",
         "nps",
         "gpdr",
         "disqualify",
-        "onboarding",
+        "document",
         "general"
       ],
       "required": true

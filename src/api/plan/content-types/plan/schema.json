@@ -47,7 +47,7 @@
       "type": "boolean",
       "default": false
     },
-    "tests": {
+    "assessments": {
       "type": "boolean",
       "default": false
     },

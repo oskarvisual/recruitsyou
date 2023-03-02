@@ -33,10 +33,10 @@
         "referral",
         "scheduler",
         "questionnaire",
-        "test",
+        "assessment",
         "nps",
         "gpdr",
-        "onboarding"
+        "document"
       ]
     },
     "code": {
@@ -50,6 +50,14 @@
     },
     "expire": {
       "type": "datetime"
+    },
+    "document": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::document.document"
+    },
+    "email": {
+      "type": "email"
     }
   }
 }

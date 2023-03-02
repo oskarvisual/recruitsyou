@@ -12,10 +12,10 @@
         "referral",
         "scheduler",
         "questionnaire",
-        "test",
+        "assessment",
         "nps",
         "gpdr",
-        "onboarding"
+        "document"
       ]
     },
     "scheduler": {
@@ -25,6 +25,11 @@
     },
     "hours": {
       "type": "integer"
+    },
+    "document": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::document.document"
     }
   }
 }

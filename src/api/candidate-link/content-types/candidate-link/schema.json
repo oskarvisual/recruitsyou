@@ -29,7 +29,8 @@
     },
     "code": {
       "type": "customField",
-      "customField": "plugin::field-uuid.uuid"
+      "customField": "plugin::field-uuid.uuid",
+      "required": true
     },
     "expire": {
       "type": "datetime"

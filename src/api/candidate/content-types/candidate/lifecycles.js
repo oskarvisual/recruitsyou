@@ -26,6 +26,7 @@ module.exports = {
         });
     },
     async afterDelete(event) {
+        //TODO: ELIMINAR TODO LO RELACIONADO
         const { result, params } = event;
 
         const jobCandidates = await strapi.db.query('api::job-candidate.job-candidate').findMany({
@@ -48,7 +49,7 @@ module.exports = {
             
         }
 
-        const fileCandidates = await strapi.db.query('api::candidate-file.candidate-file').findMany({
+        const fileCandidates = await strapi.db.query('api::document.document').findMany({
             fields: ['id'],
             filters: {
                 candidate: result.id,
@@ -58,7 +59,7 @@ module.exports = {
         if(fileCandidates.length > 0){
             const fileCandidateIds = fileCandidates.map(s => s.id);
     
-            await strapi.db.query('api::candidate-file.candidate-file').deleteMany({
+            await strapi.db.query('api::document.document').deleteMany({
                 where: {
                     id: {
                         $in: fileCandidateIds,
