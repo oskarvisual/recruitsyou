@@ -67,7 +67,7 @@ module.exports = {
 
         return user;
     },
-    async findMany(params) {  
+    async find(params) {  
         const user = await strapi.service('api::user.user').me();
 
         params.fields = [
@@ -93,14 +93,13 @@ module.exports = {
                 },
             ],
         }
-        if(params.filters){
-            if(params.filters.email){
-                filters.$and.push({ email: {
-                        $contains: params.filters.email,
-                    }
-                });
-            }
+        if(params.filters?.email){
+            filters.$and.push({ email: {
+                    $contains: params.filters.email,
+                }
+            });
         }
+        
         params.filters = filters;
         params.populate = { 
             role: true,
@@ -233,7 +232,7 @@ module.exports = {
             meta: {}
         };
     },
-    async findManyRoles(params) {  
+    async findRoles(params) {  
         const user = await strapi.service('api::user.user').me();
 
         params.filters = {

@@ -113,10 +113,10 @@ module.exports = {
             meta: {}
         };
     },
-    async findMany(ctx){
+    async find(ctx){
         const query = ctx.request.query;
 
-        const result = await strapi.service('api::user.user').findMany(query);
+        const result = await strapi.service('api::user.user').find(query);
 
         const data = [];
 
@@ -397,10 +397,10 @@ module.exports = {
             meta: {}
         };
     },
-    async findManyRoles(ctx){
+    async findRoles(ctx){
         const query = ctx.request.query;
 
-        const result = await strapi.service('api::user.user').findManyRoles(query);
+        const result = await strapi.service('api::user.user').findRoles(query);
 
         const data = [];
 

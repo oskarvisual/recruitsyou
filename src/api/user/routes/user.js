@@ -3,7 +3,7 @@ module.exports = {
         {
             method: 'GET',
             path: '/user/role',
-            handler: 'user.findManyRoles',
+            handler: 'user.findRoles',
         },
         {
             method: 'GET',
@@ -23,7 +23,7 @@ module.exports = {
         {
             method: 'GET',
             path: '/user',
-            handler: 'user.findMany',
+            handler: 'user.find',
         },
         {
             method: 'GET',
