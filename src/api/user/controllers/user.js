@@ -397,4 +397,55 @@ module.exports = {
             meta: {}
         };
     },
+    async findManyRoles(ctx){
+        const query = ctx.request.query;
+
+        const result = await strapi.service('api::user.user').findManyRoles(query);
+
+        const data = [];
+
+        if(result.data){
+            for (let i = 0; i < result.data.length; i++) {
+                let id = result.data[i].id;
+                delete result.data[i].id;
+                let attributes = result.data[i];
+
+                let element = {
+                    id: id,
+                    attributes: attributes,
+                }
+                data.push(element);
+            }
+
+        }
+
+        ctx.body = {
+            data: data,
+            meta: result.meta
+        };
+    },
+    async findOneRole(ctx){
+        const { id } = ctx.params;
+        const query = ctx.request.query;
+        
+        const result = await strapi.service('api::user.user').findOneRole(id, query);
+        
+        if(!result){
+            return ctx.notFound('Not Found', {});
+        }
+
+        let roleId = result.data.id;
+        delete result.data.id;
+        let attributes = result.data;
+        let element = {
+            id: roleId,
+            attributes: attributes,
+        }
+        const data = element;
+
+        ctx.body = {
+            data: data,
+            meta: result.meta
+        };
+    },
 };

@@ -233,4 +233,55 @@ module.exports = {
             meta: {}
         };
     },
+    async findManyRoles(params) {  
+        const user = await strapi.service('api::user.user').me();
+
+        params.filters = {
+            id: {
+                $gte: 3,
+            },
+        };
+
+        let page = 1;
+
+        if(params.pagination?.page){ 
+            page = parseInt(params.pagination.page); 
+        }
+
+        if(params.pagination?.pageSize){
+            params.limit = parseInt(params.pagination.pageSize); 
+        }
+        
+        const total = await strapi.db.query('plugin::users-permissions.role').count(params);
+
+        params.start = (page - 1) * rest.defaultLimit;
+        params.limit = rest.defaultLimit;
+
+        const result = await strapi.entityService.findMany('plugin::users-permissions.role', params);
+
+        return {
+            data: result,
+            meta: {
+                pagination: {
+                    page: page,
+                    pageSize: params.limit,
+                    pageCount: Math.ceil(total / params.limit),
+                    total: total,
+                },
+            }
+        };
+    },
+    async findOneRole(entityId, params = {}) {
+        const user = await strapi.service('api::user.user').me();
+        
+        params.filters = {}
+        params.populate = {}
+        
+        const result = await strapi.entityService.findOne('plugin::users-permissions.role', entityId, params);
+
+        return {
+            data: result,
+            meta: {}
+        };
+    },
 };

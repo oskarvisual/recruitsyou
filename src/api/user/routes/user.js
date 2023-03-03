@@ -2,6 +2,16 @@ module.exports = {
     routes: [
         {
             method: 'GET',
+            path: '/user/role',
+            handler: 'user.findManyRoles',
+        },
+        {
+            method: 'GET',
+            path: '/user/role/:id',
+            handler: 'user.findOneRole',
+        },
+        {
+            method: 'GET',
             path: '/user/me',
             handler: 'user.me',
         },
