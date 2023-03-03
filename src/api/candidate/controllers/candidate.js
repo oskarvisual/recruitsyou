@@ -35,23 +35,14 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
         const data = await this.sanitizeInput(ctx.request.body.data);
 
         const response = await super.create(ctx);
-
-        const candidateId = response.data.id;
         
         if(data?.job){
-            const jobStageOrder = await strapi.service('api::job-stage.job-stage').getJobStageOrder(data.job, 'sourced');
-
-            if(jobStageOrder){
-                await strapi.service('api::job-candidate.job-candidate').create({
-                    data: {
-                        company: user.company.id,
-                        job: jobStageOrder.jobId,
-                        stage: jobStageOrder.stageId,
-                        candidate: candidateId,
-                        order: jobStageOrder.order,
-                    },
-                });
-            }
+            await strapi.service('api::job-candidate.job-candidate').create({
+                data: {
+                    candidate: response.data.id,
+                    job: data.job,
+                },
+            });
         }
 
         return response;
@@ -82,12 +73,6 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                 source: sourceName,
             }
         });
-
-        let jobStageOrder = false;
-        
-        if(data?.job){
-            jobStageOrder = await strapi.service('api::job-stage.job-stage').getJobStageOrder(data.job, 'sourced');
-        }
         
         let count = [];
         let countExist = [];
@@ -99,7 +84,7 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                     continue;
                 }
                 
-                const candidateData = {
+                let candidateData = {
                     data: {
                         company: user.company.id,
                         email: csv[i].email,
@@ -128,20 +113,17 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                     candidateData.data.mobile = csv[i].mobile;
                 }
 
-                const candidate = await strapi.service('api::candidate.candidate').create(candidateData);
+                let candidate = await strapi.service('api::candidate.candidate').create(candidateData);
 
                 if(candidate){
-                    if(candidate.exist){ count.push(candidate); }
+                    if(!candidate.exist){ count.push(candidate); }
                     else{ countExist.push(candidate); }
 
-                    if(jobStageOrder){
+                    if(data?.job){
                         await strapi.service('api::job-candidate.job-candidate').create({
                             data: {
-                                company: user.company.id,
                                 candidate: candidate.id,
-                                job: jobStageOrder.jobId,
-                                stage: jobStageOrder.stageId,
-                                order: jobStageOrder.order,
+                                job: data.job,
                             },
                         });
                     }
@@ -292,19 +274,12 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
         const candidate = await strapi.service('api::candidate.candidate').create(candidateData);
         
         if(data?.job){
-            const jobStageOrder = await strapi.service('api::job-stage.job-stage').getJobStageOrder(data.job, 'sourced');
-
-            if(jobStageOrder){
-                await strapi.service('api::job-candidate.job-candidate').create({
-                    data: {
-                        company: user.company.id,
-                        candidate: candidate.id,
-                        job: jobStageOrder.jobId,
-                        stage: jobStageOrder.stageId,
-                        order: jobStageOrder.order,
-                    },
-                });
-            }
+            await strapi.service('api::job-candidate.job-candidate').create({
+                data: {
+                    candidate: candidate.id,
+                    job: data.job,
+                },
+            });
         }
         
         let candidateId = candidate.id;

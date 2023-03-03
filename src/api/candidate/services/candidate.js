@@ -20,7 +20,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 },
             ],
         }
-        //TODO: VER SI SE PUEDE MEJORAR FILTRO CON ESTO
 
         if(params.filters){
             let candidates = [];

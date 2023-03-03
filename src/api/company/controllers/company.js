@@ -714,6 +714,16 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
             }
         });
 
+        await strapi.entityService.create('api::job-stage.job-stage',{
+            data: {
+                company: company.data.id,
+                job: job.id,
+                stage: 'Onboarding',
+                type: 'onboarding',
+                order: 6,
+            }
+        });
+
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
                 company: company.data.id,
