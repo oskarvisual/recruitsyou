@@ -12,8 +12,6 @@ module.exports = {
                 api: true,
                 database: true,
                 integrations: true,
-                support: true,
-                documentation: true,
             }
         }
     }
