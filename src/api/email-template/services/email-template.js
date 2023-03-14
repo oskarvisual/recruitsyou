@@ -89,6 +89,241 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     
         return result[0];
     },
+    async getTemplate(type, data) {
+        let filters = {
+            $and: [
+                {
+                    company: data.company.id,
+                },
+            ],
+        }
+
+        if(typeof(type) == 'number'){
+            filters.$and.push({
+                id: type,
+            });
+        }else{
+            filters.$and.push({
+                type: type,
+            });
+
+            filters.$and.push({
+                default: 1,
+            });
+        }
+
+        const result = await strapi.entityService.findMany(api, {
+            filters: filters
+        });
+        if(result.length == 0){ return false; }
+        let template = result[0];
+        
+        const expireDaysLinks = (data.company?.expireDaysLinks) ? data.company.expireDaysLinks : 5;
+        
+        if(template.subject.indexOf("{company.company}") >= 0 || template.body.indexOf("{company.company}") >= 0){
+            template.subject = template.subject.replaceAll('{company.company}', data.company.company);
+            template.body = template.body.replaceAll('{company.company}', data.company.company);
+        }
+
+        if(template.subject.indexOf("{company.url}") >= 0 || template.body.indexOf("{company.url}") >= 0){      
+            let companyUrl = await strapi.service('api::link.link').getUrl(data.company.domain, data.company.subdomain, null, 'company');      
+            template.subject = template.subject.replaceAll('{company.url}', companyUrl);
+            template.body = template.body.replaceAll('{company.url}', companyUrl);
+        }
+
+        if(template.subject.indexOf("{company.gpdrPrivacyUrl}") >= 0 || template.body.indexOf("{company.gpdrPrivacyUrl}") >= 0){      
+            template.subject = template.subject.replaceAll('{company.gpdrPrivacyUrl}', data.company.gpdrPrivacyUrl);
+            template.body = template.body.replaceAll('{company.gpdrPrivacyUrl}', data.company.gpdrPrivacyUrl);
+        }
+
+        if(template.subject.indexOf("{company.website}") >= 0 || template.body.indexOf("{company.website}") >= 0){      
+            template.subject = template.subject.replaceAll('{company.website}', data.company.website);
+            template.body = template.body.replaceAll('{company.website}', data.company.website);
+        }
+        
+        if(data.candidate){
+            if(template.subject.indexOf("{candidate.email}") >= 0 || template.body.indexOf("{candidate.email}") >= 0){
+                template.subject = template.subject.replaceAll('{candidate.email}', data.candidate.email);
+                template.body = template.body.replaceAll('{candidate.email}', data.candidate.email);
+            }
+    
+            if(template.subject.indexOf("{candidate.firstName}") >= 0 || template.body.indexOf("{candidate.firstName}") >= 0){
+                template.subject = template.subject.replaceAll('{candidate.firstName}', data.candidate.firstName);
+                template.body = template.body.replaceAll('{candidate.firstName}', data.candidate.firstName);
+            }
+    
+            if(template.subject.indexOf("{candidate.lastName}") >= 0 || template.body.indexOf("{candidate.lastName}") >= 0){
+                template.subject = template.subject.replaceAll('{candidate.lastName}', data.candidate.lastName);
+                template.body = template.body.replaceAll('{candidate.lastName}', data.candidate.lastName);
+            }        
+
+            if(template.subject.indexOf("{gpdr.url}") >= 0 || template.body.indexOf("{gpdr.url}") >= 0){
+                let link = await strapi.service('api::link.link').generate({
+                    data: {
+                        company: data.company,
+                        expireDaysLinks: expireDaysLinks,
+                        email: data.email,
+                        type: 'gpdr',
+                    }
+                });
+                
+                template.subject = template.subject.replaceAll('{gpdr.url}', link.url);
+                template.body = template.body.replaceAll('{gpdr.url}', link.url);
+            }
+        }
+    
+        if(template.subject.indexOf("{candidates.url}") >= 0 || template.body.indexOf("{candidates.url}") >= 0){
+            let link = await strapi.service('api::link.link').generate({
+                data: {
+                    company: data.company,
+                    expireDaysLinks: expireDaysLinks,
+                    candidates: data.candidates,
+                    email: data.email,
+                    type: 'candidates',
+                }
+            });
+            
+            template.subject = template.subject.replaceAll('{candidates.url}', link.url);
+            template.body = template.body.replaceAll('{candidates.url}', link.url);
+        }
+
+        if(data.document){
+            if(template.subject.indexOf("{document.url}") >= 0 || template.body.indexOf("{document.url}") >= 0){
+                let link = await strapi.service('api::link.link').generate({
+                    data: {
+                        company: data.company,
+                        expireDaysLinks: expireDaysLinks,
+                        document: data.document.id,
+                        email: data.email,
+                        type: 'document',
+                    }
+                });
+                
+                template.subject = template.subject.replaceAll('{document.url}', link.url);
+                template.body = template.body.replaceAll('{document.url}', link.url);
+            }
+    
+            if(template.subject.indexOf("{document.title}") >= 0 || template.body.indexOf("{document.title}") >= 0){
+                template.subject = template.subject.replaceAll('{document.title}', data.document.title);
+                template.body = template.body.replaceAll('{document.title}', data.document.title);
+            }
+    
+            if(template.subject.indexOf("{document.email}") >= 0 || template.body.indexOf("{document.email}") >= 0){
+                template.subject = template.subject.replaceAll('{document.email}', data.document.email);
+                template.body = template.body.replaceAll('{document.email}', data.document.email);
+            }
+    
+            if(template.subject.indexOf("{document.type}") >= 0 || template.body.indexOf("{document.lastName}") >= 0){
+                let typeDocument = 'sign';
+
+                if(data.document.type = 'file'){
+                    typeDocument = 'download';
+                }
+
+                if(data.document.type = 'file-request'){
+                    typeDocument = 'upload';
+                }
+                
+                template.subject = template.subject.replaceAll('{document.type}', typeDocument);
+                template.body = template.body.replaceAll('{document.type}', typeDocument);
+            }
+        }
+
+        if(data.job){
+            if(template.subject.indexOf("{job.title}") >= 0 || template.body.indexOf("{job.title}") >= 0){
+                template.subject = template.subject.replaceAll('{job.title}', data.job.title);
+                template.body = template.body.replaceAll('{job.title}', data.job.title);
+            }
+
+            if(template.subject.indexOf("{job.url}") >= 0 || template.body.indexOf("{job.url}") >= 0){
+                let jobUrl = await strapi.service('api::link.link').getUrl(data.company.domain, data.company.subdomain, job.code, 'job');
+                template.subject = template.subject.replaceAll('{job.url}', jobUrl);
+                template.body = template.body.replaceAll('{job.url}', jobUrl);
+            }
+
+            if(template.subject.indexOf("{job.url.scheduler}") >= 0 || template.body.indexOf("{job.url.scheduler}") >= 0){
+                let link = await strapi.service('api::link.link').generate({
+                    data: {
+                        company: data.company,
+                        expireDaysLinks: expireDaysLinks,
+                        job: data.job.id,
+                        email: data.email,
+                        type: 'scheduler',
+                    }
+                });
+                
+                template.subject = template.subject.replaceAll('{job.url.scheduler}', link.url);
+                template.body = template.body.replaceAll('{job.url.scheduler}', link.url);
+            }
+
+            if(template.subject.indexOf("{job.url.assessment}") >= 0 || template.body.indexOf("{job.url.assessment}") >= 0){
+                let link = await strapi.service('api::link.link').generate({
+                    data: {
+                        company: data.company,
+                        expireDaysLinks: expireDaysLinks,
+                        job: data.job.id,
+                        email: data.email,
+                        type: 'assessment',
+                    }
+                });
+                
+                template.subject = template.subject.replaceAll('{job.url.assessment}', link.url);
+                template.body = template.body.replaceAll('{job.url.assessment}', link.url);
+            }
+
+            if(template.subject.indexOf("{job.url.questionnaire}") >= 0 || template.body.indexOf("{job.url.questionnaire}") >= 0){
+                let link = await strapi.service('api::link.link').generate({
+                    data: {
+                        company: data.company,
+                        expireDaysLinks: expireDaysLinks,
+                        job: data.job.id,
+                        email: data.email,
+                        type: 'questionnaire',
+                    }
+                });
+                
+                template.subject = template.subject.replaceAll('{job.url.questionnaire}', link.url);
+                template.body = template.body.replaceAll('{job.url.questionnaire}', link.url);
+            }
+
+            if(template.subject.indexOf("{job.url.nps}") || template.body.indexOf("{job.url.nps}")){
+                let link = await strapi.service('api::link.link').generate({
+                    data: {
+                        company: data.company,
+                        expireDaysLinks: expireDaysLinks,
+                        job: data.job.id,
+                        email: data.email,
+                        type: 'nps',
+                    }
+                });
+                
+                template.subject = template.subject.replaceAll('{job.url.nps}', link.url);
+                template.body = template.body.replaceAll('{job.url.nps}', link.url);
+            }
+        }
+    
+        return template;
+    },
+    async sendTemplate(type, data){
+        const template = await strapi.service(api).getTemplate(type, data);
+
+        if(!template){ return false; }
+        
+        const result = await strapi.service('api::email.email').create({
+            data: {
+                company: data.company.id,
+                from: process.env.SMTP_FROM,
+                replyTo: template.replyTo,
+                to: data.email,
+                subject: template.subject,
+                body: template.body,
+                sent: 0,
+                sentAt: new Date(),
+            }
+        });
+
+        return result;
+    },
     async create(params) {
         const ctx = strapi.requestContext.get();
 

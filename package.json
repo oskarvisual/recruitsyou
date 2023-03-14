@@ -39,6 +39,8 @@
     "set-tz": "^0.2.0",
     "strapi-plugin-multi-select": "^1.1.0",
     "strapi-plugin-oembed": "^1.0.1",
+    "strapi-plugin-populate-deep": "^2.0.0",
+    "strapi-plugin-transformer": "^3.0.1",
     "strapi-provider-email-smtp": "^1.0.3",
     "strapi-tiptap-editor": "^0.9.8",
     "stripe": "^11.9.1",
@@ -55,5 +57,12 @@
     "node": ">=14.19.1 <=18.x.x",
     "npm": ">=6.0.0"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "standard": "^17.0.0",
+    "strapi-utils": "^3.6.11"
+  },
+  "eslintConfig": {
+    "extends": "./node_modules/standard/eslintrc.json"
+  }
 }

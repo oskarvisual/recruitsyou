@@ -44,7 +44,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             ],
         }
         params.populate = { 
-            questionnaire: true,
             alternatives: true
         };
 
@@ -69,7 +68,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 
         const questionnaire = await strapi.service('api::questionnaire.questionnaire').findOne(params.data.questionnaire);
         if(!questionnaire){ 
-            return ctx.notFound('These attributes were not found', { 
+            return ctx.badRequest('These attributes were not found', { 
                 errors: [
                     {
                         path: ['questionnaire'],
@@ -95,7 +94,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
 
         if(countQuestions >= 100){
             if(!user.company.plan.customize){ 
-                return ctx.forbidden('Exceeds the maximum question limit (100)', {});
+                return ctx.forbidden('Exceeds the maximum questions limit (100)', {});
             }
         }
 
@@ -115,13 +114,13 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             sort: { order: 'desc' },
         });
         
-        let order = 0;
+        let order = -1;
         
         if(questions.length > 0){
-            order = questions[0].order;
+            order = questions[0].order + 1;
         }
 
-        params.data.order = order + 1;
+        params.data.order = (order < 0) ? 0 : order;
         
         const response = await super.create(params);
 

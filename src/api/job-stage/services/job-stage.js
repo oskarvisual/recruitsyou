@@ -6,11 +6,22 @@
 
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::job-stage.job-stage';
-//TODO: AGREGAR LIMITE DE 15 STAGES y Validar que job EXISTE COMO EN STAGES()
+//TODO: AGREGAR LOGICA PARA ORDENAR (CON DRAG&DROP) Y QUE NO SE PUEDA MOVER SOURCE Y APPLY Y QUE ACTUALICE IGUAL QUE CANDIDATOS
 module.exports = createCoreService(api, ({ strapi }) => ({
     async find(params) {
         const user = await strapi.service('api::user.user').me();
-        params.filters = { company: user.company.id }
+        
+        let filters = {
+            $and: [
+                {
+                    company: user.company.id,
+                },
+            ],
+        }
+
+        if(params.filters?.job){
+            filters.$and.push({ job: params.filters.job })
+        }
         params.populate = {}
 
         const result = await super.find(params);
@@ -105,8 +116,101 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         }
     },
     async create(params) {
+        const ctx = strapi.requestContext.get();
+
         const user = await strapi.service('api::user.user').me();
         params.data.company = user.company.id;
+
+        if(!params.data?.job){ 
+            return ctx.badRequest('You must select a job', {});
+        }
+                
+        const job = await strapi.service('api::job.job').findOne(params.data.pipeline);
+        if(!job){ 
+            return ctx.badRequest('These attributes were not found', { 
+                errors: [
+                    {
+                        path: ['job'],
+                        message: 'These attributes were not found',
+                        name: 'ValidationError'
+                    }
+                ]
+            });
+        }    
+
+        const countStages = await strapi.db.query(api).count({ 
+            filters: { 
+                $and: [
+                    {
+                        company: user.company.id,
+                    },
+                    {
+                        job: job.id,
+                    },
+                ]
+            }
+        });
+
+        if(countStages >= 15){
+            return ctx.badRequest('Exceeds the maximum stages limit (15)', {});
+        }
+
+        const names = [];
+        const types = [];
+        let stages = await strapi.db.query(api).findMany({
+            filters: {
+                $and: [
+                    {
+                        company: user.company.id,
+                    },
+                    {
+                        job: job.id,
+                    },
+                ],
+            },
+            sort: { order: 'desc' },
+        });
+        
+        let order = -1;
+        
+        if(stages.length > 0){
+            order = stages[0].order + 1;
+            
+            for(let i = 0; i < stages.length; i++){
+                if(stages[i].type && !types.includes(stages[i].type)){
+                    types.push(stages[i].type);
+                }
+                if(!names.includes(stages[i].stage)){
+                    names.push(stages[i].stage);
+                }
+            }
+        }
+
+        if(params.data.type && types.includes(params.data.type)){
+            return ctx.badRequest('This attribute must be unique', {
+                errors: [
+                    {
+                        path: ['type'],
+                        message: 'This attribute must be unique',
+                        name: 'ValidationError'
+                    }
+                ]
+            });
+        }
+
+        if(names.includes(params.data.stage)){
+            return ctx.badRequest('This attribute must be unique', {
+                errors: [
+                    {
+                        path: ['stage'],
+                        message: 'This attribute must be unique',
+                        name: 'ValidationError'
+                    }
+                ]
+            });
+        }
+
+        params.data.order = (order < 0) ? 0 : order;
         
         const response = await super.create(params);
 
@@ -119,6 +223,14 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         const result = await strapi.service(api).findOne(entityId);
         if(!result){ return null; }
 
+        if(params.data.job){
+            delete params.data.job;
+        }
+
+        if(params.data.type){
+            delete params.data.type;
+        }
+
         const response = await super.update(entityId, params);
     
         return response;
@@ -128,6 +240,18 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         
         const result = await strapi.service(api).findOne(entityId);
         if(!result){ return null; }
+
+        if(result.type == 'sourced' || result.type == 'apply'){
+            return ctx.badRequest('It is not possible to delete that element', {
+                errors: [
+                    {
+                        path: ['type'],
+                        message: `It is not possible to delete an element of type ${result.type}`,
+                        name: 'ValidationError'
+                    }
+                ]
+            });
+        }
         
         const response = await super.delete(entityId, params);
 

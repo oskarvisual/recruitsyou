@@ -12,7 +12,15 @@
   },
   "pluginOptions": {},
   "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
     "from": {
+      "type": "email"
+    },
+    "replyTo": {
       "type": "email"
     },
     "to": {
@@ -24,23 +32,26 @@
     "body": {
       "type": "richtext"
     },
+    "event": {
+      "type": "json"
+    },
     "sent": {
       "type": "boolean",
       "default": false
     },
-    "company": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::company.company"
-    },
-    "replyTo": {
-      "type": "email"
-    },
-    "event": {
-      "type": "json"
-    },
-    "sendDate": {
+    "sentAt": {
       "type": "datetime"
+    },
+    "attachments": {
+      "type": "media",
+      "multiple": true,
+      "required": false,
+      "allowedTypes": [
+        "images",
+        "files",
+        "videos",
+        "audios"
+      ]
     }
   }
 }

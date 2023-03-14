@@ -1,4 +1,4 @@
-const collection = "candidate";
+const collection = "job";
 
 module.exports = {
     async afterCreate(event) {
@@ -26,7 +26,7 @@ module.exports = {
         });
     },
     async afterDelete(event) {
-        const { result, params } = event;
+        const { result, params } = event;   
 
         await strapi.service('api::log.log').create({
             data:{

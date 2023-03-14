@@ -22,6 +22,11 @@ module.exports = {
         },
         {
             method: 'POST',
+            path: '/ai/candidate-match',
+            handler: 'ai.candidateMatch',
+        },
+        {
+            method: 'POST',
             path: '/ai/email',
             handler: 'ai.email',
         },

@@ -4,7 +4,8 @@
   "info": {
     "singularName": "page",
     "pluralName": "pages",
-    "displayName": "Page"
+    "displayName": "Page",
+    "description": ""
   },
   "options": {
     "draftAndPublish": true
@@ -26,8 +27,10 @@
       "type": "enumeration",
       "enum": [
         "home",
+        "jobs",
         "job",
         "referral",
+        "link",
         "page"
       ],
       "default": "page"

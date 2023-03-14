@@ -20,101 +20,112 @@ const geoip = require('geoip-lite');
 //TODO: TODO DEBE TENER SU POPULATE INCLUIDO EN LA CONSULTA PARA NO PONERLO EN LA URL
 //TODO: FALTA CREAR PLANTILLA DE PAGINAS CON (publishedAt: new Date())
 //TODO: FALTA MODIFICAR PLANTILLA DE CORREOS CON VARIABLES REALES
-//TODO: CREAR WEBHOOKS para recibir pagos o caneclaciones de stripe
-//TODO: Crear listado y detalles de invoices
 module.exports = createCoreController('api::company.company', ({ strapi }) => ({
     async create(ctx){
+        let user = await strapi.service('api::user.user').me();
+
         const data = await this.sanitizeInput(ctx.request.body.data);
 
-        const userIp = ip.address();
-        const userGeo = geoip.lookup(userIp);
-
-        if(!CompanyEmailValidator.isCompanyEmail(data.email)){
-            return ctx.badRequest('Only business emails are allowed', {});
-        }
-
-        if(!data.company){
-            return ctx.badRequest('company must be defined', { 
-                errors: [
-                    {
-                        path: ['company'],
-                        message: 'company must be defined',
-                        name: 'ValidationError'
-                    }
-                ]
-            });
-        }
-
-        if(!data.email){
-            return ctx.badRequest('email must be defined', { 
-                errors: [
-                    {
-                        path: ['email'],
-                        message: 'email must be defined',
-                        name: 'ValidationError'
-                    }
-                ]
-            });
-        }
-
-        const checkUsername = await strapi.db.query('plugin::users-permissions.user').count({ filters: { username: data.email }});
-        if(checkUsername > 0){
-            return ctx.badRequest('This attribute must be unique', { 
-                errors: [
-                    {
-                        path: ['email'],
-                        message: 'This attribute must be unique',
-                        name: 'ValidationError'
-                    }
-                ]
-            });
-        }
-
-        const checkEmail = await strapi.db.query('plugin::users-permissions.user').count({ filters: { email: data.email }});
-        if(checkEmail > 0){
-            return ctx.badRequest('This attribute must be unique', { 
-                errors: [
-                    {
-                        path: ['username'],
-                        message: 'This attribute must be unique',
-                        name: 'ValidationError'
-                    }
-                ]
-            });
-        }
-
-        const domainEmail = data.email.split('@').pop();
-
-        const checkEmailExist = await strapi.db.query('plugin::users-permissions.user').count({ filters: { 
-            email: {
-                $endsWith: '@' + domainEmail,
-            }
-        }});
-        if(checkEmailExist > 0){
-            return ctx.badRequest('An email is already registered with that domain', {});
-        }
-
-        const dueDate = moment(new Date()).add(process.env.ATS_TRIAL_DAYS, 'days').format('YYYY-MM-DD');
         const password = nanoid();
 
-        const user = await strapi.entityService.create('plugin::users-permissions.user',{
-            data: {
-                username: data.email,
-                email: data.email,
-                provider: 'local',
-                password: password,
-                role: process.env.ATS_ADMINISTRATOR_ROLE,
-                firstName: data.firstName,
-                lastName: data.lastName,
-                confirmed: 1,
-                administrator: 1,
-                timezone: (userGeo) ? userGeo.timezone : null,
+        let dueDate = moment(new Date()).format('YYYY-MM-DD'); 
+        
+        let demo = 0;
+        let plan = process.env.ATS_FREE_PLAN;
+
+        if(!user){
+            demo = 1;
+            plan = process.env.ATS_PRO_PLAN;
+
+            dueDate = moment(new Date()).add(process.env.ATS_TRIAL_DAYS, 'days').format('YYYY-MM-DD');        
+
+            const userIp = ip.address();
+            const userGeo = geoip.lookup(userIp);
+
+            if(!CompanyEmailValidator.isCompanyEmail(data.email)){
+                return ctx.badRequest('Only business emails are allowed', {});
             }
-        });
-        delete user.username;
-        delete user.password;
-        delete user.resetPasswordToken;
-        delete user.confirmationToken;
+
+            if(!data.company){
+                return ctx.badRequest('company must be defined', { 
+                    errors: [
+                        {
+                            path: ['company'],
+                            message: 'company must be defined',
+                            name: 'ValidationError'
+                        }
+                    ]
+                });
+            }
+
+            if(!data.email){
+                return ctx.badRequest('email must be defined', { 
+                    errors: [
+                        {
+                            path: ['email'],
+                            message: 'email must be defined',
+                            name: 'ValidationError'
+                        }
+                    ]
+                });
+            }
+
+            const checkUser = await strapi.db.query('plugin::users-permissions.user').count({ 
+                filters: {
+                    $or: [
+                        { username: data.email },
+                        { email: data.email },
+                    ]
+                }
+            });
+
+            if(checkUser > 0){
+                return ctx.badRequest('The email or username is already registered in the system', {});
+            }
+
+            const domainEmail = data.email.split('@').pop();
+    
+            const checkEmailExist = await strapi.db.query('plugin::users-permissions.user').count({ filters: { 
+                email: {
+                    $endsWith: '@' + domainEmail,
+                }
+            }});
+            if(checkEmailExist > 0){
+                return ctx.badRequest('An email is already registered with that domain', {});
+            }
+
+            user = await strapi.entityService.create('plugin::users-permissions.user',{
+                data: {
+                    username: data.email,
+                    email: data.email,
+                    provider: 'local',
+                    password: password,
+                    role: process.env.ATS_SUPERADMINISTRATOR_ROLE,
+                    firstName: data.firstName,
+                    lastName: data.lastName,
+                    confirmed: 1,
+                    timezone: (userGeo) ? userGeo.timezone : null,
+                }
+            });
+            delete user.password;
+            delete user.resetPasswordToken;
+            delete user.confirmationToken;
+
+            user.new = true;
+        }else{
+            if(user.role.id != process.env.ATS_SUPERADMINISTRATOR_ROLE){ 
+                return ctx.forbidden('Your user role does not allow you to perform this action', {});
+            }
+
+            if(user.companies.length >= 5){ 
+                return ctx.forbidden('You exceeded the limit of companies', {});
+            }
+
+            if(user.company.plan.id == process.env.ATS_FREE_PLAN){ 
+                return ctx.forbidden('Your plan does not allow you to perform this action', {});
+            }
+            user.new = false;
+        }
 
         let domain = data.company.toString()
         .normalize('NFD')
@@ -125,37 +136,73 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         .replace(/[^\w-]+/g, '')
         .replace(/--+/g, '-') + user.id;
 
-
-        ctx.request.body.data = {
-            company: data.company,
-            domain: domain,
-            subdomain: 1,
-            demo: 1,
-            dueDate: dueDate,
-            colorPrimary: process.env.COLOR_PRIMARY,
-            colorSecundary: process.env.COLOR_SECUNDARY,
-            colorAccent: process.env.COLOR_ACCENT,
-            navBackground: process.env.NAV_BACKGROUND,
-            navColor: process.env.NAV_COLOR,
-            navColorHover: process.env.NAV_COLOR_HOVER,
-            publishedAt: new Date(),
-        };
-        
-        const company = await super.create(ctx);
-
-        const customer = await strapi.service('api::stripe.stripe').createCustomer(company.data.id, user.email, user.firstName);
-
-        await strapi.entityService.update('api::company.company', company.data.id, {
+        const company = await strapi.entityService.create('api::company.company', {
             data: {
-                plan: process.env.ATS_PRO_PLAN,
+                company: data.company,
+                domain: domain,
+                subdomain: 1,
+                demo: demo,
+                dueDate: dueDate,
+                colorPrimary: process.env.COLOR_PRIMARY,
+                colorSecundary: process.env.COLOR_SECUNDARY,
+                colorAccent: process.env.COLOR_ACCENT,
+                navBackground: process.env.NAV_BACKGROUND,
+                navColor: process.env.NAV_COLOR,
+                navColorHover: process.env.NAV_COLOR_HOVER,
+                plan: plan,
                 users: user.id,
-                customerID: customer.id,
+                publishedAt: new Date(),
+            }
+        });
+
+        if(user.new){
+            user.password = password;
+            
+            await strapi.service('api::log.log').create({
+                data:{
+                    company: company.id,
+                    log: `Registered user`,
+                    type: "register-user",
+                    result: user,
+                    params: {}
+                }
+            });
+        }
+
+        await strapi.service('api::log.log').create({
+            data:{
+                company: company.id,
+                log: `Registered company`,
+                type: "register-company",
+                result: company,
+                params: {}
+            }
+        });
+
+        await strapi.service('api::n8n.n8n').webhook(process.env.N8N_SETUP_URL, {
+            data: {
+                company: company,
+                user: user,
+            }
+        });
+
+        return {
+            data: company,
+            meta: {}
+        };
+    },
+    async setup(ctx){
+        const data = await this.sanitizeInput(ctx.request.body.data);
+
+        await strapi.entityService.update('api::company.company', data.company.id, {
+            data: {
+                customerID: data.company.customerID,
             },
         });
 
         const pipeline = await strapi.entityService.create('api::pipeline.pipeline',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: 'Default',
                 default: 1,
             }
@@ -163,7 +210,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::stage.stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: pipeline.id,
                 stage: 'Sourced',
                 type: 'sourced',
@@ -173,7 +220,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::stage.stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: pipeline.id,
                 stage: 'Apply',
                 type: 'apply',
@@ -183,7 +230,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::stage.stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: pipeline.id,
                 stage: 'Interview',
                 type: 'interview',
@@ -193,7 +240,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::stage.stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: pipeline.id,
                 stage: 'Assessment',
                 type: 'assessment',
@@ -203,7 +250,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::stage.stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: pipeline.id,
                 stage: 'Offer',
                 type: 'offer',
@@ -213,7 +260,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::stage.stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: pipeline.id,
                 stage: 'Hired',
                 type: 'hired',
@@ -223,7 +270,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::stage.stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 pipeline: pipeline.id,
                 stage: 'Onboarding',
                 type: 'onboarding',
@@ -237,7 +284,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for (let i = 0; i < sources.length; i++) {
             let source = await strapi.entityService.create('api::source.source',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     source: sources[i],
                 }
             });
@@ -250,7 +297,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for (let i = 0; i < disqualifies.length; i++) {
             let disqualify = await strapi.entityService.create('api::disqualify.disqualify',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     disqualify: disqualifies[i],
                 }
             });
@@ -263,7 +310,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for (let i = 0; i < departaments.length; i++) {
             let departament = await strapi.entityService.create('api::departament.departament',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     departament: departaments[i],
                 }
             });
@@ -276,7 +323,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for (let i = 0; i < tagCandidates.length; i++) {
             let tagCandidate = await strapi.entityService.create('api::tag-candidate.tag-candidate',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     tag: tagCandidates[i],
                 }
             });
@@ -289,7 +336,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for (let i = 0; i < TagJobs.length; i++) {
             let tagCandidate = await strapi.entityService.create('api::tag-job.tag-job',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     tag: TagJobs[i],
                 }
             });
@@ -298,14 +345,14 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         const questionnaire = await strapi.entityService.create('api::questionnaire.questionnaire',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: 'Basic questionnaire',
             }
         });
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'Can you tell us about your work experience and qualifications for this position?',
                 description: '',
@@ -319,7 +366,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'What are your greatest strengths and weaknesses?',
                 description: '',
@@ -333,7 +380,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'Why do you want to work for our company?',
                 description: '',
@@ -347,7 +394,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'Have you ever worked in a similar role before? ',
                 description: '',
@@ -361,7 +408,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'How do you handle stress and pressure in the workplace?',
                 description: '',
@@ -375,7 +422,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'Are you willing to travel for work?',
                 description: '',
@@ -389,7 +436,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'What is your availability for this position?',
                 description: '',
@@ -414,7 +461,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'How do you handle conflicts with coworkers or superiors?',
                 description: '',
@@ -428,7 +475,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'Are you comfortable working remotely?',
                 description: '',
@@ -442,7 +489,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::question.question',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 questionnaire: questionnaire.id,
                 question: 'What are your salary expectations?',
                 description: '',
@@ -456,14 +503,14 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         const job = await strapi.entityService.create('api::job.job',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 code: uuidv4(),
                 title: 'Computer Software Engineer [SAMPLE]',
                 departament: departamentIds[3],
-                type: 1,
+                type: "full-time",
                 industry: 25,
-                experience: 6,
-                education: 9,
+                experience: "senior",
+                education: "professional",
                 country: 'US',
                 state: faker.address.state(),
                 city: faker.address.city(),
@@ -503,9 +550,9 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::job-user.job-user',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
-                user: user.id,
+                user: data.user.id,
                 owner: 1,
             },
         });
@@ -528,7 +575,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
             let candidate = await strapi.entityService.create('api::candidate.candidate',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     email: faker.internet.email(firstName, lastName),
                     mobile: faker.phone.number(),
                     phone: faker.phone.number(),
@@ -596,7 +643,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
     
         let stageSourced = await strapi.entityService.create('api::job-stage.job-stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
                 stage: 'Sourced',
                 type: 'sourced',
@@ -607,7 +654,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for(let i = 0; i <= 6; i++){  
             await strapi.entityService.create('api::job-candidate.job-candidate',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     job: job.id,
                     stage: stageSourced.id,
                     candidate: candidateIds[i],
@@ -618,7 +665,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         let stageApply = await strapi.entityService.create('api::job-stage.job-stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
                 stage: 'Apply',
                 type: 'apply',
@@ -629,7 +676,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for(let i = 7; i <= 9; i++){  
             await strapi.entityService.create('api::job-candidate.job-candidate',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     job: job.id,
                     stage: stageApply.id,
                     candidate: candidateIds[i],
@@ -640,7 +687,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         let stageInterview = await strapi.entityService.create('api::job-stage.job-stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
                 stage: 'Interview',
                 type: 'interview',
@@ -651,7 +698,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for(let i = 10; i <= 12; i++){  
             await strapi.entityService.create('api::job-candidate.job-candidate',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     job: job.id,
                     stage: stageInterview.id,
                     candidate: candidateIds[i],
@@ -662,7 +709,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         let stageAssessment = await strapi.entityService.create('api::job-stage.job-stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
                 stage: 'Assessment',
                 type: 'assessment',
@@ -673,7 +720,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for(let i = 13; i <= 14; i++){  
             await strapi.entityService.create('api::job-candidate.job-candidate',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     job: job.id,
                     stage: stageAssessment.id,
                     candidate: candidateIds[i],
@@ -684,7 +731,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         let stageOffer = await strapi.entityService.create('api::job-stage.job-stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
                 stage: 'Offer',
                 type: 'offer',
@@ -695,7 +742,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         for(let i = 15; i <= 16; i++){  
             await strapi.entityService.create('api::job-candidate.job-candidate',{
                 data: {
-                    company: company.data.id,
+                    company: data.company.id,
                     job: job.id,
                     stage: stageOffer.id,
                     candidate: candidateIds[i],
@@ -706,7 +753,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::job-stage.job-stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
                 stage: 'Hired',
                 type: 'hired',
@@ -716,7 +763,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::job-stage.job-stage',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 job: job.id,
                 stage: 'Onboarding',
                 type: 'onboarding',
@@ -726,11 +773,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
 
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'confirmation',
                 template: 'Confirmation',
-                subject: `Confirmation of your application for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Confirmation of your application for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We wanted to take a moment to thank you for submitting your application for the {job.title} role at {company.company}. We have received your application and are currently reviewing it.</p>
                 
@@ -747,11 +794,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'referral',
                 template: 'Referral Notification',
-                subject: `Referral Notification for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Referral Notification for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We are writing to inform you that you have been referred for the {job.title} role at {company.company} by {referral.firstName}. We appreciate the referral and are excited to review your application.</p>
                 
@@ -770,11 +817,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'scheduler',
                 template: 'Interview Invitation',
-                subject: `Interview Invitation for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Interview Invitation for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We are writing to invite you for an interview for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about you and discuss how you can contribute to our organization.</p>
         
@@ -793,17 +840,17 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'assessment',
                 template: 'Assessment Invitation',
-                subject: `Assessment Invitation for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Assessment Invitation for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We are writing to invite you to participate in a series of tests as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your cognitive and behavioral characteristics to ensure that you are the best fit for the role.</p>
         
                 <p>The tests will be conducted online. They will assess your cognitive abilities, personality traits, work-related values, intelligence, etc. The results will be used to evaluate your suitability for the position and to provide feedback on your strengths and areas for improvement.</p>
                 
-                <p>Please click on the following link {job.url.test} to access the test platform and schedule a time that works best for you. We recommend that you find a quiet place, with a reliable internet connection, to participate in the tests.</p>
+                <p>Please click on the following link {job.url.assessment} to access the test platform and schedule a time that works best for you. We recommend that you find a quiet place, with a reliable internet connection, to participate in the tests.</p>
                 
                 <p>If you have any questions or concerns, please do not hesitate to reach out to us. We will be happy to assist you.</p>
                 
@@ -816,11 +863,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'questionnaire',
                 template: 'Questionnaire Invitation',
-                subject: `Questionnaire Invitation for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Questionnaire Invitation for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We are writing to invite you to participate in a questionnaire as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about your skills, experiences and interests to ensure that you are the best fit for the role.</p>
         
@@ -839,19 +886,17 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'gpdr',
                 template: 'GPDR Data Deletion',
-                subject: `GPDR Automated Data Deletion Notification`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - GPDR Automated Data Deletion Notification`,
+                body: `<p>Dear {candidate.firstName},</p>
         
-                <p>We are writing to inform you that, in accordance with the General Data Protection Regulation (GDPR), in 3 days we will be automating the deletion of your personal data that we collected as part of your application for the {job.title} role at {company.company}.</p>
+                <p>We are writing to inform you that, in accordance with the General Data Protection Regulation (GDPR), in ${process.env.GPDR_NOTIFICATION_DAYS} days we will be automating the deletion of your personal data that we collected as part of your application to the company {company.company}.</p>
         
                 <p>As you may know, GDPR requires us to delete personal data that is no longer necessary for the purpose for which it was collected, and you have not given us explicit consent to keep it. Therefore, we will be automatically deleting your personal data, including your resume, cover letter, and any other documents you have submitted, as well as any notes or comments that our recruiters have made.</p>
                 
-                <p>Please note that this deletion will be permanent and irreversible, and that we will not be able to restore your data after it has been deleted. Therefore, If you want to keep your information, click on the following link {job.url.gpdr} to give us your consent and keep your information in our database for future job opportunities.</p>
-                
-                <p>We would like to thank you for your interest in our organization and for the time you have taken to apply for this position. We wish you all the best in your job search.</p>
+                <p>Please note that this deletion will be permanent and irreversible, and that we will not be able to restore your data after it has been deleted. Therefore, If you want to keep your information, click on the following link {gpdr.url} to give us your consent and keep your information in our database for future job opportunities.</p>
                 
                 <p>Kind regards,</p>`,
                 default: 1,
@@ -860,11 +905,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'nps',
                 template: 'Candidate NPS Feedback Request',
-                subject: `{company.company} Candidate Feedback Request`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Candidate Feedback Request`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We hope you are doing well. We wanted to take a moment to thank you for your interest in the {job.title} role at {company.company}. We appreciate the time and effort you have put into the recruitment process.</p>
         
@@ -885,11 +930,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'disqualify',
                 template: 'Disqualified candidate',
-                subject: `Decision on your application for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Decision on your application for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>Thank you for taking the time to apply for the {job.title} role at {company.company}. We appreciate your interest in our organization.</p>
         
@@ -906,17 +951,17 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'candidate',
                 template: 'Sharing Candidates',
-                subject: `Sharing Candidates forr {job.title}`,
-                message: `<p>Dear {email.firstName},</p>
+                subject: `{company.company} - Sharing Candidates for {job.title}`,
+                body: `<p>Dear,</p>
         
                 <p>I hope this email finds you well. I wanted to reach out and share some candidates that I believe would be a great fit for the {job.title} role that we are currently recruiting for.</p>
         
                 <p>You can view the candidates on the following link:</p>
         
-                <p>{candidate.url}</p>
+                <p>{candidates.url}</p>
                 
                 <p>I would highly recommend scheduling an interview with these candidates as soon as possible, as they are highly sought after in the job market and may not be available for long.</p>
                 
@@ -929,11 +974,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'document',
                 template: 'Document',
                 subject: `{company.company} sent you a document to {document.type}`,
-                message: `<p>Dear {email.firstName},</p>
+                body: `<p>Dear {data.firstName},</p>
                 
                 <p>{company.company} sent you a document to {document.type}</p>
                 
@@ -950,11 +995,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'general',
                 template: 'Referral outreach',
-                subject: `Referral Outreach for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Referral Outreach for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We hope this email finds you well. We are writing to reach out to you regarding a new opportunity that has become available at our company {company.company}. The {job.title} role is a great fit for your skills and experience and we would like to invite you to apply for the role.</p>
         
@@ -971,11 +1016,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'general',
                 template: 'Phone Interview',
-                subject: `Phone Interview Invitation for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Phone Interview Invitation for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We are writing to invite you for a phone interview as part of the hiring process for the {job.title} role at {company.company}. We have reviewed your application and are impressed with your qualifications and experience. We would like to learn more about you and discuss how you can contribute to our organization.</p>
         
@@ -992,11 +1037,11 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
         
         await strapi.entityService.create('api::email-template.email-template',{
             data: {
-                company: company.data.id,
+                company: data.company.id,
                 type: 'general',
                 template: 'Reviewing Status',
-                subject: `Checking and Reviewing Status of your application for {job.title}`,
-                message: `<p>Dear {candidate.firstName},</p>
+                subject: `{company.company} - Checking and Reviewing Status of your application for {job.title}`,
+                body: `<p>Dear {candidate.firstName},</p>
         
                 <p>We wanted to reach out to you regarding the status of your application for the {job.title} role at {company.company}. We have received your application and are currently reviewing it.</p>
         
@@ -1013,66 +1058,12 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
             }
         });
 
-        await strapi.service('api::log.log').create({
-            data:{
-                company: company.data.id,
-                log: `Registered user`,
-                type: "register-user",
-                result: user,
-                params: {}
-            }
-        });
-
-        await strapi.service('api::log.log').create({
-            data:{
-                company: company.data.id,
-                log: `Registered company`,
-                type: "register-company",
-                result: company,
-                params: {}
-            }
-        });
-
-        await strapi.service('api::email.email').create({
-            data:{
-                from: process.env.SMTP_FROM,
-                replyTo: process.env.SMTP_FROM,
-                to: user.email,
-                subject: `Welcome to ${process.env.ATS_NAME}`,
-                body: `<p>Dear ${user.firstName},</p>
-
-                <p>We are excited to welcome you to ${process.env.ATS_NAME}. Your account has been created and you can now begin using our Applicant Tracking System (ATS) to manage your job applications.</p>
-
-                <h3>Your login credentials are as follows:</h3>
-
-                <ul>
-                    <li>URL: ${process.env.ATS_URL}</li>
-                    <li>Email: ${user.email}</li>
-                    <li>Password: ${password}</li>
-                </ul>
-
-                <p>Please keep this information safe and do not share it with anyone. If you need to reset your password at any time, you can do so by clicking the "Forgot Password" link on the login page.</p>
-
-                <p>Thank you for choosing ${process.env.ATS_NAME}.</p>
-                
-                <h3>A few things you may want to know:</h3>
-
-                <ul>
-                    <li>Your trial period gives you complete access to ${process.env.ATS_NAME} for ${process.env.ATS_TRIAL_DAYS} days, then you will have the option to continue with a paid plan or keep with the Free plan.</li>
-                    <li>We have a complete API that allows you to integrate any system with ${process.env.ATS_NAME}, you can review our documentation here ${process.env.ATS_API_DOCUMENTATION_URL}</li>
-                    <li>You can access our documentation and support from the following link ${process.env.ATS_SUPOORT_URL}</li>
-                </ul>
-
-                <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
-                sent: 0,
-                sendDate: new Date(),
-            }
-        });
-
-        await strapi.service('api::mailing.mailing').addContact(user.firstName, user.email, process.env.MJ_CONTACT_ADMINS_LIST);
-
-        return this.sanitizeOutput(company, ctx);
-        
+        ctx.body = {
+            data: {
+                status: "ok"
+            },
+            meta: {}
+        };
     },
     async report(ctx){
         const { id } = ctx.params;
@@ -1146,11 +1137,14 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
                     }
                 }
             },
-            evaluations:{
+            evaluations: {
                 users: {},
                 overTime: {
                     
                 },
+            },
+            diversity: {
+                //TODO: INFO DE EDADES, DIVERSIDAD, ETC
             }
         };
 

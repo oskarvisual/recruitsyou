@@ -54,6 +54,9 @@ module.exports = createCoreController('api::job.job', ({ strapi }) => ({
                 no: 0,
                 yes: 0,
                 great: 0,
+            },
+            diversity: {
+                //TODO: INFO DE EDADES, DIVERSIDAD, ETC
             }
         };
 

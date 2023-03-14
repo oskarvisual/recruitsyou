@@ -61,7 +61,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     async create(params) {
         const user = await strapi.service('api::user.user').me();
         
-        if(user){
+        if(user?.id && user?.company?.id){
             params.data.user = user.id;
             params.data.company = user.company.id;
         }

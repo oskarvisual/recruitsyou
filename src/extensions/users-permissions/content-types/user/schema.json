@@ -80,9 +80,9 @@
         "images"
       ]
     },
-    "company": {
+    "companies": {
       "type": "relation",
-      "relation": "manyToOne",
+      "relation": "manyToMany",
       "target": "api::company.company",
       "inversedBy": "users"
     },
@@ -98,10 +98,6 @@
       "type": "component",
       "repeatable": true,
       "component": "user.integrations"
-    },
-    "administrator": {
-      "type": "boolean",
-      "default": false
     },
     "timezone": {
       "type": "string"

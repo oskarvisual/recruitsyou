@@ -33,6 +33,13 @@
     },
     "time": {
       "type": "integer"
+    },
+    "icon": {
+      "allowedTypes": [
+        "images"
+      ],
+      "type": "media",
+      "multiple": false
     }
   }
 }

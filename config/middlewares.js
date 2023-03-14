@@ -40,14 +40,20 @@ module.exports = [
         },
     },
     'strapi::logger',
-    'strapi::query',
+    {
+        name: 'strapi::query',
+        config: {
+            arrayLimit: 5000,
+            depth: 20,
+        },
+    },
     {
         name: "strapi::body",
         config: {
             includeUnparsed: true,
             formLimit: "20mb",
-            jsonLimit: "20mb",
-            textLimit: "20mb",
+            jsonLimit: "5mb",
+            textLimit: "5mb",
             formidable: {
                 maxFileSize: 20 * 1024 * 1024,
             },

@@ -19,15 +19,11 @@ const getServiceUpload = (name) => {
 const { load } = require('csv-load-sync');
 
 const { createCoreController } = require('@strapi/strapi').factories;
-//TODO: CREAR CONTROLADOR PARA APLICAR y ONBOARDING
+//TODO: CREAR CONTROLADOR PARA APLICAR
 //TODO: FALTA PROBAR AMBOS IMPORTADORES CON TRABAJOS Y DATA REAL
 //TODO: PROBAR IMPORTAR CV A CANDIDATO YA EXISTENTE PERO SIN CV
-//TODO: FALTA CONTROLLER PARA EXPORTAR CSV
 module.exports = createCoreController('api::candidate.candidate', ({ strapi }) => ({
     async apply(ctx){
-
-    },
-    async onboarding(ctx){
 
     },
     async create(ctx) {
@@ -184,13 +180,11 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
         var myHeaders = new Headers();
         myHeaders.append("apikey", process.env.RESUME_API_KEY);
 
-        var requestOptions = {
+        const resumeFetch = await fetch(`https://api.apilayer.com/resume_parser/url?url=${file.url}`, {
             method: 'GET',
             redirect: 'follow',
             headers: myHeaders
-        };
-
-        const resumeFetch = await fetch(`https://api.apilayer.com/resume_parser/url?url=${file.url}`, requestOptions);
+        });
         const resume = await resumeFetch.json();
 
         if(!resume){
@@ -281,17 +275,20 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
                 },
             });
         }
-        
-        let candidateId = candidate.id;
-        delete candidate.id;
-        let attributes = candidate;
 
         return {
-            data: {
-                id: candidateId,
-                attributes: attributes,
-            },
+            data: candidate,
             meta: {}
         };
     },
+    async gpdr(ctx){
+        const deleted = await strapi.service('api::candidate.candidate').deleteGpdr();
+
+        return {
+            data: {
+                deleted: deleted,
+            },
+            meta: {}
+        };
+    }
 }));

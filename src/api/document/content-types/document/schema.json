@@ -26,9 +26,9 @@
       "type": "string",
       "required": true
     },
-    "file": {
+    "files": {
       "type": "media",
-      "multiple": false,
+      "multiple": true,
       "required": false,
       "allowedTypes": [
         "files"

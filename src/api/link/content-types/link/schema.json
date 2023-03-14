@@ -1,0 +1,64 @@
+{
+  "kind": "collectionType",
+  "collectionName": "links",
+  "info": {
+    "singularName": "link",
+    "pluralName": "links",
+    "displayName": "Link",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": false
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "company": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::company.company"
+    },
+    "job": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::job.job"
+    },
+    "candidates": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::candidate.candidate"
+    },
+    "code": {
+      "type": "customField",
+      "customField": "plugin::field-uuid.uuid"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "candidates",
+        "referral",
+        "scheduler",
+        "questionnaire",
+        "assessment",
+        "nps",
+        "gpdr",
+        "document"
+      ]
+    },
+    "scheduler": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::scheduler.scheduler"
+    },
+    "document": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "api::document.document"
+    },
+    "expireAt": {
+      "type": "datetime"
+    },
+    "email": {
+      "type": "email"
+    }
+  }
+}

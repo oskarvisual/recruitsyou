@@ -1,18 +1,14 @@
 const moment = require('moment');
 
-//TODO: ENVIAR AVISO DE GPDR
-//TODO: PROBAR SI FUNCIONA
-
 //TODO: PARA DEMO Y NO DEMO CUANDO FINALIZA PLAN:
-//TODO: Suspender bloquear todos los usuarios
 //TODO: Desactivar todos  los trabajos
-//TODO: Logica en jobs que no permita activar mas de uno si es free
 //TODO: Despublicar todas las paginas menos las basicas
+
 module.exports = {
     '*/30 * * * * *': async ({ strapi }) => {
         try {
-            const startToday =  moment(new Date()).startOf('day').format('YYYY-MM-DD HH:mm:ss');
-            const endToday =  moment(new Date()).endOf('day').format('YYYY-MM-DD HH:mm:ss');
+            const startToday =  moment(new Date()).startOf('day').format();
+            const endToday =  moment(new Date()).endOf('day').format();
 
             if(process.env.SMTP_SEND == "true"){
 
@@ -23,35 +19,41 @@ module.exports = {
                                 sent: 0,
                             },
                             {
-                                sendDate: { 
+                                sentAt: { 
                                     $lte: new Date() 
                                 },
                             },
                         ]
                     },
                     populate: {
-                        company: true,
+                        company: {
+                            select: [
+                                'id',
+                                'company',
+                                'gpdr',
+                                'gpdrFooterEmail',
+                                'demo',
+                            ],
+                            populate: { 
+                                plan: {
+                                    select: [
+                                        'id',
+                                        'plan',
+                                        'unlimitedEmails',
+                                        'emailsPerDay',
+                                    ]
+                                },
+                            }
+                        },
                     },
-                    sort: { sendDate: 'ASC' },
+                    sort: { sentAt: 'ASC' },
                     offset: 0, 
                     limit: 50,
                 });
 
                 for (let i = 0; i < emails.length; i++) {
-                    if(emails[i].company){
-                        emails[i].company = await strapi.db.query('api::company.company').findOne({
-                            select: [
-                                'id',
-                                'company',
-                                'demo',
-                            ],
-                            where: { id: emails[i].company.id },
-                            populate: {
-                                plan: true,
-                            },
-                        });
-
-                        if (!emails[i].company.unlimitedEmails) {
+                    if(emails[i].company?.plan){
+                        if (!emails[i].company.plan.unlimitedEmails) {
                             let emailSents = await strapi.db.query('api::email.email').count({
                                 filters: {
                                     $and: [
@@ -62,7 +64,7 @@ module.exports = {
                                             sent: 1,
                                         },
                                         {
-                                            sendDate: {
+                                            sentAt: {
                                                 $between: [startToday, endToday]
                                             },
                                         },
@@ -70,14 +72,18 @@ module.exports = {
                                 }
                             });
     
-                            if(emailSents >= emails[i].company.emailsPerDay){
+                            if(emailSents >= emails[i].company.plan.emailsPerDay){
                                 await strapi.entityService.update('api::email.email', emails[i].id, {
                                     data: {
-                                        sendDate: moment(emails[i].sendDate).add(1, 'days').format(),
+                                        sentAt: moment(emails[i].sentAt).add(1, 'days').format(),
                                     },
                                 });
                                 continue;
                             }
+                        }
+
+                        if(emails[i].company.gpdr && emails[i].company.gpdrFooterEmail){
+                            emails[i].body.concat(emails[i].company.gpdrFooterEmail);
                         }
                     }
 
@@ -95,6 +101,7 @@ module.exports = {
                         await strapi.entityService.update('api::email.email', emails[i].id, {
                             data: {
                                 sent: 1,
+                                sentAt: new Date(),
                             },
                         });
 
@@ -118,8 +125,8 @@ module.exports = {
     },
     '0 * * * * *': async ({ strapi }) => {
         try {
-            const startMinute =  moment(new Date()).startOf('minute').format('YYYY-MM-DD HH:mm:ss');
-            const endMinute =  moment(new Date()).endOf('minute').format('YYYY-MM-DD HH:mm:ss');
+            const startMinute =  moment(new Date()).startOf('minute').format();
+            const endMinute =  moment(new Date()).endOf('minute').format();
 
             const tasks = await strapi.db.query('api::task.task').findMany({
                 where: {
@@ -128,7 +135,7 @@ module.exports = {
                             done: 0,
                         },
                         {
-                            expire: {
+                            expireAt: {
                                 $between: [startMinute, endMinute]
                             },
                         },
@@ -169,13 +176,154 @@ module.exports = {
                         sent: 1,
                     },
                     {
-                        sendDate: { 
-                            $lte: moment(new Date()).subtract(30, 'days').format('YYYY-MM-DD'),
+                        sentAt: { 
+                            $lte: moment(new Date()).subtract(30, 'days').format(),
                         },
                     },
                 ]
             },
         });
+    },
+    '0 0 6 * * *': async ({ strapi }) => {
+        try {   
+            const companies = await strapi.entityService.findMany('api::company.company', {
+                fields: [
+                    'id',
+                    'company',
+                    'gpdrRetentionDays',
+                ],
+                filters: {
+                    $and: [
+                        {
+                            gpdr: 1,
+                        },
+                        {
+                            gpdrDeleteExpiredCandidates: 1,
+                        },
+                    ],
+                },
+            });
+
+            if(companies.length > 0){
+                for (let i = 0; i < companies.length; i++){
+                    let candidates = await strapi.entityService.findMany('api::candidate.candidate', {
+                        filters: {
+                            $and: [
+                                {
+                                    company: companies[i].id,
+                                },
+                                {
+                                    consent: 0,
+                                },
+                                { 
+                                    createdAt: {
+                                        $lte: moment(new Date()).subtract(companies[i].gpdrRetentionDays, 'days').format()
+                                    }
+                                }
+                            ],
+                        },
+                        populate: { 
+                            photo: true,
+                            resume: true,
+                        }
+                    });
+
+                    if(candidates.length > 0){
+                        for (let c = 0; c < candidates.length; c++){
+                            await strapi.service('api::candidate.candidate').deleteData(candidates[c]);
+
+                            let result = await strapi.entityService.delete('api::candidate.candidate', candidates[c].id);
+
+                            await strapi.service('api::log.log').create({
+                                data:{
+                                    company: companies[i].id,
+                                    log: `GPDR deleted candidate`,
+                                    type: `gpdr-delete-candidate`,
+                                    result: result,
+                                    params: {},
+                                }
+                            });
+                        }
+                    }
+                }
+            }
+            
+
+        } catch(err){
+            console.log(err);
+        }
+    },
+    '0 0 9 * * *': async ({ strapi }) => {
+        try {   
+            const companies = await strapi.entityService.findMany('api::company.company', {
+                fields: [
+                    'id',
+                    'company',
+                    'domain',
+                    'subdomain',
+                    'gpdrPrivacyUrl',
+                    'website',
+                    'gpdrRetentionDays',
+                    'expireDaysLinks',
+                ],
+                filters: {
+                    $and: [
+                        {
+                            gpdr: 1,
+                        },
+                        {
+                            gpdrDeleteExpiredCandidates: 1,
+                        },
+                    ],
+                },
+            });
+
+            if(companies.length > 0){
+                for (let i = 0; i < companies.length; i++){
+                    let startDay =  moment(new Date()).subtract(companies[i].gpdrRetentionDays - process.env.GPDR_NOTIFICATION_DAYS, 'days').startOf('day').format();
+                    let endDay =  moment(new Date()).subtract(companies[i].gpdrRetentionDays - process.env.GPDR_NOTIFICATION_DAYS, 'days').endOf('day').format();
+
+                    let candidates = await strapi.entityService.findMany('api::candidate.candidate', {
+                        fields: [
+                            'id',
+                            'email',
+                            'firstName',
+                            'lastName',
+                        ],
+                        filters: {
+                            $and: [
+                                {
+                                    company: companies[i].id,
+                                },
+                                {
+                                    consent: 0,
+                                },
+                                { 
+                                    createdAt: {
+                                        $between: [startDay, endDay]
+                                    }
+                                }
+                            ],
+                        },
+                        populate: {}
+                    });
+
+                    if(candidates.length > 0){
+                        for (let c = 0; c < candidates.length; c++){
+                            await strapi.service('api::email-template.email-template').sendTemplate('gpdr', {
+                                company: companies[i],
+                                email: candidates[c].email,
+                                candidate: candidates[c],
+                            });
+                        }
+                    }
+                }
+            }
+            
+
+        } catch(err){
+            console.log(err);
+        }
     },
     '0 0 10 * * *': async ({ strapi }) => {
         try {            
@@ -229,7 +377,7 @@ module.exports = {
     
                                 <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                                 sent: 0,
-                                sendDate: new Date(),
+                                sentAt: new Date(),
                             }
                         });
                     }
@@ -297,7 +445,7 @@ module.exports = {
                                 
                                 <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                                 sent: 0,
-                                sendDate: new Date(),
+                                sentAt: new Date(),
                             }
                         });
                     }

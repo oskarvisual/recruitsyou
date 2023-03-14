@@ -26,17 +26,18 @@
     },
     "gpdrRetentionDays": {
       "type": "integer",
-      "default": 180
+      "default": 180,
+      "min": 10
     },
     "gpdrPrivacyUrl": {
       "type": "string"
     },
-    "gpdrEmailFooter": {
-      "type": "richtext"
-    },
     "gpdrDeleteExpiredCandidates": {
       "type": "boolean",
       "default": false
+    },
+    "gpdrFooterEmail": {
+      "type": "richtext"
     },
     "googleAnalytics": {
       "type": "string"
@@ -155,12 +156,6 @@
     "linkedInCompanyId": {
       "type": "string"
     },
-    "users": {
-      "type": "relation",
-      "relation": "oneToMany",
-      "target": "plugin::users-permissions.user",
-      "mappedBy": "company"
-    },
     "domain": {
       "type": "uid",
       "targetField": "company"
@@ -179,6 +174,12 @@
     "expireDaysLinks": {
       "type": "integer",
       "default": 5
+    },
+    "users": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "mappedBy": "companies"
     }
   }
 }

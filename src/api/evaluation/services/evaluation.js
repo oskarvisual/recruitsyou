@@ -43,6 +43,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async create(params) {
         const user = await strapi.service('api::user.user').me();
+        params.data.user = user.id;
         params.data.company = user.company.id;
         
         const response = await super.create(params);
@@ -51,6 +52,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async update(entityId, params) {
         const user = await strapi.service('api::user.user').me();
+        params.data.user = user.id;
         params.data.company = user.company.id;
         
         const result = await strapi.service(api).findOne(entityId);

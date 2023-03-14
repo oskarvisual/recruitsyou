@@ -31,25 +31,10 @@
       "relation": "oneToOne",
       "target": "api::departament.departament"
     },
-    "type": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::type-job.type-job"
-    },
     "industry": {
       "type": "relation",
       "relation": "oneToOne",
       "target": "api::industry.industry"
-    },
-    "experience": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::experience.experience"
-    },
-    "education": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "api::education.education"
     },
     "state": {
       "type": "string"
@@ -62,10 +47,6 @@
     },
     "zip": {
       "type": "string"
-    },
-    "remote": {
-      "type": "boolean",
-      "default": true
     },
     "hoursFrom": {
       "type": "integer"
@@ -182,7 +163,7 @@
     "testDescription": {
       "type": "richtext"
     },
-    "archivedDate": {
+    "archivedAt": {
       "type": "datetime"
     },
     "indeed": {
@@ -233,6 +214,68 @@
     "formDiversity": {
       "type": "boolean",
       "default": false
+    },
+    "formConsent": {
+      "type": "boolean",
+      "default": true
+    },
+    "instantQuestionnaire": {
+      "type": "boolean",
+      "default": false
+    },
+    "location": {
+      "type": "enumeration",
+      "enum": [
+        "on-site",
+        "remote",
+        "hybrid"
+      ],
+      "default": "on-site"
+    },
+    "type": {
+      "type": "enumeration",
+      "enum": [
+        "full-time",
+        "part-time",
+        "contract",
+        "temporary",
+        "other"
+      ],
+      "default": "full-time"
+    },
+    "experience": {
+      "type": "enumeration",
+      "enum": [
+        "studend ",
+        "internship",
+        "entry-level",
+        "mid-senior",
+        "experienced",
+        "manager",
+        "senior",
+        "executive",
+        "senior-executive"
+      ],
+      "default": "studend "
+    },
+    "education": {
+      "type": "enumeration",
+      "enum": [
+        "high-school",
+        "certification",
+        "vocational",
+        "associate-degree",
+        "bachelor-degree",
+        "master-degree",
+        "doctorate",
+        "professional",
+        "college-coursework",
+        "vocational-hs-diploma",
+        "vocational-degree",
+        "high-school-coursework",
+        "unspecified"
+      ],
+      "default": "high-school"
     }
   }
 }

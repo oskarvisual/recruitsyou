@@ -29,7 +29,7 @@
       "type": "boolean",
       "default": false
     },
-    "signedDate": {
+    "signedAt": {
       "type": "datetime"
     },
     "code": {
@@ -38,6 +38,10 @@
     },
     "sign": {
       "type": "text"
+    },
+    "rejected": {
+      "type": "boolean",
+      "default": false
     }
   }
 }

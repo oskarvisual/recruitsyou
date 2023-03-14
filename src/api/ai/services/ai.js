@@ -42,10 +42,9 @@ module.exports = {
         if(!user.company.plan.ai || aiGenerated >= user.company.plan.aiPerDay){
             return ctx.forbidden('Your plan does not allow you to perform this action', {});
         }
-        
-        const result = await openai.createCompletion({
+        const result = await openai.createChatCompletion({
             model: process.env.OPENAI_API_MODEL,
-            prompt: prompt,
+            messages: [{role: "user", content: prompt}],
             max_tokens: parseInt(process.env.OPENAI_API_MAX_TOKENS),
             temperature: parseFloat(process.env.OPENAI_API_TEMPERATURE),
         });
@@ -63,8 +62,11 @@ module.exports = {
 
 
         return {
-            data: result.data.choices,
-            meta: {}
+            data: result.data.choices[0].message,
+            meta: {
+                finish_reason: result.data.choices[0].finish_reason,
+                index: result.data.choices[0].index,
+            }
         };
     }
 };

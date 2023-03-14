@@ -1,4 +1,4 @@
-const collection = "candidate";
+const collection = "evaluation";
 
 module.exports = {
     async afterCreate(event) {

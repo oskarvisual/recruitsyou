@@ -38,7 +38,7 @@
       "type": "string",
       "required": true
     },
-    "message": {
+    "body": {
       "type": "richtext",
       "required": true
     },

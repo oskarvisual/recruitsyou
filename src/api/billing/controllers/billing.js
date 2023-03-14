@@ -327,7 +327,7 @@ module.exports = {
                 });
         
                 if(plans.length == 0){
-                    return ctx.notFound('Plan no exist', {
+                    return ctx.badRequest('Plan no exist', {
                         errors: [
                             {
                                 path: ['plan'],
@@ -423,7 +423,7 @@ module.exports = {
 
                         <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                         sent: 0,
-                        sendDate: new Date(),
+                        sentAt: new Date(),
                     }
                 });
             }
@@ -453,7 +453,7 @@ module.exports = {
 
                         <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                         sent: 0,
-                        sendDate: new Date(),
+                        sentAt: new Date(),
                     }
                 });
             }
@@ -483,7 +483,7 @@ module.exports = {
 
                         <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                         sent: 0,
-                        sendDate: new Date(),
+                        sentAt: new Date(),
                     }
                 });
             }
@@ -513,7 +513,7 @@ module.exports = {
                         
                         <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>`,
                         sent: 0,
-                        sendDate: new Date(),
+                        sentAt: new Date(),
                     }
                 });
             }

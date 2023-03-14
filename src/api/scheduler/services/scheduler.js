@@ -66,7 +66,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 populate: {}
             });
             if(!userData){
-                return ctx.notFound('user Not Found', {});
+                return ctx.badRequest('user Not Found', {});
             }
         }
         
@@ -91,7 +91,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             const dataUser = await strapi.service('api::user.user').findOne(params.data.user);
         
             if(!dataUser){
-                return ctx.notFound('user Not Found', {});
+                return ctx.badRequest('user Not Found', {});
             }
         }
         

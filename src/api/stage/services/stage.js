@@ -6,7 +6,7 @@
 
 const { createCoreService } = require('@strapi/strapi').factories;
 const api = 'api::stage.stage';
-//TODO: AGREGAR LOGICA PARA ORDENAR (CON DRAG&DROP)
+//TODO: AGREGAR LOGICA PARA ORDENAR (CON DRAG&DROP) Y QUE NO SE PUEDA MOVER SOURCE Y APPLY Y QUE ACTUALICE IGUAL QUE CANDIDATOS
 module.exports = createCoreService(api, ({ strapi }) => ({
     async find(params) {
         const user = await strapi.service('api::user.user').me();
@@ -66,7 +66,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                 
         const pipeline = await strapi.service('api::pipeline.pipeline').findOne(params.data.pipeline);
         if(!pipeline){ 
-            return ctx.notFound('These attributes were not found', { 
+            return ctx.badRequest('These attributes were not found', { 
                 errors: [
                     {
                         path: ['pipeline'],
@@ -91,7 +91,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         });
 
         if(countStages >= 15){
-            return ctx.badRequest('Exceeds the maximum question limit (15)', {});
+            return ctx.badRequest('Exceeds the maximum stages limit (15)', {});
         }
 
         const names = [];
@@ -107,18 +107,16 @@ module.exports = createCoreService(api, ({ strapi }) => ({
                     },
                 ],
             },
-            start: 0, 
-            limit: 1,
             sort: { order: 'desc' },
         });
         
-        let order = 0;
+        let order = -1;
         
         if(stages.length > 0){
-            order = stages[0].order;
+            order = stages[0].order + 1;
             
             for(let i = 0; i < stages.length; i++){
-                if(!types.includes(stages[i].type) && stages[i].type){
+                if(stages[i].type && !types.includes(stages[i].type)){
                     types.push(stages[i].type);
                 }
                 if(!names.includes(stages[i].stage)){
@@ -127,7 +125,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             }
         }
 
-        if(types.includes(params.data.type)){
+        if(params.data.type && types.includes(params.data.type)){
             return ctx.badRequest('This attribute must be unique', {
                 errors: [
                     {
@@ -151,7 +149,7 @@ module.exports = createCoreService(api, ({ strapi }) => ({
             });
         }
 
-        params.data.order = order + 1;
+        params.data.order = (order < 0) ? 0 : order;
         
         const response = await super.create(params);
 
@@ -169,10 +167,6 @@ module.exports = createCoreService(api, ({ strapi }) => ({
         
         const result = await strapi.service(api).findOne(entityId);
         if(!result){ return null; }
-
-        if(params.data.order){
-            delete params.data.order;
-        }
 
         if(params.data.pipeline){
             delete params.data.pipeline;

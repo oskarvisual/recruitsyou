@@ -12,7 +12,7 @@
     "subject": {
       "type": "string"
     },
-    "message": {
+    "body": {
       "type": "richtext"
     },
     "replyTo": {
