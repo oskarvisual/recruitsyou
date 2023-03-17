@@ -179,7 +179,7 @@ module.exports = createCoreController('api::company.company', ({ strapi }) => ({
             }
         });
 
-        await strapi.service('api::n8n.n8n').webhook(process.env.N8N_SETUP_URL, {
+        await strapi.service('api::n8n.n8n').webhook(process.env.N8N_COMPANY_URL, {
             data: {
                 company: company,
                 user: user,

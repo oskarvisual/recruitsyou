@@ -306,19 +306,18 @@ module.exports = createCoreService(api, ({ strapi }) => ({
     },
     async sendTemplate(type, data){
         const template = await strapi.service(api).getTemplate(type, data);
+        const emails = (Array.isArray(data.to)) ? data.to : [data.to];
 
         if(!template){ return false; }
-        
-        const result = await strapi.service('api::email.email').create({
+
+        const result = await strapi.service('api::n8n.n8n').webhook(process.env.N8N_EMAIL_URL, {
             data: {
                 company: data.company.id,
-                from: process.env.SMTP_FROM,
                 replyTo: template.replyTo,
-                to: data.email,
+                to: emails,
                 subject: template.subject,
                 body: template.body,
-                sent: 0,
-                sentAt: new Date(),
+                hours: 0,
             }
         });
 

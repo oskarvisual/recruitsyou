@@ -70,10 +70,5 @@ module.exports = {
             path: '/billing/invoices/:id',
             handler: 'billing.findOneInvoice'
         },
-        {
-            method: 'POST',
-            path: '/billing/webhook',
-            handler: 'billing.webhook'
-        },
     ]
 }

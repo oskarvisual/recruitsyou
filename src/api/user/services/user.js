@@ -115,7 +115,7 @@ module.exports = {
         const user = result[0];
 
         if (!user?.companies) { 
-            throw new ApplicationError('User without existing companies', {});
+            return false;
         }
 
         if(headers?.company){
@@ -361,33 +361,22 @@ module.exports = {
                     },
                 });
 
-                await strapi.service('api::email.email').create({
-                    data:{
-                        from: process.env.SMTP_FROM,
-                        replyTo: process.env.SMTP_FROM,
-                        to: users[0].email,
-                        subject: `Invitation to ${process.env.ATS_NAME}`,
-                        body: `<p>Dear ${users[0].firstName},</p>
-    
-                        <p>You were added to the company ${user.company.company} in ${process.env.ATS_NAME} for the personnel selection.</p>
-    
-                        <p>A colleague has invited you to join.</p>
-
-                        <p>Now in your dashboard of ${process.env.ATS_NAME} you will have access to all the companies to which you have been added.</p>
-    
-                        <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>
-                        `,
-                        sent: 0,
-                        sentAt: new Date(),
-                    }
-                });
-
                 await strapi.service('api::log.log').create({
                     data:{
                         log: `Added user`,
                         type: "add-user",
                         result: users[0],
                         params: ctx.request.body,
+                    }
+                });
+
+                await strapi.service('api::n8n.n8n').webhook(process.env.N8N_USER_URL, {
+                    data: {
+                        company: user.company,
+                        user: {
+                            ...users[0],
+                            new: false
+                        }
                     }
                 });
             }
@@ -419,35 +408,6 @@ module.exports = {
             return ctx.badRequest('Error', {});
         }
 
-        await strapi.service('api::email.email').create({
-            data:{
-                from: process.env.SMTP_FROM,
-                replyTo: process.env.SMTP_FROM,
-                to: result.email,
-                subject: `Invitation to ${process.env.ATS_NAME}`,
-                body: `<p>Dear ${result.firstName},</p>
-
-                <p>${user.company.company} uses ${process.env.ATS_NAME} for its personnel selection.</p>
-
-                <p>A colleague has invited you to join.</p>
-
-                <h3>Your login credentials are as follows:</h3>
-
-                <ul>
-                    <li>URL: ${process.env.ATS_URL}</li>
-                    <li>Email:  ${result.email}</li>
-                    <li>Password: ${password}</li>
-                </ul>
-
-                <p>Please keep this information safe and do not share it with anyone. If you need to reset your password at any time, you can do so by clicking the "Forgot Password" link on the login page.</p>
-
-                <p>Best Regards,<br />${process.env.ATS_NAME} Team</p>
-                `,
-                sent: 0,
-                sentAt: new Date(),
-            }
-        });
-
         await strapi.service('api::log.log').create({
             data:{
                 log: `Registered user`,
@@ -459,10 +419,15 @@ module.exports = {
 
         await strapi.service('api::n8n.n8n').webhook(process.env.N8N_USER_URL, {
             data: {
-                ...result
+                company: user.company,
+                user: {
+                    ...result,
+                    new: true,
+                    password: password
+                }
             }
         });
-
+        
         return await strapi.service('api::user.user').findOne(result.id);
     },
     async update(entityId, params = {}) {

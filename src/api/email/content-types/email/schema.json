@@ -17,9 +17,6 @@
       "relation": "oneToOne",
       "target": "api::company.company"
     },
-    "from": {
-      "type": "email"
-    },
     "replyTo": {
       "type": "email"
     },
@@ -31,27 +28,6 @@
     },
     "body": {
       "type": "richtext"
-    },
-    "event": {
-      "type": "json"
-    },
-    "sent": {
-      "type": "boolean",
-      "default": false
-    },
-    "sentAt": {
-      "type": "datetime"
-    },
-    "attachments": {
-      "type": "media",
-      "multiple": true,
-      "required": false,
-      "allowedTypes": [
-        "images",
-        "files",
-        "videos",
-        "audios"
-      ]
     }
   }
 }

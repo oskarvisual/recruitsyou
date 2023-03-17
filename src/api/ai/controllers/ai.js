@@ -257,22 +257,23 @@ module.exports = {
 
         const response = await strapi.service('api::ai.ai').generateText(prompt);
 
+        response.data.match = 0;
         const percentageStart = parseInt(response.data.content.indexOf("%")) - 3;
         if(percentageStart >= 0){
             response.data.match = parseInt(response.data.content.slice(percentageStart, percentageStart + 3));            
         }
 
-        if(data.evaluation){
-            let evaluation = 1;
-            if(response.data?.match >= 30){ evaluation = 2 }
-            if(response.data?.match >= 70){ evaluation = 3 }
+        response.data.evaluation = 1;
+        if(response.data?.match >= 30){ response.data.evaluation = 2 }
+        if(response.data?.match >= 70){ response.data.evaluation = 3 }
 
+        if(data.evaluation){
             await strapi.service('api::evaluation.evaluation').create({
                 data: {
                     job: (job) ? job.id : null,
                     candidate: candidate.id,
                     description: response.data.content,
-                    evaluation: evaluation,
+                    evaluation: response.data.evaluation,
                     ai: 1,
                 }
             });

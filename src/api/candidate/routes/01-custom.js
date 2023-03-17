@@ -16,6 +16,11 @@ module.exports = {
             handler: 'candidate.apply',
         },
         {
+            method: 'POST',
+            path: '/candidates/gpdr-webhook',
+            handler: 'candidate.gpdrWebhook',
+        },
+        {
             method: 'DELETE',
             path: '/candidates/gpdr',
             handler: 'candidate.gpdr',

@@ -290,5 +290,73 @@ module.exports = createCoreController('api::candidate.candidate', ({ strapi }) =
             },
             meta: {}
         };
-    }
+    },
+    async gpdrWebhook(ctx){
+        const data = ctx.request.body.data;
+        const meta = ctx.request.body.meta;
+
+        let candidates = 0;
+
+        if(data.length == 0){ return ctx.notFound('Not Found', {}); }
+
+        for(let i = 0; i < data.length; i++){   
+            let company = await strapi.entityService.findOne('api::company.company', data[i].company, {
+                fields: [
+                    'id',
+                    'company',
+                    'domain',
+                    'subdomain',
+                    'gpdrPrivacyUrl',
+                    'website',
+                ],
+                populate: {}
+            });
+            if(!company){ continue; }
+
+
+            let candidate = await strapi.entityService.findOne('api::candidate.candidate', data[i].candidate, {
+                fields: [
+                    'id',
+                    'email',
+                    'firstName',
+                    'lastName',
+                ],
+                populate: { 
+                    photo: true,
+                    resume: true,
+                }
+            });
+            if(!candidate){ continue; }
+
+            candidates++;
+
+            if(meta.type == "delete"){
+                await strapi.service('api::candidate.candidate').deleteData(candidate);
+                let result = await strapi.entityService.delete('api::candidate.candidate', candidate.id);
+
+                await strapi.service('api::log.log').create({
+                    data:{
+                        company: company.id,
+                        log: `GPDR deleted candidate`,
+                        type: `gpdr-delete-candidate`,
+                        result: result,
+                        params: {},
+                    }
+                });
+            }else{
+                await strapi.service('api::email-template.email-template').sendTemplate('gpdr', {
+                    company: company,
+                    to: candidate.email,
+                    candidate: candidate,
+                });
+            }
+        }
+        
+        return {
+            data: {
+                candidates: candidates,
+            },
+            meta: {}
+        };
+    },
 }));
