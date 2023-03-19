@@ -38,6 +38,23 @@ module.exports = ({ env }) => ({
                 expiresIn: '7d',
             },
         },
-    },  
+    },
+    'strapi-plugin-populate-deep': {
+        config: {
+            defaultDepth: 10,
+        }
+    },
+    'transformer': {
+        enabled: true,
+        config: {
+            responseTransforms: {
+                removeAttributesKey: true,
+                removeDataKey: false,
+            },
+            requestTransforms : {
+                wrapBodyWithDataKey: true
+            },
+        }
+    }, 
   });
   
